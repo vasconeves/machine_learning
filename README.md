@@ -1,2 +1,12 @@
 # machine_learning
-this repository showcases what I've learned in ML in the past few years
+
+This repository showcases what I've learned in statistics and ML in the past few years.
+
+Menu.
+
+* 
+* 
+* 
+
+
+

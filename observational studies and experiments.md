@@ -8,7 +8,7 @@ The key questions here is the following: *does mammography speeds up cancer dete
 
 This study consists in the screening of women's breasts by X-rays as shown in the Table below.
 
-![Alt text](mammography_table.png)
+![Alt text](pics/mammography_table.png)
 
 We are inclined to compare between those who took the treatment with the ones how refused it. However this is an **observational** comparison!
 
@@ -44,8 +44,8 @@ In some cases, it is impossible to ensure that a study is completely double-blin
 
 From the table we can observe that
 
-* death rate from breast cancer in control group = $\frac{63}{31k}$
-* death rate from breast cancer in treatment group = $\frac{39}/{31k}$
+* death rate from breast cancer in control group = $\frac{63}{31k}$ = 0.0020
+* death rate from breast cancer in treatment group = $\frac{39}{31k}$ = 0.0013
 
 Key question: *Is the difference in death rates between treatment and control sufficient to establish that mammography reduces the risk of death from breast cancer?*
 
@@ -53,6 +53,57 @@ We need to perform an **hypothesis test**.
 
 Hypothesis testing steps:
 
+1. Determine a model. In our case Bernoulli (modeling as 1/0 problem) or a Poisson model (modeling as number of events).
+
+2. Determine a mutually exclusive null hypothesis and alternative.
+
+* $H_0$: $\pi = 0.002$ or $\lambda = 63$
+
+* $H_1$: $\pi = 0.0013$ or $\lambda = 39$
+
+3. Determine a test statistic (quantity that can differentiate between $H_0$ and $H_1$ and whose assumptions under $H_0$ are true)
+
+T = #Deaths under $H_0$:
+    
+    T ~ Binomial(31k,0.002) 
+    
+    or 
+    
+    T ~Poisson(63)
+
+4. Determine a significance level ($\alpha$) i.e. the probability of rejecting $H_0$ when $H_0$ is true: e.g. $\alpha \le 0.05$.
+
+The following Figure shows the pmf of a Binomial and a Poissonian distributions. The significance level is depicted as the dashed blue line. We can observe that the distributions are very similar. Therefore, for large n, it is preferred to use the Poissonian approximation.
+
+![](pics/pmf.png)
+
+*Code:*
+'
+import numpy as np
+from scipy.stats import poisson,binom
+import matplotlib.pyplot as plt
+
+n = 31000 #control sample size
+death = 63 # number of cancer deaths in control
+rate = death/n #death ratio in control
+x = np.arange(0,125) #parameter space
+#binomial calculation exercise
+pmf_binomial = binom.pmf(x,n,rate)
+
+#poisson approximation
+pmf_poisson = poisson.pmf(x,death)
+
+alpha = x[np.where(np.cumsum(pmf_binomial) <= 0.05)][-1] #alpha = 0.05
+
+plt.plot(x,pmf_poisson,'.',label='Binomial pmf')
+plt.plot(x,pmf_poisson,'or',alpha=0.5,label='Poisson pmf')
+plt.plot((63,63),(0,0.05),'r--',alpha=0.1,label='$E[X]$')
+plt.plot((alpha,alpha),(0,pmf_binomial[alpha]),'b-',label="$\\alpha=0.05$")
+plt.xlabel('Cancer deaths'),plt.ylabel('pmf')
+plt.xlim(20,100),plt.ylim(0,0.06)
+
+plt.legend()
+'
 
 
 

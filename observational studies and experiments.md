@@ -78,7 +78,7 @@ The following Figure shows the pmf of a Binomial and a Poissonian distributions.
 ![](pics/pmf.png)
 
 *Code:*
-'
+'''
 import numpy as np
 from scipy.stats import poisson,binom
 import matplotlib.pyplot as plt
@@ -103,7 +103,7 @@ plt.xlabel('Cancer deaths'),plt.ylabel('pmf')
 plt.xlim(20,100),plt.ylim(0,0.06)
 
 plt.legend()
-'
+'''
 
 
 

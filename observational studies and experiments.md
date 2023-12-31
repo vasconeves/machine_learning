@@ -65,15 +65,17 @@ Hypothesis testing steps:
 
 T = #Deaths under $H_0$:
     
-    T ~ Binomial(31k,0.002) 
+T ~ Binomial(31k,0.002) 
     
-    or 
+or 
     
-    T ~Poisson(63)
+T ~Poisson(63)
 
 4. Determine a significance level ($\alpha$) i.e. the probability of rejecting $H_0$ when $H_0$ is true: e.g. $\alpha \le 0.05$.
 
 The following Figure shows the pmf of a Binomial and a Poissonian distributions. The significance level is depicted as the dashed blue line. We can observe that the distributions are very similar. Therefore, for large n, it is preferred to use the Poissonian approximation.
+
+In this case, if the p-value of the test statistic is lower than 0.05 we can say that we reject the null at the 0.05 confidence level. In practice, however, we should be very careful about the importance of p-values and should use other statistical tools as well as we'll see later on.
 
 ![](pics/pmf.png)
 
@@ -106,5 +108,55 @@ plt.xlim(20,100),plt.ylim(0,0.06)
 plt.legend()
 ```
 
-d
+The p-value is calculated by summing all pmf values up to pmf(x=39). Therefore, the p-value is a probability. In this case we obtain a value of 0.0008 which is much smaller than 0.05. **Thus, we reject the null**.
+
+We can now define type I error, type II error and power from the following table.
+
+![](pics/table_power.png)
+
+Type I error is a false positive and is bounded by $\alpha$ (meaning type I error  $\le \alpha$), Type II error is a false negative, and the power can be written as
+
+$Power = 1-Type II error$
+
+**Note:** there is a trade-off between type I error and type II error.
+
+**Note:** the power of a 1-sided test is usually higher than the power of a 2-sided test. Thus you should always use 1-sided tests when evaluating deviations that go in one direction only.
+
+## Fisher exact test
+
+What if we don't know the frequency of deaths of the control? We can do a **Fisher exact test** which is based on the hypergeometric distribution.
+
+Null hypothesis: $\pi$ control = $\pi$ treatment
+
+Alternative hypothesis: $\pi$ control > $\pi$ treatment
+
+*Key question: Knowing that 102 subjects died and that number of treatments / controls each is 31k what is probability that deaths are so unevenly distributed?*
+
+We can write the test as
+
+$P_{H_0}(T=39) = (31k/39)(31k/63)/(62k/102)$
+
+$p-value$ = 0.011 < 0.05
+
+Advantages:
+
+- Does not assume knowledge about the true probability of dying due to breast cancer in the control population
+
+Shortcomings:
+
+- Assumes knowledge of the margins (i.e., row and column sums)
+- Alternative is Bernard’s test (estimates the margins)
+- Both tests are difficult to perform on large tables for computational reasons
+
+
+
+
+
+
+
+
+
+
+
+
 

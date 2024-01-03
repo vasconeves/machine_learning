@@ -148,7 +148,6 @@ Shortcomings:
 - Alternative is Bernard’s test (estimates the margins)
 - Both tests are difficult to perform on large tables for computational reasons
 
-hello world
 
 
 

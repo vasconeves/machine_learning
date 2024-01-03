@@ -2,9 +2,11 @@
 
 Here I will demonstrate how we can analyze data from observational studies using a mammography study as an example.
 
-The key questions here is the following: *does mammography speeds up cancer detection?*
+The key questions here are the following: 
 
-*How do we set up an experiment in order to minimize the problem of confounding?*
+* *Does mammography speeds up cancer detection?*
+
+* *How do we set up an experiment in order to minimize the problem of confounding?*
 
 This study consists in the screening of women's breasts by X-rays as shown in the Table below.
 
@@ -145,7 +147,7 @@ Advantages:
 Shortcomings:
 
 - Assumes knowledge of the margins (i.e., row and column sums)
-- Alternative is Bernard’s test (estimates the margins)
+- **Alternative is Bernard’s test** (estimates the margins)
 - Both tests are difficult to perform on large tables for computational reasons
 
 

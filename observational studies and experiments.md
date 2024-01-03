@@ -8,15 +8,15 @@ The key questions here are the following:
 
 * *How do we set up an experiment in order to minimize the problem of confounding?*
 
-This study consists in the screening of women's breasts by X-rays as shown in the Table below.
+The study consists in the screening of women's breasts by X-rays as shown in the Table below.
 
 ![Alt text](pics/mammography_table.png)
 
-We are inclined to compare between those who took the treatment with the ones how refused it. However this is an **observational** comparison!
+Intuitively, we are inclined to compare between those who took the treatment with the ones how refused it. However this is an **observational comparison**!
 
 Instead we need to compare the whole treatment group against the whole control group.
 
-We need to do an **intent-to-treat** analysis.
+We need to do an **intent-to-treat analysis**.
 
 From the table we will assume that the **outcome variable** will be death by breast cancer. This variable will depend on the treatment variable, that will be the people offered mammography.
 
@@ -38,7 +38,7 @@ An experimental design where treatments are assigned at random and that satisfie
 
 In any experiment that involves human subjects, factors related to human behavior may influence the outcome, obscuring treatment effects. For example, if patients in a drug trial are made aware that they actually received the new treatment pill, their behavior may change in a number of ways, such as by being more or less careful with their health-related choices. Such changes are very difficult to model, so we seek to minimize their effect as much as possible.
 
-The standard way to resolve this is through a double-blind study , also called a blinded experiment . Here, human subjects are prevented from knowing whether they are in the treatment or control groups. At the same time, whoever is in charge of the experiment and anyone else who could interact with the patient are also prevented from directly knowing whether a patient is in the treatment or the control group. This is to prevent a variety of cognitive biases such as observer bias or confirmation bias that could influence the experiment.
+The standard way to resolve this is through a double-blind study, also called a blinded experiment. Here, human subjects are prevented from knowing whether they are in the treatment or control groups. At the same time, whoever is in charge of the experiment and anyone else who could interact with the patient are also prevented from directly knowing whether a patient is in the treatment or the control group. This is to prevent a variety of cognitive biases such as observer bias or confirmation bias that could influence the experiment.
 
 In some cases, it is impossible to ensure that a study is completely double-blind. In the mammography study, for example, patients will definitely know whether they received a mammography. If we modify the treatment instead to whether a patient is offered mammography (which they could decline), then we neither have nor want double-blindness.
 
@@ -49,7 +49,7 @@ From the table we can observe that
 * death rate from breast cancer in control group = $\frac{63}{31k}$ = 0.0020
 * death rate from breast cancer in treatment group = $\frac{39}{31k}$ = 0.0013
 
-Key question: *Is the difference in death rates between treatment and control sufficient to establish that mammography reduces the risk of death from breast cancer?*
+***Key question:*** *Is the difference in death rates between treatment and control sufficient to establish that mammography reduces the risk of death from breast cancer?*
 
 We need to perform an **hypothesis test**.
 
@@ -67,11 +67,11 @@ Hypothesis testing steps:
 
 T = #Deaths under $H_0$:
     
-T ~ Binomial(31k,0.002) 
+* T ~ Binomial(31k,0.002) 
     
 or 
     
-T ~Poisson(63)
+* T ~Poisson(63)
 
 4. Determine a significance level ($\alpha$) i.e. the probability of rejecting $H_0$ when $H_0$ is true: e.g. $\alpha \le 0.05$.
 
@@ -118,7 +118,7 @@ We can now define type I error, type II error and power from the following table
 
 Type I error is a false positive and is bounded by $\alpha$ (meaning type I error  $\le \alpha$), Type II error is a false negative, and the power can be written as
 
-$Power = 1-Type II error$
+$Power = 1-Type\ II\ error$
 
 **Note:** there is a trade-off between type I error and type II error.
 

@@ -55,7 +55,7 @@ We need to perform an **hypothesis test**.
 
 Hypothesis testing steps:
 
-1. Determine a model. In our case Bernoulli (modeling as 1/0 problem) or a Poisson model (modeling as number of events).
+1. Determine a model. In our case Binomial (modeling as the outcome of a number *n* of heads/tails) or a Poisson model (modeling as number of arrivals/events).
 
 2. Determine a mutually exclusive null hypothesis and alternative.
 
@@ -102,7 +102,8 @@ alpha = x[np.where(np.cumsum(pmf_binomial) <= 0.05)][-1] #alpha = 0.05
 
 plt.plot(x,pmf_poisson,'.',label='Binomial pmf')
 plt.plot(x,pmf_poisson,'or',alpha=0.5,label='Poisson pmf')
-plt.plot((63,63),(0,0.05),'r--',alpha=0.1,label='$E[X]$')
+plt.plot((63,63),(0,0.05),'r--',alpha=0.1,label='$E[H_0]$')
+plt.plot(39,pmf_binomial[39],'b*',markersize=12,label='$E[H_1]$')
 plt.plot((alpha,alpha),(0,pmf_binomial[alpha]),'b-',label="$\\alpha=0.05$")
 plt.xlabel('Cancer deaths'),plt.ylabel('pmf')
 plt.xlim(20,100),plt.ylim(0,0.06)
@@ -132,13 +133,13 @@ Null hypothesis: $\pi$ control = $\pi$ treatment
 
 Alternative hypothesis: $\pi$ control > $\pi$ treatment
 
-*Key question: Knowing that 102 subjects died and that number of treatments / controls each is 31k what is probability that deaths are so unevenly distributed?*
+***Key question:*** *Knowing that 102 subjects died and that number of treatments / controls each is 31k what is the probability that deaths are so unevenly distributed?*
 
 We can write the test as
 
 $P_{H_0}(T=39) = (31k/39)(31k/63)/(62k/102)$
 
-$p-value$ = 0.011 < 0.05
+$p\- value$ = 0.011 < 0.05
 
 Advantages:
 
@@ -149,15 +150,4 @@ Shortcomings:
 - Assumes knowledge of the margins (i.e., row and column sums)
 - **Alternative is Bernard’s test** (estimates the margins)
 - Both tests are difficult to perform on large tables for computational reasons
-
-
-
-
-
-
-
-
-
-
-
 

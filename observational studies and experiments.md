@@ -1,4 +1,4 @@
-# Mammography study
+# Mammography study - a discrete variable example
 
 Here I will demonstrate how we can analyze data from observational studies using a mammography study as an example.
 
@@ -104,7 +104,7 @@ plt.plot(x,pmf_poisson,'.',label='Binomial pmf')
 plt.plot(x,pmf_poisson,'or',alpha=0.5,label='Poisson pmf')
 plt.plot((63,63),(0,0.05),'r--',alpha=0.1,label='$E[H_0]$')
 plt.plot(39,pmf_binomial[39],'b*',markersize=12,label='$E[H_1]$')
-plt.plot((alpha,alpha),(0,pmf_binomial[alpha]),'b-',label="$\\alpha=0.05$")
+plt.plot((alpha,alpha),(0,pmf_binomial[alpha]),'b-',label="$\\alpha=0.05\ threshold$")
 plt.xlabel('Cancer deaths'),plt.ylabel('pmf')
 plt.xlim(20,100),plt.ylim(0,0.06)
 
@@ -125,6 +125,10 @@ $Power = 1-Type\ II\ error$
 
 **Note:** the power of a 1-sided test is usually higher than the power of a 2-sided test. Thus you should always use 1-sided tests when evaluating deviations that go in one direction only.
 
+The following plot shows a graphical depiction of the power of the test as well as the upper bound of the Type I error represented by $\alpha$. **The plot clearly shows the interplay between type I and type II errors: 
+
+![](pics/power.png)
+
 ## Fisher exact test
 
 What if we don't know the frequency of deaths of the control? We can do a **Fisher exact test** which is based on the hypergeometric distribution.
@@ -135,11 +139,19 @@ Alternative hypothesis: $\pi$ control > $\pi$ treatment
 
 ***Key question:*** *Knowing that 102 subjects died and that number of treatments / controls each is 31k what is the probability that deaths are so unevenly distributed?*
 
-We can write the test as
+The $\textit{p-value}$ is then the sum of probabilities of obtaining a value of T that is more extreme than 39, in the direction of the alternate hypothesis:
 
-$P_{H_0}(T=39) = (31k/39)(31k/63)/(62k/102)$
+$P_{H_0}(T \le 39) = \sum_{t=0}^{39}{{31k \choose t}{31k \choose 102-t}{62k \choose 102}}$
 
-$p\- value$ = 0.011 < 0.05
+$\textit{p-value} = 0.011 < 0.05$
+
+From here, based on the significance level $\alpha$, we can either
+
+* reject the null if $p \le \alpha$
+
+or
+
+* fail to reject the null if $p > \alpha$.
 
 Advantages:
 
@@ -150,4 +162,136 @@ Shortcomings:
 - Assumes knowledge of the margins (i.e., row and column sums)
 - **Alternative is Bernard’s test** (estimates the margins)
 - Both tests are difficult to perform on large tables for computational reasons
+
+# Sleeping drug study - a continuous variable example
+
+Let's now move on to a different study where we have a **continuous variable** as our variable of interst.
+
+In the clinical trial setup we are testing a new sleeping aid drug which in principle should help users suffering from insomnia to increase their sleeping time.
+
+*Which should be the best approach to this problem?*
+
+We could adapt the previous framework for the mammography study. However, the power of this hypothesis might not be very high, considering that the sample size is small: people have a wide range of sleep lengths and may be difficult to discern anything due to this natural variability. An alternative to the standard RTC test is a **paired test design**.
+
+## Paired test design
+
+In the paired test design one takes multiple samples from the same individual at different times, a group corresponding to the control situation and the other group corresponding to the treatment situation. This allow us to estimate the effect of the drug at the individual level. 
+
+Therefore we will measure the difference between the observed values in the treatment and in the control situations,
+
+$Y_i = X_{i,treatment}-X_{i_control}.
+
+The null hypothesis is the one where the expected value of the measurement $E[Y_i] = 0$.
+
+**Note: the paired test design removes the need for randomization. However the individual does not know if he is in the treatment or the in the control group. This can be done by having two seperate observation periods: one for a placebo administration and the other for the drug treatment.**
+
+## Modeling choce for the sleeping drug study
+
+The following table shows the data collected for our clinical trial.
+
+![](pics/sleeping_drug.png)
+
+*What should be our modeling choice?*
+
+In this case we can think in two possibilities *a priori*:
+
+* The number of hour slept in a day has an upper bound, as shown in the table which implies that the difference $Y$ is also bounded. This points in favour of the **uniform distribution** as this model has bounded support, while the Gaussian distribution has infinite support.
+
+* We can look at the empirical distribution of the observations. The number of hours slept by an adult is known to be centered around 8 hours, and outliers are rare, so this favours the Gaussian distribution model.
+
+In this case, it is prefereble to choose the Gaussian distribution as it closely matches the empirical distribution of the sleeping population. We can further argue that the number of hours slept is a cumulative effect of a large number of biological and lifestile variables. As most of these variables are unrelated to each other, the cumulative effect can be approximated by a normal distribution.
+
+## The central limit theorem (CLT) and the z-test statistic
+
+From the CLT, we know that when $n$ is large, the distribution of the random variables of a sample $X_1...X_n$ is approximately normal with mean $\mu$ and variance $\sigma^2$. Therefore,
+
+$\overline{X} \sim N(\mu,\frac{\sigma^2}{n})$
+
+From here we can defina a test statistic, the **z-test statistic** as
+
+$z = \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \sim N(0,1)$.
+
+This test statistic does not depend on the parameters $\mu$ or $\sigma$. It is, in fact, the standard normal. Thus we can simply use the CDF of this function to calculate the $\textit{p-value}$ of the test statistic.
+
+In our case we want to answer the following question:
+
+*Does the drug increase hours of sleep enough to matter?*
+
+To answer this question we go through the following steps:
+
+1. Choose a model (Gaussian) and use the proper random variables ($Y_i = X_drug-X_placebo).
+2. State the hypothesis (in this case is a one-sided test):
+    - H_0: $\mu = 0$
+    - H_1: $\mu > 0$.
+3. Calculate the test statistic.
+
+We have, however, a problem. To calculate z we need to known the true value of the variance $\sigma$. Since we do not know the population variance, only the sample variance we cannot use this test.
+
+## T-test
+
+The solution to this problem is to use a t-test instead. The t-test uses the sample variance, and enable us to write
+
+$T = \frac{\overline{X}-\mu}{\hat{\sigma}/\sqrt{n}} \sim N(0,1)$.
+
+## Application to the sleeping drug experiment
+
+To calculate the T-test to our experiment we first calculate the difference of the hours of sleep between drug and placebo as shown in the table below.
+
+![](pics/diferences.png)
+
+Then, we know that under the null the t-test follows a t distribution of 9 degrees of freedom,
+
+$\frac{X}{\hat{\sigma}/sqrt{n}} \sim t_9$.
+
+Using for instance the t-test program in the scipy python library we obtain
+
+```python
+t_test = sp.stats.ttest_1samp(x,0,alternative='greater') #note: alternative='greater' because by default the t-test output is a two-sided test.
+print ('The t-test statistic =',t_test[0], 'with a p-value =',t_test[1],'and df = 9.')
+The t-test statistic = 3.1835383022188735 with a p-value = 0.005560692749284678 and df = 9.
+```
+
+In this case we can also reject the null at the 5% level (or even at the 1% level).
+
+The pdf of a $t_9$ distribution is shown below and compared to a standard normal distribution.
+
+![](pics/z_and_t.png)
+
+Code:
+```python
+df = 9 #number of degrees of freedom
+x = np.linspace(-5,5,1000) #support
+td = sp.stats.t.pdf(x,df)
+tn = sp.stats.norm.pdf(x)
+
+indx = np.max(np.where(x<t_test[0])) #location of the pdf value of the t-score
+
+plt.plot(x,td,'r',label='T-distribution (df=9)')
+plt.plot(x,tn,'b',label='Z distribution')
+plt.plot(t_test[0],td[indx],'*k',label='T score',markersize=12)
+
+plt.legend()
+```
+A great feature of the $t_n$ distribution is that it introduces uncertainty due to the estimation of the population variance: As $n$ gets smaller and smaller the tails of the T distribution get larger and larger as shon in the following Figure.
+
+![](pics/t_distributions.png)
+
+**Note: as a rule of thumb, when the sample size $n \ge 30$ the t-distribution is already very similar to the normal distribution. At this threshold the normal approximation becomes (more) valid.**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

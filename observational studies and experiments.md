@@ -231,7 +231,9 @@ We have, however, a problem. To calculate z we need to known the true value of t
 
 The solution to this problem is to use a t-test instead. The t-test uses the sample variance, and enable us to write
 
-$T = \frac{\overline{X}-\mu}{\hat{\sigma}/\sqrt{n}} \sim N(0,1)$.
+$T = \frac{\overline{X}-\mu}{\hat{\sigma}/\sqrt{n}},$
+
+under the assumption that $X_1,...,X_n \sim N(\mu,\sigma)$. This distribution is called a t-distribution and is parameterized by a number of *degrees of freedom*. In this case, $T \sim t_{n-1}$, the t distribution with $n-1$ degrees of freedom, where $n$ is the number of samples.
 
 ## Application to the sleeping drug experiment
 
@@ -241,7 +243,7 @@ To calculate the T-test to our experiment we first calculate the difference of t
 
 Then, we know that under the null the t-test follows a t distribution of 9 degrees of freedom,
 
-$\frac{X}{\hat{\sigma}/sqrt{n}} \sim t_9$.
+$\frac{\overline{X}}{\hat{\sigma}/sqrt{n}} \sim t_9$.
 
 Using for instance the t-test program in the scipy python library we obtain
 
@@ -277,6 +279,176 @@ A great feature of the $t_n$ distribution is that it introduces uncertainty due 
 ![](pics/t_distributions.png)
 
 **Note: as a rule of thumb, when the sample size $n \ge 30$ the t-distribution is already very similar to the normal distribution. At this threshold the normal approximation becomes (more) valid.**
+
+## Testing the assumption of normality
+
+- When using a t-test sometimes we have very few samples. It is thus important to check the assumption of normality of the random variables. *How can we do that?*
+
+    - Using a qq-plot (quantile-quantile plot). By inspecting the form of the qq plot one has a **qualitative** measure of the form of the distribution. In this example I use the qqplot function of the statsmodels library. In short the function draws at random $n$ numbers and orders them, doing the same with the sample values. Then, if they're more or less in a straight line we can have some confidence that our sample is drawn from a normal distribution. **It's important to note that it is necessary to subtract by the mean and divide by the standard deviation to properly use the qq plot**.
+![](pics/qqplot.png)
+   - Using a KS test (one sample Kolmogorov smirnov test of normality). For instance we can use the 1-sample KS test for normality contained in the scipy.stats library and we conclude that there is a high probability that our data is drawn from a normal distribution ($\textit{p-value} \sim 0.64$) as shown below. **Always take care to check if you're doing a 1-sided or a two-sided test**.
+
+Code:
+```python
+sp.stats.ks_1samp(teste,sp.stats.norm.cdf,alternative='greater')
+KstestResult(statistic=0.13524505784239993, pvalue=0.6393148695381738, statistic_location=-0.34577756840579527, statistic_sign=1)
+```
+
+## The Wilcoxon signed-rank test
+
+*Ok, but what if the assumption of normality is not valid? What if the sample has origin in any other distribution?*
+
+You can use the **Wilcoxon sign-rank test**. You just need to ensure that the sample are drawn from some distribution that is symmetric around a mean.
+
+- Model: $X_1...X_n \sim Dist. $  symmetric around a mean $\mu$.
+- Test statistic: $W=\sum{_{i=1}^n X_i-\mu}R_i$, where $R_i$ is the rank of $|X_i-\mu|$. The rank is just a weight that gives a value of 1 to the smallest distance and a value of $n$ to the largest distance.
+- This test statistic is asymptotically normal.
+
+There are many other tests. **The most important thing is to always check the assumption of each test very carefully!**
+
+## Confidence intervals
+
+Ok, we're now actually happy with our model to obtain the expected value and its variability. But *actually* we're more interested in a range of **realistic values**. *How should we quantify this range*?
+
+This range is called a **confidence interval**. It is centered around the sample mean and its width is proportional to the standard error.
+
+The interval is defined in such a way that with probability $1-\alpha$ the interval will contain the true mean $\mu$. In other words, if we sample the dataset many times and calculate inervals each time, the probability taht $\mu$ is in the proposed range is $1-\alpha$.
+
+We can write this interval in the following way
+
+$P(-\Phi^{-1}_{1-\alpha/2} \le \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \le \Phi^{-1}_{1-\alpha/2}) = 1 - \alpha$,
+
+where $\phi$ is the cdf of the distribution and $\alpha$ is the significant level.
+
+If we isolate $\mu$ then we obtain
+
+$P(\overline{X}-\frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2} \le \mu \le \overline{X}+\frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2}) = 1 - \alpha$.
+
+Therefore, the (two-sided in this case!) confidence interval will be
+
+$\overline{X} \pm \frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2}$.
+
+To better understand what the confidence interval is we can create a very simple simulation where we randomly draw 100 elements from a standard normal distribution 100 times. The result is depicted in the following Picture.
+
+![](pics/simulation_ci.png)
+
+Here we assume that $\alpha = 0.05$ and thus $\Phi^{-1}_{0.975} \sim 1.96$.
+
+Code:
+```python
+#simulation
+#100 sets of 100 standard gaussian distribution draws
+#here we assume alpha = 0.05
+#we know the table value of phi^-1(0.95) = P(z<1.96) = 1.96
+q = 1.96 #alpha quantile for alpha=0.05
+media = np.zeros(100)
+ci = np.zeros((100))
+plt.figure(figsize=(3,8))
+for n in range(100) :
+    dist = sp.stats.norm.rvs(size=100)
+    media[n] = dist.mean()
+    ci[n] = dist.std()/np.sqrt(len(dist))*q
+    plt.plot((media[n]-ci[n],media[n]+ci[n]),(n,n),linewidth=2)
+
+plt.plot((media.mean(),media.mean()),(0,99),'r--',alpha=0.25,label='$\mu$')
+plt.xlabel('Confidence interval'),plt.ylabel('simulation #')
+plt.ylim(-1,100)
+```
+# A general approach: the likelihood ratio test
+
+The likelihood ratio test is quite important because
+
+* you can use it in any setting
+* is quite powerfull! From the **Neyman-Pearson Lemma**, the likelihood raio test is the most powerful among all $\alpha$ tests for testing $H_0: \theta=\theta_0$ versus $H_A: \theta = \theta_A$ so it should be used in these cases.
+
+In general terms we can write that
+
+* We can have a model with r.v. X $\sim$ Distribution(x,$\theta$), where $\theta$ are the paremeters
+* We want to do a test on a null hypothesis $H_0: \theta \in \Theta_0 $ versus $H_A: \theta \in \Theta_A$, where $\Theta_0 \cap \Theta_A = \emptyset$
+* The likelihood ratio will be 
+$L(X) = \frac{\max_{\theta \in \Theta_0 p(x;\theta)}}{\max_{\theta \in \Theta p(x;\theta)}}$, where $\Theta = \Theta_0 \cup \Theta_A$. Also,
+  * $0 \le L(x) \le 1$
+  * if $L(x) << 1, \theta \in \Theta_A$
+  * if $L(x) \sim 1, \theta \in \Theta_0$
+  * the numerator is the maximum of the probability of observing the data under the null.
+  * the denominator is the maximum of the probability that you observe the data that you are given.
+  * the parameter $\theta$ that maximizes $p(x;\theta)$ is called the maximum likelihood estimator (MLE).
+  * the parameter $\theta$ can be in the null model or in the alternative model!
+
+* The likelihood raio test
+  * will reject $H_0$ if $L(x) < \eta$, where $\eta$ is chosen such that $P_H0(L(x) \le \eta) = \alpha$
+
+
+*Looks very complicated! How do we calculate this thing?*
+
+In general $L(x)$ does not have an easily computable null distribution. To actually comput it, we need to do the following transformation
+
+$\Lambda(x) = -2\log(L(x)) $,
+
+where 
+
+* $0 \le \Lambda(x) \le \inf$
+* reject $H_0$ if $\Lambda(x)$ is too large.
+* From the **Wilks Theorem** we know that, under H_0
+
+$\Lambda(x) \xrightarrow{n \rightarrow \inf} \chi^2_d$,
+
+where $d = dim(\Theta) - dim(\Theta_0) >0$.
+
+*Still looks very cryptic...*
+
+Let's go back to the HIP mammography cancer study. The table below shows our data.
+
+![](pics/table_likelihood_test.png)
+
+
+In this case we have 
+
+* $X \sim Binomial(31k,\pi)$
+* $H_0: \pi_{treatment} = \pi_{control}$ versus $H_A: \pi_{treatment} \ne \pi_{control}$
+* $\Lambda(x) = -2\log{\frac{\max{p(x;\pi_treat = \pi_control)}}{\max{p(x;\pi_treat;\pi_control)}}}$
+
+*Ok, let's calculate!*
+
+* Under $H_0$ the MLE is $\hat{\pi} = \frac{102}{62k}$.
+* Under $H_A$ the MLEs are $\hat{\pi}_{treatment}$ and $\hat{\pi}_{control.}$.
+* We're in the **binomial framework**. Therefore we need to calculate the binomial distribution probabilities for each case.
+  * $p(x;\pi) = {62k \choose 102}\pi^{102}(1-\pi)^{61898}$
+  * $p(x;\pi_{treat}) = {31k \choose 39}\pi^{39}(1-\pi)^{30961}$
+  * $p(x;\pi_{control}) = {31k \choose 63}\pi^{63}(1-\pi)^{30937}$
+* The following step is to calculate the MLE. To do this we need to transform the probability into a logarithm and then derive to find the maximum. Doing the two simple operations we end up with (surprise!):
+  * $\hat{\pi} = \frac{102}{62k}$
+  * $\hat{\pi}_{treat} = \frac{39}{31k}$
+  * $\hat{\pi}_{control} = \frac{63}{31k}$
+  
+Now, we just plug-in the values into the formula and we get
+
+$\Lambda(x) = -2\log{\frac{p(x;\hat{\pi})}{p(x;\hat{\pi_{treat}})p(x;\hat{\pi_{control}})}} = \frac{{62k \choose 102}\hat{\pi^{102}}(1-\hat{\pi})^{61898}}{{31k \choose 39}\hat{\pi^{39}}(1-\hat{\pi})^{30961}{31k \choose 63}\hat{\pi^{63}}(1-\hat{\pi})^{30937}} \sim 5.71$.
+
+
+Under the null, the Wilks theorem states that this distribution tends to a $\chi$ squared distribution of degree $d$, where $d = 2-1$.
+
+Therefore, we will observe where the value of the test ended up in this distribution as shown below.
+
+![](pics/chi_dist.png)
+
+The $\alpha$ threshold is depicted by the red line and our test value is shwon as the blue star. As we can clearly see, according to the likelihood ratio test, for a significance value $\alpha = 0.05$ we can safely reject $H_0$.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

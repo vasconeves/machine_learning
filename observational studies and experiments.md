@@ -404,27 +404,54 @@ Let's go back to the HIP mammography cancer study. The table below shows our dat
 
 In this case we have 
 
-* $X \sim Binomial(31k,\pi)$
 * $H_0: \pi_{treatment} = \pi_{control}$ versus $H_A: \pi_{treatment} \ne \pi_{control}$
-* $\Lambda(x) = -2\log{\frac{\max{p(x;\pi_treat = \pi_control)}}{\max{p(x;\pi_treat;\pi_control)}}}$
+* We're in the **binomial framework**. Therefore we need to calculate the binomial distribution probabilities for each case. Let $Y_T$ and $Y_C$ be the numbers of cancer deaths in the treatment and control groups respectively. Assumming that these groups are independent from each other, the probability of having y_t cancer deaths in the treatment group and y_c deaths in the control group is
 
-*Ok, let's calculate!*
+$P(Y_T=y_t,Y_C=yc) = P(Y_T=yt)P(Y_C=yc)$,
 
-* Under $H_0$ the MLE is $\hat{\pi} = \frac{102}{62k}$.
-* Under $H_A$ the MLEs are $\hat{\pi}_{treatment}$ and $\hat{\pi}_{control.}$.
-* We're in the **binomial framework**. Therefore we need to calculate the binomial distribution probabilities for each case.
-  * $p(x;\pi) = {62k \choose 102}\pi^{102}(1-\pi)^{61898}$
-  * $p(x;\pi_{treat}) = {31k \choose 39}\pi^{39}(1-\pi)^{30961}$
-  * $p(x;\pi_{control}) = {31k \choose 63}\pi^{63}(1-\pi)^{30937}$
-* The following step is to calculate the MLE. To do this we need to transform the probability into a logarithm and then derive to find the maximum. Doing the two simple operations we end up with (surprise!):
+$Y_T$ and $Y_C$ will be
+
+$Y_T \sim Binom(31k,\pi_T)$
+
+and
+
+$Y_C \sim Binom(31k,\pi_C)$.
+
+*Ok, let's calculate the LR test step-by-step!*
+
+The initial equation is
+
+$\Lambda(Y_T,Y_C) = -2\log{\frac{\max_{\Theta_0}{P(y_t,y_c;\pi_T, \pi_C)}}{\max_{\Theta_A}{P(y_t,y_c;\pi_T, \pi_C)}}}$.
+
+The maximum values of the probabilities are obtained with MLE estimators, so we can write that
+
+$\Lambda(Y_T,Y_C) = -2\log{\frac{P(Binom(31k,\hat{\pi}^{MLE})=yt)P(Binom(31k,\hat{\pi}^{MLE})=yc)}{P(Binom(31k,\hat{\pi_T}^{MLE})=yt)P(Binom(31k,\hat{\pi_C}^{MLE})=yc)}}$
+
+* Under $H_0$ the MLE is $\hat{\pi}$ and
+
+$p(x;\pi) = {62k \choose 102}\pi^{102}(1-\pi)^{61898}$
+
+* Under $H_A$ the MLEs are $\hat{\pi}_{treatment}$ and $\hat{\pi}_{control.}$, and
+
+$p(x;\pi_{treat}) = {31k \choose 39}\pi^{39}(1-\pi)^{30961}$,
+
+$p(x;\pi_{control}) = {31k \choose 63}\pi^{63}(1-\pi)^{30937}$.
+
+To calculate the MLE estimators we need to transform the probability into a logarithm and then derive to find the maximum. Doing the two simple operations we end up with (surprise!):
   * $\hat{\pi} = \frac{102}{62k}$
   * $\hat{\pi}_{treat} = \frac{39}{31k}$
   * $\hat{\pi}_{control} = \frac{63}{31k}$
-  
-Now, we just plug-in the values into the formula and we get
 
-$\Lambda(x) = -2\log{\frac{p(x;\hat{\pi})}{p(x;\hat{\pi_{treat}})p(x;\hat{\pi_{control}})}} = \frac{{62k \choose 102}\hat{\pi^{102}}(1-\hat{\pi})^{61898}}{{31k \choose 39}\hat{\pi^{39}}(1-\hat{\pi})^{30961}{31k \choose 63}\hat{\pi^{63}}(1-\hat{\pi})^{30937}} \sim 5.71$.
+Now, we just need to plug-in the values into the formula above and we get
 
+$\Lambda(Y_T,Y_C) = -2\log{\frac{\max_{\Theta_0}{P(y_t,y_c;\pi_T, \pi_C)}}{\max_{\Theta_A}{P(y_t,y_c;\pi_T, \pi_C)}}} \sim 5.71$.
+
+Computing the test in python just takes one line of code.
+```python
+LRtest = -2*np.log(sp.stats.binom.pmf(39,31000,102/62000)*sp.stats.binom.pmf(63,31000,102/62000)/(sp.stats.binom.pmf(39,31000,39/31000)*sp.stats.binom.pmf(63,31000,63/31000)))
+print ('The value of the LR test is',LRtest)
+The value of the LR test is 5.709660479762173
+```
 
 Under the null, the Wilks theorem states that this distribution tends to a $\chi$ squared distribution of degree $d$, where $d = 2-1$.
 
@@ -433,6 +460,13 @@ Therefore, we will observe where the value of the test ended up in this distribu
 ![](pics/chi_dist.png)
 
 The $\alpha$ threshold is depicted by the red line and our test value is shwon as the blue star. As we can clearly see, according to the likelihood ratio test, for a significance value $\alpha = 0.05$ we can safely reject $H_0$.
+
+We can also calculate the $\textit{p-value}$. In this case it will be the probability above the test value. We can obtain this value using the cdf of this function. 
+
+The cdf will give the probability up to $x=5.71$. To obtain the p-value we just obtain the remaining part of the probability by calculating the complement $1-cdf$.
+
+
+
 
 
 

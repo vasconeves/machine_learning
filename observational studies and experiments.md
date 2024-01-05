@@ -463,8 +463,60 @@ The $\alpha$ threshold is depicted by the red line and our test value is shwon a
 
 We can also calculate the $\textit{p-value}$. In this case it will be the probability above the test value. We can obtain this value using the cdf of this function. 
 
-The cdf will give the probability up to $x=5.71$. To obtain the p-value we just obtain the remaining part of the probability by calculating the complement $1-cdf$.
+The cdf will give the probability up to $x=5.71$. To obtain the p-value we just obtain the remaining part of the probability by calculating the complement $1-cdf$. Again we just need one line of code.
 
+```python
+pvalue = 1-sp.stats.chi2.cdf(5.71,1)
+print('The p-value associated to the LR test is',pvalue)
+The p-value associated to the LR test is 0.016868539397458027
+```
+
+We can also observe this p-value graphically as shown in the following plot.
+
+![](pics/chi2_dist_1d.png)
+
+Code:
+```python
+x = np.linspace(0.1,10,1000)
+pdf_x = sp.stats.chi2.pdf(x,1)
+q_alfa = 3.84 #0.95 quantile taken from table
+f_alfa = pdf_x[np.max(np.where(x<=q_alfa))]
+
+plt.plot(x,pdf_x,label='$\chi^2_1 distribution$')
+plt.fill_between(x,pdf_x,color='red',where=(x>=LRtest),label='p-value')
+plt.plot((q_alfa,q_alfa),(0,f_alfa),'b:',label='0.95 quantile')
+plt.plot((0,0),(0,1.2),'k',linewidth=0.5)
+plt.plot((0,10),(0,0),'k',linewidth=0.5)
+plt.xlabel('X'),plt.ylabel('pdf')
+
+plt.legend()
+```
+
+# Multiple hypothesis testing
+
+So far we've seen cases for single hypothesis testing, but in the real world and in a lot of experiments there are at least a few variables that need to be taken into account.
+
+There is also the temptation that, when doing an experiment, to test for as many variables as possible. This has the awful side effect of increasing the chances of finding spurious correlations. 
+
+For instance:
+
+* Intake of tomato sauce (p-value of 0.001), tomatoes (p-value of 0.03), and pizza (p-value of 0.05) reduce the risk of prostate cancer;
+* But for example tomato juice (p-value of 0.67), or cooked spinach (p-value of 0.51), and many other vegetables are not significant.
+* ”Orange cars are less likely to have serious damages that are discovered only after the purchase.”
+
+*See where we are going?*
+
+For instance consider the case of a famous product called "Wonder-syrup". To study the benefits of ingesting this syrup, a research group constructed the following experiment:
+
+* they choose a randomized group of 1000 people.
+* measured 100 variables before and after taking the syrup: weight, blood pressure, etc.
+* performed a paired t-test with a significance level of 5\%.
+
+If we model the number of false significant tests as having a Binomial distribution, or Binom(100,0.05), **on average we will get 5 out of 100 variables showing a significant effect!!**
+
+**How can we prevent this from happening in multiple hypothesis testing?*
+
+We need to **correct** our p-values!
 
 
 

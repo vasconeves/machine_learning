@@ -808,12 +808,102 @@ Kepler was looking for geometrical relationships as it as supposed that the heav
 
 ## Multiple linear regression
 
-We are now reaching the *good stuff*. We will first introduce multiple linear regression, which is the basic framework for many of today's realistic models in many areas and then we'll see the strategies to choose the best model.
+We are now reaching the *good stuff*. We will first introduce multiple linear regression, which is the basic framework for many of today's realistic models in many areas and then we'll also go through the strategies to choose the best model.
+
+It's time to generalize linear regression to multiple dimensions. If we have more than two observed variables, we can create a model to predict one variable, $Y$ based on two or more variables: $X_1,X_2,...,X_p$. The model for **one observation** of the predicted variable $Y_i$ can then be written as
+
+$Y_i = \beta_0 + \beta_1 X_{i,1}+\beta_2 X_{i,2} +...+ \beta_p X_{i,p} + \epsilon_i$,
+
+where $X_{i,j}$ is the $jth$ feature of data point $i$ and $p$ is the number of parameters.
+
+To better visualize this we can use the vector form. Let
+
+$X_i$ = $
+\begin{bmatrix}
+1 \\
+X_{i,1} \\
+X_{i,2} \\
+\vdots \\
+X_{i,p}
+\end{bmatrix} 
+ \in R^{p+1}$,
+
+and
+
+$\beta$ = $
+\begin{bmatrix}
+\beta_0 \\
+\beta_1 \\
+\beta_2 \\
+\vdots \\
+\beta_p
+\end{bmatrix} 
+ \in R^{p+1}$,
 
 
+Then we can write the model in matrix form as
 
+$Y_i = \bm{X_i^T\beta} + \epsilon_i$. 
 
+**Note: the leading 1 in $\bm{X_i^T}$ multiplies by $\beta_0$ in $\bm{\beta}$ to create the intercept.**
 
+**Note: this equation shows the computation of one element at a time from the matrix-vector product. We'll use this to simplify further, so that we'll only use one equation for all observations.**
+
+Lets place all the $Y_i$ observations and noise terms into their own vectors,
+
+$\bm{y}=$
+$\begin{bmatrix}
+Y_1 \\
+Y_2 \\
+\vdots \\
+Y_N
+\end{bmatrix}
+\in R^N
+$
+
+and
+
+$\bm{\epsilon}=$
+$\begin{bmatrix}
+\epsilon_1 \\
+\epsilon_2 \\
+\vdots \\
+epsilon_N
+\end{bmatrix}
+\in R^N
+$
+
+Now we arrange each row vector $\bm{X_i^T}$ so that if forms one row of a larger matrix,
+
+$\bf{X} =$
+$\begin{bmatrix}
+X_{1,1} & X_{1,2} & \cdots & X{1,p} \\
+X_{2,1} & X_{2,2} & \cdots & X{2,p} \\
+\vdots  & \vdots  & \ddots & \vdots \\
+X_{N,1} & X_{N,2} & \cdots & X_{N,p} \\
+\end{bmatrix}
+\in R^{N\times(p+1)}
+$.
+
+Now we can write that the multiple linear regression predictive model is
+
+$\bm{y=X\beta+\epsilon}$.
+
+In order to find the model parameters we define the error function $E$
+
+$E = \bm{(y-X\beta)^T}(\bm{y-X\beta})$.
+
+The least squares solution to $E$ is found by searching its gradient with respect to $\bm{\beta}$ and setting it to zero:
+
+$\nabla{S} = \frac{\partial{S}}{\partial{\bm{\beta}}} = 0$
+
+After some operations we obtain
+
+$\bm{\beta} = (\bm{X^TX})^{-1}\bm{X^Ty}$.
+
+**Note: the \bm{X^TX} must be invertible!**.
+
+## An example of multiple linear regression - exoplanet mass data
 
 
 

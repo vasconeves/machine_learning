@@ -516,7 +516,349 @@ If we model the number of false significant tests as having a Binomial distribut
 
 **How can we prevent this from happening in multiple hypothesis testing?*
 
-We need to **correct** our p-values!
+We need to **correct** our p-values! 
+
+There are two main avenues to consider:
+
+- Family-wise error rate (FWER) which is the probability of making at least one false discovery, or type I error.
+
+and
+
+- False discovery rate (FDR) which is the expected fraction of false significance results among **all** significance results.
+
+## Family-wise error rate
+
+FWER is usually used when we really need to be careful and control the error rate dut to possible serious consequences in any false discovery, such as the Pharmaceutical sector.
+
+We can control the size of the FWER by choosing significance levels of the individual tests to vary with the size of the series of tests. This translates to correcting the *p-values* before comparing with a fixed significance level e.g. $\alpha = 0.05$.
+
+### Bonferroni Correction
+
+The simples of the possible correction for $\alpha$ is the Bonferroni Correction. If we have $m$ tests performed at the same time, the corrected *p-value* will be 
+
+$p'=\alpha/m$,
+
+then $FWER < \alpha$. We can re-write the equation stating that
+
+$FWER = mp' < \alpha$.
+
+**Note: We should note that this is a very stringent and conservative test, and can be applied when the tests are not necessarily independent of each other.**
+**Note: when $m$ is large this criteria are stringent and lowers the power of the tests.**
+
+### Holm-Bonferroni Correction
+
+The Holms-Bonferroni method is more flexible and less stringent.
+
+Suppose we have $m$ hypothesis. The application of the method consists in the following steps:
+
+- Calculate the initial *p-values* for each hypothesis.
+- Sort the initial *p-values* in increasing order.
+- Start with the *p-value* with the lowest number. If
+  $p_{i} < \frac{\alpha}{m-(i-1)},$
+
+then
+  - reject H_0^i
+- proceed to the next smallest *p-value* by 1, and again use the same rejection criterion above.
+- As soon as hypothesis H_0^k is not rejected, stop and do not reject any more of the H_0.
+
+**Note: This procedure guarantees $FWER < \alpha$ for $m$ tests, *which do not need to be independent*.**
+**Note: the Holms-Bonferroni method is more powerful than the Bonferroni correction, since it increases the chance of rejecting the null hypothesis, and thus reduces the change of type II errors.**
+
+## False discovery rate (FDR)
+
+In most cases, however, FWER is too strict and we loose too much statistical power. The most sensible course of action is then to control the expected proportion of false discoveries among all discoveries made. We can define 
+
+$FDR = \mathbb{E}[ \frac{ \text{\# type 1 errors or false discoveries}}{\text{total number of discoveries}}].$
+
+### The Benjamini-Hochberg correction
+
+The Benjamini-Hochbert correction guarantees $FDR < \alpha$ for a series of **$m$ independent tests.**.
+
+The method is as follows:
+
+- Sort the $m$ *p-values* in increasing order.
+- Find the maximum $k$ such that
+
+$p_{k} \le \frac{k}{m}\alpha$
+
+- Reject all of H_0^1, H_0^2,...,H_0^k.
+
+**Example**
+
+The table below illustrates how to apply the method. First we rank the p-values, then we calculate the adjusted value and then we reject the ones with $p<\alpha$.
+
+![](pics/fdr_table.png)
+
+## Commonly accepted practice
+
+*What correction should we use and in which settings?*
+
+- It's ok not correcting for multiple testing when generating the original hypothesis, **but the number of tests performed must be reported**. Generally, to check 
+- If it's a screening or exploratory analysis you do want to get some significant results. Then, a $FDR \le 10\%$ is adequate.
+- In more stringent contexts like confirmatory analysis you really need to use a $FWER \le 5\%$, like for instance the test done by the Food and Drug Administration.
+- Personally, and in general, I would go for a FDR between 1 to 5\% but it all depends on the context, type of sample, sample number, variables, error type, etc.
+
+# Correlation and least squares regression - A general view
+
+## Example from Astronomy
+
+In this example we will investigate the correlation found by Edwin Hubble in 1930 from data from distant Galaxies.
+
+He recorded the apparent velocity of these galaxies – the speed at which they appear to be receding away from us – by observing the spectrum of light they emit, and the distortion thereof caused by their relative motion to us. He also determined the distance of these galaxies from our own by observing a certain kind of star known as a Cepheid variable which periodically pulses. The amount of light this kind of star emits is related to this pulsation, and so the distance to any star of this type can be determined by how bright or dim it appears.
+
+The following plot shows his data, where the X axis depicts the distance in mega-parsecs (Mpc) and the Y axis shows the apparent velocities in km/s. One mega-parsec is one million parsecs (one parsec is approximately 3.26 light-years).Positive values of velocities means the object is moving away from us, negative velocities away from us.
+
+![](pics/hubble.png)
+
+This figure help us visualize the relationship between the two variables? *Are they correlated?*
+
+But first, let's calculate some basic quantities.
+
+From the data we can calculate the sample averages and sample standard deviations. Using the *mean* and *std* commands from the numpy package we obtain
+
+$\hat{X} = 0.9199 Mpc$,
+
+$\hat{Y} = 425.6175 km/s$,
+
+$\sigma_X$ = 0.6534 Mpc$,
+
+and,
+
+$\sigma_Y$ = 348.7337 km/s$.
+
+From the average value of the two variables we can calculate the sample covariance, which is defined as the amount that $X$ and $Y$ vary away from the mean **at the same time**. The covariance has a maximum when X and Y are perfectly correlated. This value is equal to
+
+$s^2_{X,Y} = \sigma_X\sigma_Y$. 
+
+When X and Y are perfectly anti-correlated,
+
+$s^2_{X,Y} = -\sigma_X\sigma_Y$. 
+
+Finally, when there is no correlation between X and Y (i.e. X and Y are independent), the value of the covariance is zero.
+
+In our example the value of the sample covariance is
+
+$s^2_{X,Y} = 191.2071\ Mpc\ km/s$.
+
+*Ok, but what does this mean? How can we quantify the correlation in more precise terms?*
+
+**We need a coefficient without units in order to have a standardized measure of the correlation!** We can write the correlation coefficient as
+
+$\rho_{X,Y} = \frac{s^2_{X,Y}}{s_Xs_Y} = \frac{1}{N+1}\sum_{i=1}^{N}\left(\frac{X_i-\hat{X}}{s_X}\frac{Y_i-\hat{Y}}{s_Y}\right)$,
+
+where the covariance is now scaled by its maximum possible value. This means the maximum possible value of the correlation coefficient is 1, the minimum is -1, and having no correlation is still zero.
+
+In our example we obtain a correlation value of
+
+$\rho = 0.8391$.
+
+This shows that there is a strong correlation between the two variables. This was a startling realization for Hubble, as it was largely unexpected in the scientific community. *Why should another galaxy's velocity depend on the distance to us ?* This gave origin to a whole new area in Astronomy called observational cosmology that led to the theory of the Big Bang!
+
+Now, let's go further into our analysis! We know there exists a correlation between the distance and the velocity, but now we want to find an analytic model to this relationship. 
+
+The most intuitive, which is also the best first approach in almost any problem is to try to find a linear relationship, which in this case is quite obvious from the observation of the previous figure. As we have two variables, we can write that
+
+$y = \beta_1 x + \beta_0 + \epsilon$,
+
+where $\beta_1$ is the slope of the linear model, $beta_0$ is the intercept, and $\epsilon$ is the noise model.
+
+To identify the model parameters for a given dataset we define the **fitting error function**
+
+$E(\beta_0,\beta_1) = \sum_{i=1}^{N}{(\beta_1X_i + \beta_0-Y_i})^2$,
+
+which is the squared sum of the residuals (i.e. the difference between the predicted and the observed Y values).
+
+To obtain $\beta_0$ and $\beta_1$ we need to minimize $E$. It is shown that the optimum values for the slope and intercept is achieved when
+
+$\hat{\beta}_1 = \frac{s^2_{X,Y}}{s^2_{X}} = \rho\frac{\sigma_Y}{\sigma_X}$,
+
+and 
+
+$\hat{\beta}_0 = \overline{Y}-\hat{\beta}_1\overline{X}$ 
+
+respectively.
+
+From here we can use this model to obtain predictors for Y:
+
+$\hat{Y}(X) = \hat{\beta}_1X+\hat{\beta}_0$.
+
+In our example we obtain 
+
+$\hat{\beta}_1 = 447.8706.
+
+and
+
+$\hat{\beta}_0 = 13.6101\ km/s$.
+
+The value of the slope is what was then named the *Hubble constant*, which we now know that it is slowly increasing, which means in turn that the Universe is expanding!
+
+## Goodness of fit metric
+
+The least squares regression has a goodness of fit metric called coefficient of determination $R^2$. This coefficient is defined as
+
+$R^2 = 1-\frac{SumSq_{res}}{SumSq_{tot}}$,
+
+where $SumSq_{res}$ is the sum of the squared residuals and $SumSq_{tot}$ is the total sum of the squares. 
+
+We don't need to perform these calculation as it is known that 
+
+$R^2 = \rho$.
+
+## A brief historical note
+
+The value of $\beta_1$ is known as the Hubble's parameter. Hubble's original value is close to the value we obtain here. However today's measurement is quite different! The original value is actually too large by a factor of between 6 and 7. 
+
+Hubble didn't know at the time that there are two types of Cepheid variable stars, the stars he measured to obtain the distances to the galaxies, and the difference between them needs to be accounted for in order to accurately estimate the distance to other galaxies.
+
+Even today this matter is not settled: the measurements of the parameter based on nearby galaxies disagrees with measurements based on the cosmic microwave background (which tells us about the early universe, and thus much greater distances). Hubble's parameter is critical to understanding the geometry of space-time in our universe, and its value and evolution in time still an open question to this day.
+
+# Correcting simple non-linear relationships.
+
+If the underlying relationship in the data is non-linear, and in most cases it is, fitting a linear model may give poor results and can even be misleading: you may conclude that there is no relationship in the data (although a simple visualization does wonders!).
+
+In general, fitting a non-linear relationship must be done using a non-linear regression (i.e. using a more complex model). However, if we have a simple nonlinearity, if we can clearly identify the underlying function by, for instance, looking at it in a plot, it can be possible to transform the nonlinear relationship into a linear one. 
+
+Consider, for instance, that our data has an exponential trend that can be modelled as
+
+$Y=\alpha e^{\beta X}$,
+
+where $\alpha$ and $\beta$ are two parameters. If we try to fit a linear relationship here it will fail miserably. However, if we take the log on both sides we obtain a linear form,
+
+$\ln{Y}=\beta X + \ln{\alpha}$,
+
+where $\beta$ is the slope and $ln{\alpha} is the intercept. We can use the logarithm or the exponential in many situations as well as trying different functions as polynomials, powers, etc.
+
+**We should note here a word of caution: the transformation will change the nature of the noise which in turn can interfere with the regression. It is thus very important to check how the transformation propagates to the error model.**
+
+For instance if we have a relationship 
+
+$Y=\alpha e^{\beta X}\epsilon$,
+
+that has a multiplicative error model, then the transformation will be
+
+$\ln{Y}=\beta X + \ln{\alpha} + \ln{\epsilon}$.
+
+Also, if $\epsilon$ is small, a linear approximation can work well. However if $\epsilon$ is or becomes large we may have problems and a non-linear regression is needed.
+
+## Solar system example as a cautionary tale
+
+Consider the following data.
+
+    Xs = np.array([ 0.387, 0.723, 1.00, 1.52, 5.20, 9.54, 19.2, 30.1, 39.5 ])
+
+    Ys = np.array([ 0.241, 0.615, 1.00, 1.88, 11.9, 29.5, 84.0, 165.0, 248 ])
+
+    N = 9
+
+Each data point represents one planet in our solar system plus Pluto (we could not exclude Pluto!!!). In the following Figure, the $X_s$ is the semi-major axis in astronomical units (AU) and the $Y_s$ is the period in year. Earth is depicted as the black cross at (1,1) location.
+
+![](pics/kepler.png)
+
+We observe a linear trend with a beautiful r^2 = 0.9888! Right? 
+
+**In fact this is not correct**. If we look carefully at the plot we already may see that something is not correct: following the linear fit line we observe the drawing of a curve. To dig deeper we need to follow methods that we'll use as a diagnostic. 
+
+### The residual plots
+
+The first tool to consider is to draw the residual plots. The residuals are just the difference between the data and the values from the model at a given $X_s$, as shown below.
+
+![](pics/residuals.png)
+
+We know we should expect random noise in the residuals, if the noise is well modelled. Insted we obtain a highly non-linear trend! **This may mean that our linear model is not adequate.** Also, notice that the residuals (thus the errors) for the first three planets (Mercury, Venus, Earth) are many times their data values! This means that the model is really making very bad predictions.
+
+### The Q-Q plots
+
+The QQ plots are another tool that can be used as a diagnostic. Drawing a QQ plot for each variable we can observe how close the residuals (meaning the errors of the model) are from normality, considering that ordinary linear regression assumes that the errors are normal. The result for the $X_s$ distribution is as follow. The plot for the $Y_s$ distribution is very similar to this one. 
+
+![](pics/qqplot_kepler.png)
+
+From the plot we can observe that the distribution is clearly non-normal!
+
+*That's terrible! We can we do **now?***
+
+We can try a non-linear transformation!
+
+After a few tries, the best transformation we can find is a ln-ln transformation. On other words, we apply a logarithm in both terms of the equation. The transformed version is then
+
+$\ln{Y_s} = \beta ln(X_s)+\alpha. The resulting correlation coefficient is now a rounded 1,
+
+![](pics/linearization.png)
+
+and the residuals now display no discernible pattern with a greatly reduced error, from tens of years to fractions of a day!
+
+![](pics/residuals_log.png)
+
+Now that we found the linear relationship between the transformed variables, the next step will to find the actual non-linear relationship. Let
+
+$Y' = \kappa X' + \ln{omega}$,
+
+where $\kappa$ is the slope of the transformed relation and $\ln{\omega}$ is the intercept.
+
+From the linear regression we know that $\kappa = 1.5$ and $\omega$ = \sim 1. To obtain the non-linear relation we just need to invert the transformation. Therefore we apply the exponential function to both sides of the equation and we get
+
+$Y_s$ = \omega X_s^1.5 = X_s^1.5.
+
+We've just discovered Kepler's third law! Johannes Kepler first discovered this relationship between orbital period and the distance of planets to the Sun in 1618 (Kepler only had data up to Saturn — Uranus, Neptune and Pluto had yet to be discovered).
+
+Linear regression didn't exist at this time and calculus had yet to be invented by Newton and Leibnitz! So...how did Kepler got it right?
+
+Kepler was looking for geometrical relationships as it as supposed that the heavens would mimic God's perfect mind. After some time he came up with the relationship between the period and the mean distance. As Kepler himself said: *I first believed I was dreaming... But it is absolutely certain and exact that the ratio which exists between the period times of any two planets is precisely the ratio of the 3/2th power of the mean distance.*
+
+**Kepler's laws are some of the most important discoveries in the history of science. These simple relations provided evidence for the heliocentric model of the solar system, and paved the way for the scientific revolution.**
+
+## Multiple linear regression
+
+We are now reaching the *good stuff*. We will first introduce multiple linear regression, which is the basic framework for many of today's realistic models in many areas and then we'll see the strategies to choose the best model.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -557,9 +557,9 @@ Suppose we have $m$ hypothesis. The application of the method consists in the fo
   $p_{i} < \frac{\alpha}{m-(i-1)},$
 
 then
-  - reject H_0^i
+  - reject $H_0^i$
 - proceed to the next smallest *p-value* by 1, and again use the same rejection criterion above.
-- As soon as hypothesis H_0^k is not rejected, stop and do not reject any more of the H_0.
+- As soon as hypothesis $H_0^k$ is not rejected, stop and do not reject any more of the $H_0$.
 
 **Note: This procedure guarantees $FWER < \alpha$ for $m$ tests, *which do not need to be independent*.**
 **Note: the Holms-Bonferroni method is more powerful than the Bonferroni correction, since it increases the chance of rejecting the null hypothesis, and thus reduces the change of type II errors.**
@@ -616,15 +616,15 @@ But first, let's calculate some basic quantities.
 
 From the data we can calculate the sample averages and sample standard deviations. Using the *mean* and *std* commands from the numpy package we obtain
 
-$\hat{X} = 0.9199 Mpc$,
+$\hat{X} = 0.9199\ Mpc$,
 
-$\hat{Y} = 425.6175 km/s$,
+$\hat{Y} = 425.6175\ km/s$,
 
-$\sigma_X$ = 0.6534 Mpc$,
+$\sigma_X = 0.6534\ Mpc$,
 
 and,
 
-$\sigma_Y$ = 348.7337 km/s$.
+$\sigma_Y = 348.7337\ km/s$.
 
 From the average value of the two variables we can calculate the sample covariance, which is defined as the amount that $X$ and $Y$ vary away from the mean **at the same time**. The covariance has a maximum when X and Y are perfectly correlated. This value is equal to
 
@@ -646,7 +646,11 @@ $s^2_{X,Y} = 191.2071\ Mpc\ km/s$.
 
 $\rho_{X,Y} = \frac{s^2_{X,Y}}{s_Xs_Y} = \frac{1}{N+1}\sum_{i=1}^{N}\left(\frac{X_i-\hat{X}}{s_X}\frac{Y_i-\hat{Y}}{s_Y}\right)$,
 
-where the covariance is now scaled by its maximum possible value. This means the maximum possible value of the correlation coefficient is 1, the minimum is -1, and having no correlation is still zero.
+where the covariance is now scaled by its maximum possible value. This means the maximum possible value of the correlation coefficient is 1, the minimum is -1, and having no correlation is still zero. The following plot shows some possible ranges of $\rho$.
+
+![](pics/rho.png)
+
+In the figure we can observe that we must be very careful with the interpretation of the coefficient as the same value can correspond to different point distributions and to non-linearities. We also need to be careful with the outliers and understand their origin.
 
 In our example we obtain a correlation value of
 
@@ -684,7 +688,7 @@ $\hat{Y}(X) = \hat{\beta}_1X+\hat{\beta}_0$.
 
 In our example we obtain 
 
-$\hat{\beta}_1 = 447.8706.
+$\hat{\beta}_1 = 447.8706.$
 
 and
 
@@ -692,7 +696,7 @@ $\hat{\beta}_0 = 13.6101\ km/s$.
 
 The value of the slope is what was then named the *Hubble constant*, which we now know that it is slowly increasing, which means in turn that the Universe is expanding!
 
-## Goodness of fit metric
+### Goodness of fit metric
 
 The least squares regression has a goodness of fit metric called coefficient of determination $R^2$. This coefficient is defined as
 
@@ -704,7 +708,7 @@ We don't need to perform these calculation as it is known that
 
 $R^2 = \rho$.
 
-## A brief historical note
+### A brief historical note
 
 The value of $\beta_1$ is known as the Hubble's parameter. Hubble's original value is close to the value we obtain here. However today's measurement is quite different! The original value is actually too large by a factor of between 6 and 7. 
 
@@ -712,7 +716,7 @@ Hubble didn't know at the time that there are two types of Cepheid variable star
 
 Even today this matter is not settled: the measurements of the parameter based on nearby galaxies disagrees with measurements based on the cosmic microwave background (which tells us about the early universe, and thus much greater distances). Hubble's parameter is critical to understanding the geometry of space-time in our universe, and its value and evolution in time still an open question to this day.
 
-# Correcting simple non-linear relationships.
+## Correcting simple non-linear relationships
 
 If the underlying relationship in the data is non-linear, and in most cases it is, fitting a linear model may give poor results and can even be misleading: you may conclude that there is no relationship in the data (although a simple visualization does wonders!).
 
@@ -726,9 +730,13 @@ where $\alpha$ and $\beta$ are two parameters. If we try to fit a linear relatio
 
 $\ln{Y}=\beta X + \ln{\alpha}$,
 
-where $\beta$ is the slope and $ln{\alpha} is the intercept. We can use the logarithm or the exponential in many situations as well as trying different functions as polynomials, powers, etc.
+where $\beta$ is the slope and $ln{\alpha} is the intercept. We can use the logarithm or the exponential in many situations as well as trying different functions as polynomials, powers, etc. **The basic rule of thumb is that we should choose the simplest model within the models which have a very similar (and very high) correlation coefficient.**
 
 **We should note here a word of caution: the transformation will change the nature of the noise which in turn can interfere with the regression. It is thus very important to check how the transformation propagates to the error model.**
+
+**Another note: correlation is not causation! Be careful!**
+
+![](pics/causation.png)
 
 For instance if we have a relationship 
 
@@ -740,7 +748,7 @@ $\ln{Y}=\beta X + \ln{\alpha} + \ln{\epsilon}$.
 
 Also, if $\epsilon$ is small, a linear approximation can work well. However if $\epsilon$ is or becomes large we may have problems and a non-linear regression is needed.
 
-## Solar system example as a cautionary tale
+### Solar system example as a cautionary tale
 
 Consider the following data.
 
@@ -754,11 +762,11 @@ Each data point represents one planet in our solar system plus Pluto (we could n
 
 ![](pics/kepler.png)
 
-We observe a linear trend with a beautiful r^2 = 0.9888! Right? 
+We observe a linear trend with a beautiful $r^2 = 0.9888$! Right? 
 
 **In fact this is not correct**. If we look carefully at the plot we already may see that something is not correct: following the linear fit line we observe the drawing of a curve. To dig deeper we need to follow methods that we'll use as a diagnostic. 
 
-### The residual plots
+#### The residual plots
 
 The first tool to consider is to draw the residual plots. The residuals are just the difference between the data and the values from the model at a given $X_s$, as shown below.
 
@@ -766,7 +774,7 @@ The first tool to consider is to draw the residual plots. The residuals are just
 
 We know we should expect random noise in the residuals, if the noise is well modelled. Insted we obtain a highly non-linear trend! **This may mean that our linear model is not adequate.** Also, notice that the residuals (thus the errors) for the first three planets (Mercury, Venus, Earth) are many times their data values! This means that the model is really making very bad predictions.
 
-### The Q-Q plots
+#### The Q-Q plots
 
 The QQ plots are another tool that can be used as a diagnostic. Drawing a QQ plot for each variable we can observe how close the residuals (meaning the errors of the model) are from normality, considering that ordinary linear regression assumes that the errors are normal. The result for the $X_s$ distribution is as follow. The plot for the $Y_s$ distribution is very similar to this one. 
 
@@ -780,7 +788,7 @@ We can try a non-linear transformation!
 
 After a few tries, the best transformation we can find is a ln-ln transformation. On other words, we apply a logarithm in both terms of the equation. The transformed version is then
 
-$\ln{Y_s} = \beta ln(X_s)+\alpha. The resulting correlation coefficient is now a rounded 1,
+$\ln{Y_s} = \beta ln(X_s)+\alpha$. The resulting correlation coefficient is now a rounded 1,
 
 ![](pics/linearization.png)
 
@@ -790,13 +798,13 @@ and the residuals now display no discernible pattern with a greatly reduced erro
 
 Now that we found the linear relationship between the transformed variables, the next step will to find the actual non-linear relationship. Let
 
-$Y' = \kappa X' + \ln{omega}$,
+$Y' = \kappa X' + \ln{\omega}$,
 
 where $\kappa$ is the slope of the transformed relation and $\ln{\omega}$ is the intercept.
 
-From the linear regression we know that $\kappa = 1.5$ and $\omega$ = \sim 1. To obtain the non-linear relation we just need to invert the transformation. Therefore we apply the exponential function to both sides of the equation and we get
+From the linear regression we know that $\kappa = 1.5$ and $\omega \sim 1$. To obtain the non-linear relation we just need to invert the transformation. Therefore we apply the exponential function to both sides of the equation and we get
 
-$Y_s$ = \omega X_s^1.5 = X_s^1.5.
+$Y_s = \omega X_s^{1.5} = X_s^{1.5}$.
 
 We've just discovered Kepler's third law! Johannes Kepler first discovered this relationship between orbital period and the distance of planets to the Sun in 1618 (Kepler only had data up to Saturn — Uranus, Neptune and Pluto had yet to be discovered).
 
@@ -808,7 +816,7 @@ Kepler was looking for geometrical relationships as it as supposed that the heav
 
 ## Multiple linear regression
 
-We are now reaching the *good stuff*. We will first introduce multiple linear regression, which is the basic framework for many of today's realistic models in many areas and then we'll also go through the strategies to choose the best model.
+We are now reaching the *good stuff*. We will first introduce multiple regression, which is the basic framework for many of today's realistic models in many areas and then we'll also go through the strategies to choose the best model.
 
 It's time to generalize linear regression to multiple dimensions. If we have more than two observed variables, we can create a model to predict one variable, $Y$ based on two or more variables: $X_1,X_2,...,X_p$. The model for **one observation** of the predicted variable $Y_i$ can then be written as
 
@@ -826,7 +834,7 @@ X_{i,2} \\
 \vdots \\
 X_{i,p}
 \end{bmatrix} 
- \in R^{p+1}$,
+ \in \mathbb{R}^{p+1}$,
 
 and
 
@@ -838,7 +846,7 @@ $\beta$ = $
 \vdots \\
 \beta_p
 \end{bmatrix} 
- \in R^{p+1}$,
+ \in \mathbb{R}^{p+1}$,
 
 
 Then we can write the model in matrix form as
@@ -858,7 +866,7 @@ Y_2 \\
 \vdots \\
 Y_N
 \end{bmatrix}
-\in R^N
+\in \mathbb{R}^N
 $
 
 and
@@ -870,7 +878,7 @@ $\begin{bmatrix}
 \vdots \\
 epsilon_N
 \end{bmatrix}
-\in R^N
+\in \mathbb{R}^N
 $
 
 Now we arrange each row vector $\bm{X_i^T}$ so that if forms one row of a larger matrix,
@@ -882,7 +890,7 @@ X_{2,1} & X_{2,2} & \cdots & X{2,p} \\
 \vdots  & \vdots  & \ddots & \vdots \\
 X_{N,1} & X_{N,2} & \cdots & X_{N,p} \\
 \end{bmatrix}
-\in R^{N\times(p+1)}
+\in \mathbb{R}^{N\times(p+1)}
 $.
 
 Now we can write that the multiple linear regression predictive model is
@@ -903,73 +911,348 @@ $\bm{\beta} = (\bm{X^TX})^{-1}\bm{X^Ty}$.
 
 **Note: the \bm{X^TX} must be invertible!**.
 
-## An example of multiple linear regression - exoplanet mass data
+### An example of multiple linear regression - exoplanet mass data
 
+Let's now use an example and try to find a relationship that can predict the mass of an exoplanet. 
 
+The data was pre-processed and is log-transformed as shown below
 
+```python
+LogPlanetMass = np.array([-0.31471074,  1.01160091,  0.58778666,  0.46373402, -0.01005034, 0.66577598, -1.30933332, -0.37106368, -0.40047757, -0.27443685, 1.30833282, -0.46840491, -1.91054301,  0.16551444,  0.78845736, -2.43041846,  0.21511138,  2.29253476, -2.05330607, -0.43078292, -4.98204784, -0.48776035, -1.69298258, -0.08664781, -2.28278247, 3.30431931, -3.27016912,  1.14644962, -3.10109279, -0.61248928])
+  
+LogPlanetRadius = np.array([ 0.32497786,  0.34712953,  0.14842001,  0.45742485,  0.1889661 ,0.06952606, 0.07696104,  0.3220835 ,  0.42918163, -0.05762911, 0.40546511,  0.19227189, -0.16251893,  0.45107562, 0.3825376 , -0.82098055,  0.10436002,  0.0295588 , -1.17921515,  0.55961579, -2.49253568,  0.11243543, -0.72037861,  0.36464311, -0.46203546, 0.13976194, -2.70306266,  0.12221763, -2.41374014,  0.35627486])
 
+LogPlanetOrbit = np.array([-2.63108916, -3.89026151, -3.13752628, -2.99633245, -3.12356565, -2.33924908, -2.8507665 , -3.04765735, -2.84043939, -3.19004544, -3.14655516, -3.13729584, -3.09887303, -3.09004295, -3.16296819, -2.3227878 , -3.77661837, -2.52572864, -4.13641734, -3.05018846, -2.40141145, -3.14795149, -0.40361682, -3.2148838 , -2.74575207, -3.70014265, -1.98923527, -3.35440922, -1.96897409, -2.99773428])
 
+StarMetallicity = np.array([ 0.11 , -0.002, -0.4  ,  0.01 ,  0.15 ,  0.22 , -0.01 ,  0.02 , -0.06 , -0.127,  0.   ,  0.12 ,  0.27 ,  0.09 , -0.077,  0.3  , 0.14 , -0.07 ,  0.19 , -0.02 ,  0.12 ,  0.251,  0.07 ,  0.16 , 0.19 ,  0.052, -0.32 ,  0.258,  0.02 , -0.17 ])
 
+LogStarMass = np.array([ 0.27002714,  0.19144646, -0.16369609,  0.44468582,  0.19227189, 0.01291623,  0.0861777 ,  0.1380213 ,  0.49469624, -0.43850496, 0.54232429,  0.02469261,  0.07325046,  0.42133846, 0.2592826 , -0.09431068, -0.24846136, -0.12783337, -0.07364654,  0.26159474, 0.07603469, -0.07796154,  0.09440068,  0.07510747,  0.17395331, 0.28893129, -0.21940057,  0.02566775, -0.09211529,  0.16551444])
 
+LogStarAge = np.array([ 1.58103844,  1.06471074, 2.39789527,  0.72754861,  0.55675456, 1.91692261,  1.64865863,  1.38629436,  0.77472717,  1.36097655,         0.        ,  1.80828877,  1.7837273 ,  0.64185389, 0.69813472, 2.39789527, -0.35667494,  1.79175947,  1.90210753,  1.39624469, 1.84054963,  2.19722458,  1.89761986,  1.84054963,  0.74193734, 0.55961579,  1.79175947,  0.91629073,  2.17475172,  1.36097655]) 
 
+N = 30
+```
+LogPlanetMass is the logarithm of the observed exoplanet's mass in units of Jupiter's mass. A LogPlanetMass of zero is an exoplanet with the same mass as Jupiter. Jupiter is used as a convenient comparison, as large gas giants are the most easily detected, and thus most commonly observed, kind of exoplanet. LogPlanetRadius is the logarithm of the observed exoplanet's radius in units of Jupiter's radius, for much the same reason. LogPlanetOrbit is the logarithm of the observed planet's semi-major axis of orbit, in units of AU. StarMetallicity is the relative amount of metals (i.e. matter, dust) observed in the parent star. It is equal to the logarithm of the ratio of the observed abundance of the metal (i.e. element) to the observed abundance of the metal in the Sun. The Sun is a quite average star, so it serves as a good reference point. The most common metal to measure is Iron, but astronomers define any element that isn't Hydrogen or Helium as a metal. LogStarMass is the logarithm of the parent star's mass in units of the Sun's mass. LogStarAge is the logarithm of the parent star's age in giga-years.
 
+*Why the log-transform?* Because in Astronomy it is very common that the variables have a multiplicative relation. And we know that it is true in this case as well.
 
+To calculate beta we just apply what we've learned before:
 
+```python
+#Beta = (X^t*X)^-1*X^t*y
+#y --> LogPlanetmass
+y = LogPlanetMass #30x1
+#construct matrix X. Using the transpose .T places each variable as columns
+X = np.array([np.ones(N),LogPlanetRadius,LogPlanetOrbit,StarMetallicity,LogStarMass,LogStarAge]).T #30x6
+#calculate Beta
+#the @ operator is the inner product
+A = np.linalg.inv(X.T@X) #6x6
+B = X.T@y #6x1
+beta = A@B #6x1
+#columns: intercept logRadius logPlanOrbit StarMetallicity logStarMass logStarAge
+beta
+array([ 0.15379303,  1.40214538, -0.14099818, -1.59951364, -0.95610919,
+       -0.46176234])
+```
 
+Here we are assuming a normal distribution model for $\epsilon \sim \mathcal{N(0,\sigma^2)}$ and that $\epsilon$ is independent of the data. Then, it can be shown that 
 
+$\mathbb{E}[\bm{\hat{\beta}|X}] = \bm{\beta}$
 
+and
 
+$Cov[\bm{\hat{\beta}|X}] = \sigma^2(\bm{X^TX)^{-1}}$,
 
+which implies that the estimator $\bm{\hat{\beta}}$ is conditionally unbiased.
 
+However we are still missing $\sigma$. It can also be shown that there exists a conditional unbiased estimator for $\sigma^2$, given by
 
+$\hat{\sigma^2} = \frac{\sum_{i}^{N}(Y_i-x_i^T\hat{\beta})^2}{N-p}$.
 
+From here we can use a t-test to test the null hypothesis that $\beta_j=0$. Under the null we have that
 
 
 
+$T_j = \frac{\hat{\beta_j}}{\hat{\sigma}_j}$,
 
+where $T_j$ has a $t$ distribution with $N-p$ degrees of freedom.
 
+From the data we can calculate the \textit{p-values} of the parameters using a few lines of code.
 
+Code:
 
+```python
+# First, estimate the standard deviation of the noise.
+sigmaHat = np.sqrt( np.sum( np.square(y - X.dot(beta) )) / ( N - X.shape[1] ) )
+# Now estimate the (matrix part of the) covariance matrix for beta 
+betaCov = np.linalg.inv(X.T.dot(X))
+# Use the formula for the t-test statistic for each variable
+tVals = beta/(sigmaHat * np.sqrt(np.diagonal(betaCov)))
+# Calculate the 2-sided p-values.
+pvals = sp.stats.t.sf(np.abs(tVals), N-X.shape[1])*2
+#Parameters by order: intercept logRadius logPlanOrbit StarMetallicity logStarMass logStarAge
+pvals
+array([9.12757006e-01, 5.43077387e-05, 6.98598654e-01, 2.13109749e-01,
+       4.00456619e-01, 2.25952781e-01])
+```
 
+From the results we can observe that the best predictor of the mass is the planet radius, which is not surprising due to the well-known mass-radius relationship. The other parameters are not good predictors of the mass. 
 
+# Gradient descent
 
+## Notation and convexity
 
+In the field of optimization the greek letter $\omega$ is usually used to describe the model parameter we want to find. We will thus change from $\beta$ to $\omega$ as the gradient descent algorithm is discussed in the context of optimization.
 
+In this alternative notation we can write 
 
+$\hat{\omega} = f(\omega) = argmin \sum_{i=1}^{N}{(Y_i-\bm{x_i^T\omega}^2)}$.
 
+To find the minimum we take the derivative of $\hat{\omega}$ and set it to zero:
 
+$\frac{\partial{\hat{\omega}}}{\partial{\omega}}$ = 0.
 
+**Note: this estimator $\hat{\omega}$ is our optimization target, and we're trying to make it as small as possible. In the optimization field this is called the *loss function* or the _cost function_**.
 
+This is a very simple yet powerful method and is used in many machine learning areas due to its simplicity and use of computation. 
 
+*When does setting the derivative to zero give the minimum?*
 
+- The function needs to be (locally) smooth and convex
+- If the second derivative is non-negative everywhere (locally) then the critical point **(if it exists)** is the unique globl minimum.
+- **locally** means we are considering only a certain range not the full function! Never generalize to the full function!
 
+## Multidimensional convexity and local optimization
 
+Let's consider loss functions parametrized by multiple weights. We'll arrange such weights such that they form a column vector $\omega \in \mathbb{R}$.
 
+We can use the Taylor expansion to express $f(\omega)$ around a point in parameter space $\omega_0$:
 
+$f(\bm{\omega}) = f(\bm{\omega_0}) + \nabla f(\bm{\omega_0})(\bm{\omega}-\bm{\omega_0}) + \frac{1}{2}(\bm{\omega}-\bm{\omega_0})^T(\nabla\nabla f)(\bm{\omega}-\bm{\omega_0}) + \mathcal{O}({\lvert \bm{\omega}-\bm{\omega_0}\rvert}^3)$,
 
+where $\nabla f(\bm{\omega_0})$ is the gradient of $f(\bm{\omega})$ evaluated at $\omega_0$ and $\nabla\nabla f$ is the Hessian matrix which contains all the second derivatives of $f$.
 
+The critical points of $f(\bm{\omega})$ are define as the solutions to
 
+$\nabla f(\bm{\omega'}) = 0$.
 
+At a critical point, the Taylor expansion is
 
+$f(\bm{\omega}) = f(\bm{\omega_0}) + \frac{1}{2}(\bm{\omega}-\bm{\omega'})^T(\nabla\nabla f)(\bm{\omega}-\bm{\omega'}) + \mathcal{O})({\lvert \bm{\omega}-\bm{\omega_0}\rvert}^3)$.
 
+Therefore, in the vicinity of the critical point, the behavior of the function is governed by the Hessian term $(\bm{\omega}-\bm{\omega'})^T(\nabla\nabla f)(\bm{\omega}-\bm{\omega'})$. Let $\bm{v}=\bm{\omega}-\bm{\omega'}$ and $H=\nabla\nabla f$.
 
+If 
 
+$\bm{v^T H v} > 0$
 
+for all non-zero vectors $v \ne 0$ then the critical point is a minimum. This result also implies that $H$ is a positive definite matrix which in turn implies that the eigenvalues of $H$ are all positive, and thus the determinant (the product of all eigenvalues of the matrix) is also positive.
 
+For the hessian matrix $H$ at a critical point, we can interpret its eigenvalue-eigenvector pair as follows: the eigenvector is a vector that points towards a direction away from the critical point, and the eigenvalue shows if the curvature of $f(\bm{\omega})$ is positive, negative or zero in that direction.
 
+If a Hessian matrix has at least one positive eigenvalue, then we know that there is a direction away from the critical point where the loss function curves upwards. Meanwhile, if the same Hessian matrix also has at least one negative eigenvalue, then we know that there is a direction away from the critical point where the loss function curves downwards. A mixture of curving upwards and downwards is the definition of a saddle point (with eigenvalue=0), so we now know that the critical point associated with this Hessian is a saddle point.
 
+Let's take a look at the example below. In this example, a saddle point is located at the origin (where the black vertical line intersects the surface). The black vector is an eigenvector that points in the direction of positive curvature. The red vector is an eigenvector that points in the direction of negative curvature.
 
+![](pics/lossfx3d.png)
 
+We can now define one condition for convexity in multiple dimensions: $f$ is convex iif the Hessian is positive semi-definite everywhere (i.e. $\bm{v^T H v} \ge 0$). In other words, the limit of convexity is where $\bm{v^T H v} = 0$, when the convex function reaches the saddle points.
 
+## Quadratic minimization and gradient descent
 
+Convexity ensures that a loss function has a unique global minimum. However, it does not guarantee that it has a closed form (i.e. can be solved exactly).
 
+Instead of trying to find a single equation to obtain the minimum, one can make a guess and iteratively refine this guess to bring it closer to the true minimum. 
 
+Let the initial guess be $\omega_0$. To create an approximation, denoted by $g_0$ we truncate the Taylor expansion at the seconde order:
 
+$g_0(\omega_0) = f(\omega_0) + f'(\omega_0)(\omega-\omega_0) + \frac{1}{2}f''(\omega_0)(\omega-\omega_0)^2$.
 
+As $f$ is convex, we know that $f''(\omega_0) \ge 0$ and so $g_0$ will also be convex, and has a global minimum we can find.
 
+### Newton's method of minimization
 
+Using this approximation we can find the minimum by taking the derivative
 
+$\frac{\partial{g_0}}{\partial{\omega}}(\omega) = f'(\omega_0) + f''(\omega_0)(\omega-\omega_0)$,
 
+setting this derivative to zero at $\omega = \omega_1$ gives the location of the minimum $\omega_1$ at
+
+$\omega_1 = \omega_0 - \frac{f'(\omega_0)}{f''(\omega_0)}$.
+
+This can be repeated iteratively with a step $t$:
+
+$\omega_{t+1} = \omega_t - \frac{f'(\omega_t)}{f''(\omega_t)}$.
+
+This is known as **Newton's method of optimization**.
+
+**Note: We need to be careful of the possibility that $f''(\omega_t)$ is zero. For a practical algorithm, we would need to check if the second derivative is very small, and either terminate the algorithm, or threshold it to a larger positive value so as to allow the algorithm to continue.**
+
+In multiple dimensions we can write Newton's method of optimization as
+
+$\omega_{t+1} = \bm{\omega_t} - \left[(\nabla\nabla f \bm{\omega_t} \right]^{-1} \nabla f (\bm{\omega_t})^T.$
+
+In order for Newton's method to work it needs a condition to stop the iteration, as there is no single correct condition. Therefore we need to set a threshold that stops the program when a defined condition is very close to zero. This condition can be the squared value of the derivative, for instance,
+
+$(\nabla f(\bm{\omega_t}))^2 < \epsilon$
+
+or the value of the $\delta$ of the loss function,
+
+$f(\omega_{t-1} - f(\omega_t) < \epsilon$.
+
+## Gradient descent
+
+The problem with Newton's method is that it requires the computation of the Hessian matrix, which is computationally demanding. **In practice it is better to guess the value of the Hessian.**
+
+Let the guess be
+
+$\nabla \nabla f(\omega_t) \sim \frac{1}{\alpha} \bm{I}$,
+
+where $\alpha$ is some positive real number and $\bm{I}$ is the identity matrix.
+
+The iterative procedure becomes
+
+$\bm{\omega_{t+1}} = \bm{\omega_t} - \alpha\nabla f(\bm{\omega_t})^T$.
+
+**This is called gradient descent, as this procedure requires knowledge of the gradient.** The paramter $\alpha$ is called the step size. At each iteration, gradient descent moves $\bm{\omega_t}$ in the **opposite direction** (downhill) of the gradient.
+
+## Step sizes and quadratic bounds
+
+*Ok, but know we have the step size parameter $\alpha$. How should we should its size?*
+
+A good choice of the step size parameter $\alpha$ is critical for a good performance of gradient descent. 
+
+- If the step size is too large we are effectively underestimating the curvature of the loss function. We may end up 'overstepping' the minimum and the algorithm will never converge.
+- If the step size is too small we may have overestimated the curvature of the loss function and will 'understep' the minimum. However, we will get closer to it, but it will take much more (infinite?) time to reach it. 
+
+### Bounding the curvature
+
+
+We can find an upper bound $L$ of the curvature at point $\bm{\omega_t}$ by computing the eigenvalues of the Hessian and using the maximum eigenvalue
+
+$L = max_i \lambda_i$,
+
+and approximate the Hessian by this upper bound,
+
+$\nabla\nabla f(\omega_t) \sim LI = \frac{\bm{I}}{\alpha}$.
+
+Therefore,
+
+$\alpha = 1/L$.
+
+**But this requires the computation of the hessian, which is the thing we want to avoid!**
+
+Fortunately, the maximum eigenvaulue is also given by the spectral norm of the (symmetric) matrix, which is define as
+
+$|H|_2 = max_{|n|^2=1}n^THn$,
+
+where $|H|_2 is the spectral norm for the unit vectors \bm{n}$. To find the spectral norm, we need to find the unit vector $n$ that maximizes the term $n^THn$. It's like finding a direction which the Hessian-vector product $Hn$ maximizes. 
+
+Thus, we can finally write that
+
+$\alpha = \frac{1}{|H|_2}$.
+
+### Global bounds
+
+So far we only tried to set the step size using local information. The problem with this approach is, when the curvature increases sharply near the minimum the gradient descent will repetedly over-step the minimum. 
+
+In order to tackle this, we can try to find the maximum curvature within a certain region of interest and check the boundary conditions. This is equivalent of limiting the dimensional region where the computation is going to take place.
+
+### Quadratic bounds
+
+Let's write the loss function in terms of its Taylor expansion and the remainer term $R_1$,
+
+$f(\bm{\omega}) = f(\bm{\omega_t}) + \nabla f(\bm{\omega_t})(\bm{\omega}-\bm{\omega_t}) + R_1(\bm{\omega,\omega_t})$,
+
+where
+
+$R_1(\bm{w};\bm{w_t}) = \frac{1}{2}(\bm{\omega}-\bm{\omega_t})^T(\nabla\nabla f)(\bm{\omega}-\bm{\omega_t})$.
+
+Suppose we know an upper bound on the spectral norm of the Hessian within some region R:
+
+$|H|_2 \le M, \forall\ \omega \in R$.
+
+Now we can use this information to substitute the Hessian by M and find a quadratic upper bound on the loss function:
+
+$f(\omega) \le f(\bm{\omega_t}) + \nabla f(\bm{\omega_t})(\bm{\omega}-\bm{\omega_t}) + \frac{1}{2}M|\bm{\omega}-\bm{\omega_t}|^2$.
+
+We can now use a step size $\alpha = \frac{1}{M}$.
+
+In general, we don't need to find $M$ exactly to have a conservative step size. We just need to find some $L$ so that $L \ge M$, then we use the step size $\alpha = \frac{1}{L}$.
+
+### Step size tuning or backtracking
+
+*What if we don't have any information about the second derivative?*
+
+There are cases we only have information about the function and its gradient. 
+
+The approach here will be from the opposite direction. We assume a step size $\alpha_t$ and then observe what happens in the iteration itself. This implies that $L = \frac{1}{\alpha_t}$.
+
+How does this work?
+
+First we find a quadratic upper bound,
+
+$f(\omega) \le f(\bm{\omega_t}) + \nabla f(\bm{\omega_t})(\bm{\omega}-\bm{\omega_t}) + \frac{1}{2}\frac{1}{\alpha_t}|\bm{\omega}-\bm{\omega_t}|^2$.
+
+Then the gradient descent update finds the minimum of this quadratic and updates the current location to this minimum,
+
+$\omega_{t+1} = \omega_t - \alpha_t\nabla f(\omega_t)^T$
+
+If we substitute this expression into the quadratic upper bound we find the implied upper bound at $\omega_{t+1}$.
+
+$f(\omega_{t+1}) = f(\omega_t) - \frac{1}{2\alpha}|\omega-\omega_t)|^2$.
+
+**If, after calculating $f(\omega_{t+1})$ we find that it actually violates the upper bound, then we know the step size was too large!** So we decrease the step size to $\alpha_t/2$ and try again. Decreasing the step size implies a larger curvature of the loss function, so the resulting upper bound will now be higher.
+
+With the new step size we calculate $f(\omega_{t+1})$ again and do this until the upper bound is not violated. If this is the case, we move the function to the new location and use the new $\alpha$ as the initial guess for the next iteration. The $\alpha$ value is therefore adaptive for every cycle of the algorithm.
+
+## Stochastic gradient descent
+
+If our data is large we would ideally calculate the gradient on any datapoint. However, this is unfeasible. For instance if we had 80 parameters, each stored as a single 8 byte double precision floating point number and 10 billion data points we would need 6400 Gbytes of memory to perform the calculation!
+
+Instead, we need to reduce the number of data points where we will perform the calculation. In other words we need to subsample the data.
+
+We can for instance approximate the data to something similar to a mean. First we re-scale the loss function by a multiplicative constant
+
+$f(\omega) \rightarrow f(\omega) = \frac{1}{N} \sum_{i=1}^N f_i(\omega)$.
+
+We can then write the loss function as an expectation
+
+$f(\omega) \rightarrow f(\omega) = \mathbb{E}[f_i(\omega)]$.
+
+We can then estimate the update step using only one data point
+
+$\hat{\omega}_{t+1} = \omega_t - \alpha_t\nabla f_i (\omega_t)$.
+
+The data point to use each time should be chosen randomly at each iteration step. In order to ensure that we use all available data, we should choose the maximum number of iterations to be several times larger than the data set. 
+
+There are also variation on this squeme where the data points used are selected sequentially. 
+
+If the data is chosen uniformly, we insure that the estimator is unbiased.
+
+### Algorithm variance
+
+However, the variance can be quite large. First, we notice that
+
+$Var(\hat{\omega}_{t+1}) = \alpha_t^2 Var(\nabla f_i(\omega_t))$.
+
+We can't control the variance of the gradients but we can reduce the step size. 
+
+We can also modify the conditions of the computation so that it computes the average over a smaller sample $k$. Now the variance will be
+
+$Var(\hat{\omega}_{t+1}) = \frac{\alpha_t^2}{k} Var(\nabla f_i(\omega_t))$,
+
+where $k << population size$. Therefore if we increase the size of the sample we will decrease the variance as well. **This is known as mini-batch stochastic gradient descent**.
+
+### Step size schedule
+
+The variance of the stochastic gradient descent can be more problematic near the minimum, as the gradients of points close to it tend to point in different directions. 
+
+We could set a very small step size to fix this, but that would be a waste of precious time. Instead, we create a **step-size schedule** where the $\alpha_t$ is a function of the step number $t$. For instance we can impose that
+
+$\alpha_t = \frac{1}{1+t}$,
+
+so that the step size can start large and then be reduced as we converge.
 
 
 

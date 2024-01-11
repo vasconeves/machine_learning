@@ -119,7 +119,7 @@ We can now define type I error, type II error and power from the following table
 
 Type I error is a false positive and is bounded by $\alpha$ (meaning type I error  $\le \alpha$), Type II error is a false negative, and the power can be written as
 
-$Power = 1-Type\ II\ error$
+$$Power = 1-Type\ II\ error.$$
 
 **Note:** there is a trade-off between type I error and type II error.
 
@@ -141,7 +141,7 @@ Alternative hypothesis: $\pi$ control > $\pi$ treatment
 
 The $\textit{p-value}$ is then the sum of probabilities of obtaining a value of T that is more extreme than 39, in the direction of the alternate hypothesis:
 
-$P_{H_0}(T \le 39) = \sum_{t=0}^{39}{{31k \choose t}{31k \choose 102-t}{62k \choose 102}}$
+$$P_{H_0}(T \le 39) = \sum_{t=0}^{39}{{31k \choose t}{31k \choose 102-t}{62k \choose 102}}$$
 
 $\textit{p-value} = 0.011 < 0.05$
 
@@ -179,7 +179,7 @@ In the paired test design one takes multiple samples from the same individual at
 
 Therefore we will measure the difference between the observed values in the treatment and in the control situations,
 
-$Y_i = X_{i,treatment}-X_{i_control}.
+$$Y_i = X_{i,treatment}-X_{i_control}$$.
 
 The null hypothesis is the one where the expected value of the measurement $E[Y_i] = 0$.
 
@@ -205,11 +205,11 @@ In this case, it is prefereble to choose the Gaussian distribution as it closely
 
 From the CLT, we know that when $n$ is large, the distribution of the random variables of a sample $X_1...X_n$ is approximately normal with mean $\mu$ and variance $\sigma^2$. Therefore,
 
-$\overline{X} \sim N(\mu,\frac{\sigma^2}{n})$
+$$\overline{X} \sim N(\mu,\frac{\sigma^2}{n})$$
 
 From here we can defina a test statistic, the **z-test statistic** as
 
-$z = \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \sim N(0,1)$.
+$$z = \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \sim N(0,1)$$.
 
 This test statistic does not depend on the parameters $\mu$ or $\sigma$. It is, in fact, the standard normal. Thus we can simply use the CDF of this function to calculate the $\textit{p-value}$ of the test statistic.
 
@@ -231,7 +231,7 @@ We have, however, a problem. To calculate z we need to known the true value of t
 
 The solution to this problem is to use a t-test instead. The t-test uses the sample variance, and enable us to write
 
-$T = \frac{\overline{X}-\mu}{\hat{\sigma}/\sqrt{n}},$
+$$T = \frac{\overline{X}-\mu}{\hat{\sigma}/\sqrt{n}},$$
 
 under the assumption that $X_1,...,X_n \sim N(\mu,\sigma)$. This distribution is called a t-distribution and is parameterized by a number of *degrees of freedom*. In this case, $T \sim t_{n-1}$, the t distribution with $n-1$ degrees of freedom, where $n$ is the number of samples.
 
@@ -243,7 +243,7 @@ To calculate the T-test to our experiment we first calculate the difference of t
 
 Then, we know that under the null the t-test follows a t distribution of 9 degrees of freedom,
 
-$\frac{\overline{X}}{\hat{\sigma}/sqrt{n}} \sim t_9$.
+$$\frac{\overline{X}}{\hat{\sigma}/sqrt{n}} \sim t_9$$.
 
 Using for instance the t-test program in the scipy python library we obtain
 
@@ -316,17 +316,17 @@ The interval is defined in such a way that with probability $1-\alpha$ the inter
 
 We can write this interval in the following way
 
-$P(-\Phi^{-1}_{1-\alpha/2} \le \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \le \Phi^{-1}_{1-\alpha/2}) = 1 - \alpha$,
+$$P(-\Phi^{-1}_{1-\alpha/2} \le \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \le \Phi^{-1}_{1-\alpha/2}) = 1 - \alpha,$$
 
 where $\phi$ is the cdf of the distribution and $\alpha$ is the significant level.
 
 If we isolate $\mu$ then we obtain
 
-$P(\overline{X}-\frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2} \le \mu \le \overline{X}+\frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2}) = 1 - \alpha$.
+$$P(\overline{X}-\frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2} \le \mu \le \overline{X}+\frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2}) = 1 - \alpha.$$
 
 Therefore, the (two-sided in this case!) confidence interval will be
 
-$\overline{X} \pm \frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2}$.
+$$\overline{X} \pm \frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2}.$$
 
 To better understand what the confidence interval is we can create a very simple simulation where we randomly draw 100 elements from a standard normal distribution 100 times. The result is depicted in the following Picture.
 
@@ -383,7 +383,7 @@ $L(X) = \frac{\max_{\theta \in \Theta_0 p(x;\theta)}}{\max_{\theta \in \Theta p(
 
 In general $L(x)$ does not have an easily computable null distribution. To actually comput it, we need to do the following transformation
 
-$\Lambda(x) = -2\log(L(x)) $,
+$$\Lambda(x) = -2\log(L(x)),$$
 
 where 
 
@@ -391,7 +391,7 @@ where
 * reject $H_0$ if $\Lambda(x)$ is too large.
 * From the **Wilks Theorem** we know that, under H_0
 
-$\Lambda(x) \xrightarrow{n \rightarrow \inf} \chi^2_d$,
+$$\Lambda(x) \xrightarrow{n \rightarrow \inf} \chi^2_d,$$
 
 where $d = dim(\Theta) - dim(\Theta_0) >0$.
 
@@ -407,35 +407,35 @@ In this case we have
 * $H_0: \pi_{treatment} = \pi_{control}$ versus $H_A: \pi_{treatment} \ne \pi_{control}$
 * We're in the **binomial framework**. Therefore we need to calculate the binomial distribution probabilities for each case. Let $Y_T$ and $Y_C$ be the numbers of cancer deaths in the treatment and control groups respectively. Assumming that these groups are independent from each other, the probability of having y_t cancer deaths in the treatment group and y_c deaths in the control group is
 
-$P(Y_T=y_t,Y_C=yc) = P(Y_T=yt)P(Y_C=yc)$,
+$$P(Y_T=y_t,Y_C=yc) = P(Y_T=yt)P(Y_C=yc),$$
 
 $Y_T$ and $Y_C$ will be
 
-$Y_T \sim Binom(31k,\pi_T)$
+$$Y_T \sim Binom(31k,\pi_T)$$
 
 and
 
-$Y_C \sim Binom(31k,\pi_C)$.
+$$Y_C \sim Binom(31k,\pi_C).$$
 
 *Ok, let's calculate the LR test step-by-step!*
 
 The initial equation is
 
-$\Lambda(Y_T,Y_C) = -2\log{\frac{\max_{\Theta_0}{P(y_t,y_c;\pi_T, \pi_C)}}{\max_{\Theta_A}{P(y_t,y_c;\pi_T, \pi_C)}}}$.
+$$\Lambda(Y_T,Y_C) = -2\log{\frac{\max_{\Theta_0}{P(y_t,y_c;\pi_T, \pi_C)}}{\max_{\Theta_A}{P(y_t,y_c;\pi_T, \pi_C)}}}.$$
 
 The maximum values of the probabilities are obtained with MLE estimators, so we can write that
 
-$\Lambda(Y_T,Y_C) = -2\log{\frac{P(Binom(31k,\hat{\pi}^{MLE})=yt)P(Binom(31k,\hat{\pi}^{MLE})=yc)}{P(Binom(31k,\hat{\pi_T}^{MLE})=yt)P(Binom(31k,\hat{\pi_C}^{MLE})=yc)}}$
+$$\Lambda(Y_T,Y_C) = -2\log{\frac{P(Binom(31k,\hat{\pi}^{MLE})=yt)P(Binom(31k,\hat{\pi}^{MLE})=yc)}{P(Binom(31k,\hat{\pi_T}^{MLE})=yt)P(Binom(31k,\hat{\pi_C}^{MLE})=yc)}}.$$
 
 * Under $H_0$ the MLE is $\hat{\pi}$ and
 
-$p(x;\pi) = {62k \choose 102}\pi^{102}(1-\pi)^{61898}$
+$$p(x;\pi) = {62k \choose 102}\pi^{102}(1-\pi)^{61898}.$$
 
 * Under $H_A$ the MLEs are $\hat{\pi}_{treatment}$ and $\hat{\pi}_{control.}$, and
 
-$p(x;\pi_{treat}) = {31k \choose 39}\pi^{39}(1-\pi)^{30961}$,
+$$p(x;\pi_{treat}) = {31k \choose 39}\pi^{39}(1-\pi)^{30961},$$
 
-$p(x;\pi_{control}) = {31k \choose 63}\pi^{63}(1-\pi)^{30937}$.
+$$p(x;\pi_{control}) = {31k \choose 63}\pi^{63}(1-\pi)^{30937}.$$
 
 To calculate the MLE estimators we need to transform the probability into a logarithm and then derive to find the maximum. Doing the two simple operations we end up with (surprise!):
   * $\hat{\pi} = \frac{102}{62k}$
@@ -444,7 +444,7 @@ To calculate the MLE estimators we need to transform the probability into a loga
 
 Now, we just need to plug-in the values into the formula above and we get
 
-$\Lambda(Y_T,Y_C) = -2\log{\frac{\max_{\Theta_0}{P(y_t,y_c;\pi_T, \pi_C)}}{\max_{\Theta_A}{P(y_t,y_c;\pi_T, \pi_C)}}} \sim 5.71$.
+$$\Lambda(Y_T,Y_C) = -2\log{\frac{\max_{\Theta_0}{P(y_t,y_c;\pi_T, \pi_C)}}{\max_{\Theta_A}{P(y_t,y_c;\pi_T, \pi_C)}}} \sim 5.71.$$
 
 Computing the test in python just takes one line of code.
 ```python
@@ -536,11 +536,11 @@ We can control the size of the FWER by choosing significance levels of the indiv
 
 The simples of the possible correction for $\alpha$ is the Bonferroni Correction. If we have $m$ tests performed at the same time, the corrected *p-value* will be 
 
-$p'=\alpha/m$,
+$$p'=\alpha/m,$$
 
 then $FWER < \alpha$. We can re-write the equation stating that
 
-$FWER = mp' < \alpha$.
+$$FWER = mp' < \alpha.$$
 
 **Note: We should note that this is a very stringent and conservative test, and can be applied when the tests are not necessarily independent of each other.**
 **Note: when $m$ is large this criteria are stringent and lowers the power of the tests.**
@@ -554,7 +554,8 @@ Suppose we have $m$ hypothesis. The application of the method consists in the fo
 - Calculate the initial *p-values* for each hypothesis.
 - Sort the initial *p-values* in increasing order.
 - Start with the *p-value* with the lowest number. If
-  $p_{i} < \frac{\alpha}{m-(i-1)},$
+
+$$p_{i} < \frac{\alpha}{m-(i-1)},$$
 
 then
   - reject $H_0^i$
@@ -568,7 +569,7 @@ then
 
 In most cases, however, FWER is too strict and we loose too much statistical power. The most sensible course of action is then to control the expected proportion of false discoveries among all discoveries made. We can define 
 
-$FDR = \mathbb{E}[ \frac{ \text{\# type 1 errors or false discoveries}}{\text{total number of discoveries}}].$
+$$FDR = \mathbb{E}[ \frac{ \text{\# type 1 errors or false discoveries}}{\text{total number of discoveries}}].$$
 
 ### The Benjamini-Hochberg correction
 
@@ -579,7 +580,7 @@ The method is as follows:
 - Sort the $m$ *p-values* in increasing order.
 - Find the maximum $k$ such that
 
-$p_{k} \le \frac{k}{m}\alpha$
+$$p_{k} \le \frac{k}{m}\alpha$$
 
 - Reject all of H_0^1, H_0^2,...,H_0^k.
 
@@ -616,35 +617,35 @@ But first, let's calculate some basic quantities.
 
 From the data we can calculate the sample averages and sample standard deviations. Using the *mean* and *std* commands from the numpy package we obtain
 
-$\hat{X} = 0.9199\ Mpc$,
+$$\hat{X} = 0.9199\ Mpc,$$
 
-$\hat{Y} = 425.6175\ km/s$,
+$$\hat{Y} = 425.6175\ km/s,$$
 
-$\sigma_X = 0.6534\ Mpc$,
+$$\sigma_X = 0.6534\ Mpc,$$
 
-and,
+and
 
-$\sigma_Y = 348.7337\ km/s$.
+$$\sigma_Y = 348.7337\ km/s$$.
 
 From the average value of the two variables we can calculate the sample covariance, which is defined as the amount that $X$ and $Y$ vary away from the mean **at the same time**. The covariance has a maximum when X and Y are perfectly correlated. This value is equal to
 
-$s^2_{X,Y} = \sigma_X\sigma_Y$. 
+$$s^2_{X,Y} = \sigma_X\sigma_Y.$$ 
 
 When X and Y are perfectly anti-correlated,
 
-$s^2_{X,Y} = -\sigma_X\sigma_Y$. 
+$$s^2_{X,Y} = -\sigma_X\sigma_Y.$$ 
 
 Finally, when there is no correlation between X and Y (i.e. X and Y are independent), the value of the covariance is zero.
 
 In our example the value of the sample covariance is
 
-$s^2_{X,Y} = 191.2071\ Mpc\ km/s$.
+$$s^2_{X,Y} = 191.2071\ Mpc\ km/s.$$
 
 *Ok, but what does this mean? How can we quantify the correlation in more precise terms?*
 
 **We need a coefficient without units in order to have a standardized measure of the correlation!** We can write the correlation coefficient as
 
-$\rho_{X,Y} = \frac{s^2_{X,Y}}{s_Xs_Y} = \frac{1}{N+1}\sum_{i=1}^{N}\left(\frac{X_i-\hat{X}}{s_X}\frac{Y_i-\hat{Y}}{s_Y}\right)$,
+$$\rho_{X,Y} = \frac{s^2_{X,Y}}{s_Xs_Y} = \frac{1}{N+1}\sum_{i=1}^{N}\left(\frac{X_i-\hat{X}}{s_X}\frac{Y_i-\hat{Y}}{s_Y}\right),$$
 
 where the covariance is now scaled by its maximum possible value. This means the maximum possible value of the correlation coefficient is 1, the minimum is -1, and having no correlation is still zero. The following plot shows some possible ranges of $\rho$.
 
@@ -662,37 +663,37 @@ Now, let's go further into our analysis! We know there exists a correlation betw
 
 The most intuitive, which is also the best first approach in almost any problem is to try to find a linear relationship, which in this case is quite obvious from the observation of the previous figure. As we have two variables, we can write that
 
-$y = \beta_1 x + \beta_0 + \epsilon$,
+$$y = \beta_1 x + \beta_0 + \epsilon,$$
 
 where $\beta_1$ is the slope of the linear model, $beta_0$ is the intercept, and $\epsilon$ is the noise model.
 
 To identify the model parameters for a given dataset we define the **fitting error function**
 
-$E(\beta_0,\beta_1) = \sum_{i=1}^{N}{(\beta_1X_i + \beta_0-Y_i})^2$,
+$$E(\beta_0,\beta_1) = \sum_{i=1}^{N}{(\beta_1X_i + \beta_0-Y_i})^2,$$
 
 which is the squared sum of the residuals (i.e. the difference between the predicted and the observed Y values).
 
 To obtain $\beta_0$ and $\beta_1$ we need to minimize $E$. It is shown that the optimum values for the slope and intercept is achieved when
 
-$\hat{\beta}_1 = \frac{s^2_{X,Y}}{s^2_{X}} = \rho\frac{\sigma_Y}{\sigma_X}$,
+$$\hat{\beta}_1 = \frac{s^2_{X,Y}}{s^2_{X}} = \rho\frac{\sigma_Y}{\sigma_X},$$
 
 and 
 
-$\hat{\beta}_0 = \overline{Y}-\hat{\beta}_1\overline{X}$ 
+$$\hat{\beta}_0 = \overline{Y}-\hat{\beta}_1\overline{X}$$ 
 
 respectively.
 
 From here we can use this model to obtain predictors for Y:
 
-$\hat{Y}(X) = \hat{\beta}_1X+\hat{\beta}_0$.
+$$\hat{Y}(X) = \hat{\beta}_1X+\hat{\beta}_0.$$
 
 In our example we obtain 
 
-$\hat{\beta}_1 = 447.8706.$
+$$\hat{\beta}_1 = 447.8706.$$
 
 and
 
-$\hat{\beta}_0 = 13.6101\ km/s$.
+$$\hat{\beta}_0 = 13.6101\ km/s.$$
 
 The value of the slope is what was then named the *Hubble constant*, which we now know that it is slowly increasing, which means in turn that the Universe is expanding!
 
@@ -700,13 +701,13 @@ The value of the slope is what was then named the *Hubble constant*, which we no
 
 The least squares regression has a goodness of fit metric called coefficient of determination $R^2$. This coefficient is defined as
 
-$R^2 = 1-\frac{SumSq_{res}}{SumSq_{tot}}$,
+$$R^2 = 1-\frac{SumSq_{res}}{SumSq_{tot}},$$
 
 where $SumSq_{res}$ is the sum of the squared residuals and $SumSq_{tot}$ is the total sum of the squares. 
 
 We don't need to perform these calculation as it is known that 
 
-$R^2 = \rho$.
+$$R^2 = \rho.$$
 
 ### A brief historical note
 
@@ -724,11 +725,11 @@ In general, fitting a non-linear relationship must be done using a non-linear re
 
 Consider, for instance, that our data has an exponential trend that can be modelled as
 
-$Y=\alpha e^{\beta X}$,
+$$Y=\alpha e^{\beta X},$$
 
 where $\alpha$ and $\beta$ are two parameters. If we try to fit a linear relationship here it will fail miserably. However, if we take the log on both sides we obtain a linear form,
 
-$\ln{Y}=\beta X + \ln{\alpha}$,
+$$\ln{Y}=\beta X + \ln{\alpha},$$
 
 where $\beta$ is the slope and $ln{\alpha} is the intercept. We can use the logarithm or the exponential in many situations as well as trying different functions as polynomials, powers, etc. **The basic rule of thumb is that we should choose the simplest model within the models which have a very similar (and very high) correlation coefficient.**
 
@@ -740,11 +741,11 @@ where $\beta$ is the slope and $ln{\alpha} is the intercept. We can use the loga
 
 For instance if we have a relationship 
 
-$Y=\alpha e^{\beta X}\epsilon$,
+$$Y=\alpha e^{\beta X}\epsilon,$$
 
 that has a multiplicative error model, then the transformation will be
 
-$\ln{Y}=\beta X + \ln{\alpha} + \ln{\epsilon}$.
+$$\ln{Y}=\beta X + \ln{\alpha} + \ln{\epsilon}.$$
 
 Also, if $\epsilon$ is small, a linear approximation can work well. However if $\epsilon$ is or becomes large we may have problems and a non-linear regression is needed.
 
@@ -788,7 +789,9 @@ We can try a non-linear transformation!
 
 After a few tries, the best transformation we can find is a ln-ln transformation. On other words, we apply a logarithm in both terms of the equation. The transformed version is then
 
-$\ln{Y_s} = \beta ln(X_s)+\alpha$. The resulting correlation coefficient is now a rounded 1,
+$$\ln{Y_s} = \beta ln(X_s)+\alpha.$$ 
+
+The resulting correlation coefficient is now a rounded 1,
 
 ![](pics/linearization.png)
 
@@ -798,13 +801,13 @@ and the residuals now display no discernible pattern with a greatly reduced erro
 
 Now that we found the linear relationship between the transformed variables, the next step will to find the actual non-linear relationship. Let
 
-$Y' = \kappa X' + \ln{\omega}$,
+$$Y' = \kappa X' + \ln{\omega},$$
 
 where $\kappa$ is the slope of the transformed relation and $\ln{\omega}$ is the intercept.
 
 From the linear regression we know that $\kappa = 1.5$ and $\omega \sim 1$. To obtain the non-linear relation we just need to invert the transformation. Therefore we apply the exponential function to both sides of the equation and we get
 
-$Y_s = \omega X_s^{1.5} = X_s^{1.5}$.
+$$Y_s = \omega X_s^{1.5} = X_s^{1.5}.$$
 
 We've just discovered Kepler's third law! Johannes Kepler first discovered this relationship between orbital period and the distance of planets to the Sun in 1618 (Kepler only had data up to Saturn — Uranus, Neptune and Pluto had yet to be discovered).
 
@@ -820,13 +823,14 @@ We are now reaching the *good stuff*. We will first introduce multiple regressio
 
 It's time to generalize linear regression to multiple dimensions. If we have more than two observed variables, we can create a model to predict one variable, $Y$ based on two or more variables: $X_1,X_2,...,X_p$. The model for **one observation** of the predicted variable $Y_i$ can then be written as
 
-$Y_i = \beta_0 + \beta_1 X_{i,1}+\beta_2 X_{i,2} +...+ \beta_p X_{i,p} + \epsilon_i$,
+$$Y_i = \beta_0 + \beta_1 X_{i,1}+\beta_2 X_{i,2} +...+ \beta_p X_{i,p} + \epsilon_i,$$
 
 where $X_{i,j}$ is the $jth$ feature of data point $i$ and $p$ is the number of parameters.
 
 To better visualize this we can use the vector form. Let
 
-$X_i$ = $
+$$
+X_i = 
 \begin{bmatrix}
 1 \\
 X_{i,1} \\
@@ -834,11 +838,12 @@ X_{i,2} \\
 \vdots \\
 X_{i,p}
 \end{bmatrix} 
- \in \mathbb{R}^{p+1}$,
+ \in \mathbb{R}^{p+1},
+ $$
 
 and
 
-$\beta$ = $
+$$\beta = 
 \begin{bmatrix}
 \beta_0 \\
 \beta_1 \\
@@ -846,20 +851,21 @@ $\beta$ = $
 \vdots \\
 \beta_p
 \end{bmatrix} 
- \in \mathbb{R}^{p+1}$,
+ \in \mathbb{R}^{p+1},$$
 
 
 Then we can write the model in matrix form as
 
-$Y_i = \bm{X_i^T\beta} + \epsilon_i$. 
+$$Y_i = \pmb{X_i^T\beta} + \pmb{\epsilon_i}.$$
 
-**Note: the leading 1 in $\bm{X_i^T}$ multiplies by $\beta_0$ in $\bm{\beta}$ to create the intercept.**
+**Note: the leading 1 in $\pmb{X_i^T}$ multiplies by $\beta_0$ in $\pmb{\beta}$ to create the intercept.**
 
 **Note: this equation shows the computation of one element at a time from the matrix-vector product. We'll use this to simplify further, so that we'll only use one equation for all observations.**
 
 Lets place all the $Y_i$ observations and noise terms into their own vectors,
 
-$\bm{y}=$
+$$
+\pmb{y}=
 $\begin{bmatrix}
 Y_1 \\
 Y_2 \\
@@ -867,11 +873,11 @@ Y_2 \\
 Y_N
 \end{bmatrix}
 \in \mathbb{R}^N
-$
+$$
 
 and
 
-$\bm{\epsilon}=$
+$$\pmb{\epsilon}=
 $\begin{bmatrix}
 \epsilon_1 \\
 \epsilon_2 \\
@@ -879,11 +885,11 @@ $\begin{bmatrix}
 epsilon_N
 \end{bmatrix}
 \in \mathbb{R}^N
-$
+$$
 
-Now we arrange each row vector $\bm{X_i^T}$ so that if forms one row of a larger matrix,
+Now we arrange each row vector $\pmb{X_i^T}$ so that if forms one row of a larger matrix,
 
-$\bf{X} =$
+$$\bf{X} =
 $\begin{bmatrix}
 X_{1,1} & X_{1,2} & \cdots & X{1,p} \\
 X_{2,1} & X_{2,2} & \cdots & X{2,p} \\
@@ -891,25 +897,25 @@ X_{2,1} & X_{2,2} & \cdots & X{2,p} \\
 X_{N,1} & X_{N,2} & \cdots & X_{N,p} \\
 \end{bmatrix}
 \in \mathbb{R}^{N\times(p+1)}
-$.
+.$$
 
 Now we can write that the multiple linear regression predictive model is
 
-$\bm{y=X\beta+\epsilon}$.
+$$\pmb{y=X\beta+\epsilon}.$$
 
 In order to find the model parameters we define the error function $E$
 
-$E = \bm{(y-X\beta)^T}(\bm{y-X\beta})$.
+$$E = \pmb{(y-X\beta)^T}(\pmb{y-X\beta}).$$
 
-The least squares solution to $E$ is found by searching its gradient with respect to $\bm{\beta}$ and setting it to zero:
+The least squares solution to $E$ is found by searching its gradient with respect to $\pmb{\beta}$ and setting it to zero:
 
-$\nabla{S} = \frac{\partial{S}}{\partial{\bm{\beta}}} = 0$
+$$\nabla{S} = \frac{\partial{S}}{\partial{\pmb{\beta}}} = 0.$$
 
 After some operations we obtain
 
-$\bm{\beta} = (\bm{X^TX})^{-1}\bm{X^Ty}$.
+$$\pmb{\beta} = (\pmb{X^TX})^{-1}\pmb{X^Ty}.$$
 
-**Note: the \bm{X^TX} must be invertible!**.
+**Note: the \pmb{X^TX} must be invertible!**.
 
 ### An example of multiple linear regression - exoplanet mass data
 
@@ -957,23 +963,23 @@ array([ 0.15379303,  1.40214538, -0.14099818, -1.59951364, -0.95610919,
 
 Here we are assuming a normal distribution model for $\epsilon \sim \mathcal{N(0,\sigma^2)}$ and that $\epsilon$ is independent of the data. Then, it can be shown that 
 
-$\mathbb{E}[\bm{\hat{\beta}|X}] = \bm{\beta}$
+$$\mathbb{E}[\pmb{\hat{\beta}|X}] = \pmb{\beta}$$
 
 and
 
-$Cov[\bm{\hat{\beta}|X}] = \sigma^2(\bm{X^TX)^{-1}}$,
+$$Cov[\pmb{\hat{\beta}|X}] = \sigma^2(\pmb{X^TX})^{-1},$$
 
-which implies that the estimator $\bm{\hat{\beta}}$ is conditionally unbiased.
+which implies that the estimator $\pmb{\hat{\beta}}$ is conditionally unbiased.
 
 However we are still missing $\sigma$. It can also be shown that there exists a conditional unbiased estimator for $\sigma^2$, given by
 
-$\hat{\sigma^2} = \frac{\sum_{i}^{N}(Y_i-x_i^T\hat{\beta})^2}{N-p}$.
+$$\hat{\sigma^2} = \frac{\sum_{i}^{N}(Y_i-x_i^T\hat{\beta})^2}{N-p}.$$
 
 From here we can use a t-test to test the null hypothesis that $\beta_j=0$. Under the null we have that
 
 
 
-$T_j = \frac{\hat{\beta_j}}{\hat{\sigma}_j}$,
+$$T_j = \frac{\hat{\beta_j}}{\hat{\sigma}_j},$$
 
 where $T_j$ has a $t$ distribution with $N-p$ degrees of freedom.
 
@@ -1006,11 +1012,11 @@ In the field of optimization the greek letter $\omega$ is usually used to descri
 
 In this alternative notation we can write 
 
-$\hat{\omega} = f(\omega) = argmin \sum_{i=1}^{N}{(Y_i-\bm{x_i^T\omega}^2)}$.
+$$\hat{\omega} = f(\omega) = argmin \sum_{i=1}^{N}{(Y_i-\pmb{x_i^T\omega}^2)}.$$
 
 To find the minimum we take the derivative of $\hat{\omega}$ and set it to zero:
 
-$\frac{\partial{\hat{\omega}}}{\partial{\omega}}$ = 0.
+$$\frac{\partial{\hat{\omega}}}{\partial{\omega}} = 0.$$
 
 **Note: this estimator $\hat{\omega}$ is our optimization target, and we're trying to make it as small as possible. In the optimization field this is called the *loss function* or the _cost function_**.
 
@@ -1028,27 +1034,27 @@ Let's consider loss functions parametrized by multiple weights. We'll arrange su
 
 We can use the Taylor expansion to express $f(\omega)$ around a point in parameter space $\omega_0$:
 
-$f(\bm{\omega}) = f(\bm{\omega_0}) + \nabla f(\bm{\omega_0})(\bm{\omega}-\bm{\omega_0}) + \frac{1}{2}(\bm{\omega}-\bm{\omega_0})^T(\nabla\nabla f)(\bm{\omega}-\bm{\omega_0}) + \mathcal{O}({\lvert \bm{\omega}-\bm{\omega_0}\rvert}^3)$,
+$$f(\pmb{\omega}) = f(\pmb{\omega_0}) + \nabla f(\pmb{\omega_0})(\pmb{\omega}-\pmb{\omega_0}) + \frac{1}{2}(\pmb{\omega}-\pmb{\omega_0})^T(\nabla\nabla f)(\pmb{\omega}-\pmb{\omega_0}) + \mathcal{O}({\lvert \pmb{\omega}-\pmb{\omega_0}\rvert}^3),$$
 
-where $\nabla f(\bm{\omega_0})$ is the gradient of $f(\bm{\omega})$ evaluated at $\omega_0$ and $\nabla\nabla f$ is the Hessian matrix which contains all the second derivatives of $f$.
+where $\nabla f(\pmb{\omega_0})$ is the gradient of $f(\pmb{\omega})$ evaluated at $\omega_0$ and $\nabla\nabla f$ is the Hessian matrix which contains all the second derivatives of $f$.
 
-The critical points of $f(\bm{\omega})$ are define as the solutions to
+The critical points of $f(\pmb{\omega})$ are define as the solutions to
 
-$\nabla f(\bm{\omega'}) = 0$.
+$$\nabla f(\pmb{\omega'}) = 0.$$
 
 At a critical point, the Taylor expansion is
 
-$f(\bm{\omega}) = f(\bm{\omega_0}) + \frac{1}{2}(\bm{\omega}-\bm{\omega'})^T(\nabla\nabla f)(\bm{\omega}-\bm{\omega'}) + \mathcal{O})({\lvert \bm{\omega}-\bm{\omega_0}\rvert}^3)$.
+$$f(\pmb{\omega}) = f(\pmb{\omega_0}) + \frac{1}{2}(\pmb{\omega}-\pmb{\omega'})^T(\nabla\nabla f)(\pmb{\omega}-\pmb{\omega'}) + \mathcal{O})({\lvert \pmb{\omega}-\pmb{\omega_0}\rvert}^3).$$
 
-Therefore, in the vicinity of the critical point, the behavior of the function is governed by the Hessian term $(\bm{\omega}-\bm{\omega'})^T(\nabla\nabla f)(\bm{\omega}-\bm{\omega'})$. Let $\bm{v}=\bm{\omega}-\bm{\omega'}$ and $H=\nabla\nabla f$.
+Therefore, in the vicinity of the critical point, the behavior of the function is governed by the Hessian term $(\pmb{\omega}-\pmb{\omega'})^T(\nabla\nabla f)(\pmb{\omega}-\pmb{\omega'})$. Let $\pmb{v}=\pmb{\omega}-\pmb{\omega'}$ and $H=\nabla\nabla f$.
 
 If 
 
-$\bm{v^T H v} > 0$
+$$\pmb{v^T H v} > 0$$
 
 for all non-zero vectors $v \ne 0$ then the critical point is a minimum. This result also implies that $H$ is a positive definite matrix which in turn implies that the eigenvalues of $H$ are all positive, and thus the determinant (the product of all eigenvalues of the matrix) is also positive.
 
-For the hessian matrix $H$ at a critical point, we can interpret its eigenvalue-eigenvector pair as follows: the eigenvector is a vector that points towards a direction away from the critical point, and the eigenvalue shows if the curvature of $f(\bm{\omega})$ is positive, negative or zero in that direction.
+For the hessian matrix $H$ at a critical point, we can interpret its eigenvalue-eigenvector pair as follows: the eigenvector is a vector that points towards a direction away from the critical point, and the eigenvalue shows if the curvature of $f(\pmb{\omega})$ is positive, negative or zero in that direction.
 
 If a Hessian matrix has at least one positive eigenvalue, then we know that there is a direction away from the critical point where the loss function curves upwards. Meanwhile, if the same Hessian matrix also has at least one negative eigenvalue, then we know that there is a direction away from the critical point where the loss function curves downwards. A mixture of curving upwards and downwards is the definition of a saddle point (with eigenvalue=0), so we now know that the critical point associated with this Hessian is a saddle point.
 
@@ -1056,7 +1062,7 @@ Let's take a look at the example below. In this example, a saddle point is locat
 
 ![](pics/lossfx3d.png)
 
-We can now define one condition for convexity in multiple dimensions: $f$ is convex iif the Hessian is positive semi-definite everywhere (i.e. $\bm{v^T H v} \ge 0$). In other words, the limit of convexity is where $\bm{v^T H v} = 0$, when the convex function reaches the saddle points.
+We can now define one condition for convexity in multiple dimensions: $f$ is convex iif the Hessian is positive semi-definite everywhere (i.e. $\pmb{v^T H v} \ge 0$). In other words, the limit of convexity is where $\pmb{v^T H v} = 0$, when the convex function reaches the saddle points.
 
 ## Quadratic minimization and gradient descent
 
@@ -1066,7 +1072,7 @@ Instead of trying to find a single equation to obtain the minimum, one can make 
 
 Let the initial guess be $\omega_0$. To create an approximation, denoted by $g_0$ we truncate the Taylor expansion at the seconde order:
 
-$g_0(\omega_0) = f(\omega_0) + f'(\omega_0)(\omega-\omega_0) + \frac{1}{2}f''(\omega_0)(\omega-\omega_0)^2$.
+$$g_0(\omega_0) = f(\omega_0) + f'(\omega_0)(\omega-\omega_0) + \frac{1}{2}f''(\omega_0)(\omega-\omega_0)^2.$$
 
 As $f$ is convex, we know that $f''(\omega_0) \ge 0$ and so $g_0$ will also be convex, and has a global minimum we can find.
 
@@ -1074,15 +1080,15 @@ As $f$ is convex, we know that $f''(\omega_0) \ge 0$ and so $g_0$ will also be c
 
 Using this approximation we can find the minimum by taking the derivative
 
-$\frac{\partial{g_0}}{\partial{\omega}}(\omega) = f'(\omega_0) + f''(\omega_0)(\omega-\omega_0)$,
+$$\frac{\partial{g_0}}{\partial{\omega}}(\omega) = f'(\omega_0) + f''(\omega_0)(\omega-\omega_0),$$
 
 setting this derivative to zero at $\omega = \omega_1$ gives the location of the minimum $\omega_1$ at
 
-$\omega_1 = \omega_0 - \frac{f'(\omega_0)}{f''(\omega_0)}$.
+$$\omega_1 = \omega_0 - \frac{f'(\omega_0)}{f''(\omega_0)}.$$
 
 This can be repeated iteratively with a step $t$:
 
-$\omega_{t+1} = \omega_t - \frac{f'(\omega_t)}{f''(\omega_t)}$.
+$$\omega_{t+1} = \omega_t - \frac{f'(\omega_t)}{f''(\omega_t)}.$$
 
 This is known as **Newton's method of optimization**.
 
@@ -1090,15 +1096,15 @@ This is known as **Newton's method of optimization**.
 
 In multiple dimensions we can write Newton's method of optimization as
 
-$\omega_{t+1} = \bm{\omega_t} - \left[(\nabla\nabla f \bm{\omega_t} \right]^{-1} \nabla f (\bm{\omega_t})^T.$
+$$\omega_{t+1} = \pmb{\omega_t} - \left[(\nabla\nabla f \pmb{\omega_t} \right]^{-1} \nabla f (\pmb{\omega_t})^T.$$
 
 In order for Newton's method to work it needs a condition to stop the iteration, as there is no single correct condition. Therefore we need to set a threshold that stops the program when a defined condition is very close to zero. This condition can be the squared value of the derivative, for instance,
 
-$(\nabla f(\bm{\omega_t}))^2 < \epsilon$
+$$(\nabla f(\pmb{\omega_t}))^2 < \epsilon$$
 
 or the value of the $\delta$ of the loss function,
 
-$f(\omega_{t-1} - f(\omega_t) < \epsilon$.
+$$f(\omega_{t-1} - f(\omega_t) < \epsilon.$$
 
 ## Gradient descent
 
@@ -1106,15 +1112,15 @@ The problem with Newton's method is that it requires the computation of the Hess
 
 Let the guess be
 
-$\nabla \nabla f(\omega_t) \sim \frac{1}{\alpha} \bm{I}$,
+$$\nabla \nabla f(\omega_t) \sim \frac{1}{\alpha} \pmb{I},$$
 
-where $\alpha$ is some positive real number and $\bm{I}$ is the identity matrix.
+where $\alpha$ is some positive real number and $\pmb{I}$ is the identity matrix.
 
 The iterative procedure becomes
 
-$\bm{\omega_{t+1}} = \bm{\omega_t} - \alpha\nabla f(\bm{\omega_t})^T$.
+$$\pmb{\omega_{t+1}} = \pmb{\omega_t} - \alpha\nabla f(\pmb{\omega_t})^T.$$
 
-**This is called gradient descent, as this procedure requires knowledge of the gradient.** The paramter $\alpha$ is called the step size. At each iteration, gradient descent moves $\bm{\omega_t}$ in the **opposite direction** (downhill) of the gradient.
+**This is called gradient descent, as this procedure requires knowledge of the gradient.** The paramter $\alpha$ is called the step size. At each iteration, gradient descent moves $\pmb{\omega_t}$ in the **opposite direction** (downhill) of the gradient.
 
 ## Step sizes and quadratic bounds
 
@@ -1128,29 +1134,29 @@ A good choice of the step size parameter $\alpha$ is critical for a good perform
 ### Bounding the curvature
 
 
-We can find an upper bound $L$ of the curvature at point $\bm{\omega_t}$ by computing the eigenvalues of the Hessian and using the maximum eigenvalue
+We can find an upper bound $L$ of the curvature at point $\pmb{\omega_t}$ by computing the eigenvalues of the Hessian and using the maximum eigenvalue
 
-$L = max_i \lambda_i$,
+$$L = max_i \lambda_i,$$
 
 and approximate the Hessian by this upper bound,
 
-$\nabla\nabla f(\omega_t) \sim LI = \frac{\bm{I}}{\alpha}$.
+$$\nabla\nabla f(\omega_t) \sim LI = \frac{\pmb{I}}{\alpha}.$$
 
 Therefore,
 
-$\alpha = 1/L$.
+$$\alpha = 1/L.$$
 
 **But this requires the computation of the hessian, which is the thing we want to avoid!**
 
 Fortunately, the maximum eigenvaulue is also given by the spectral norm of the (symmetric) matrix, which is define as
 
-$|H|_2 = max_{|n|^2=1}n^THn$,
+$$|H|_2 = max_{|n|^2=1}n^THn,$$
 
-where $|H|_2 is the spectral norm for the unit vectors \bm{n}$. To find the spectral norm, we need to find the unit vector $n$ that maximizes the term $n^THn$. It's like finding a direction which the Hessian-vector product $Hn$ maximizes. 
+where $|H|_2 is the spectral norm for the unit vectors \pmb{n}$. To find the spectral norm, we need to find the unit vector $n$ that maximizes the term $n^THn$. It's like finding a direction which the Hessian-vector product $Hn$ maximizes. 
 
 Thus, we can finally write that
 
-$\alpha = \frac{1}{|H|_2}$.
+$$\alpha = \frac{1}{|H|_2}.$$
 
 ### Global bounds
 
@@ -1162,19 +1168,19 @@ In order to tackle this, we can try to find the maximum curvature within a certa
 
 Let's write the loss function in terms of its Taylor expansion and the remainer term $R_1$,
 
-$f(\bm{\omega}) = f(\bm{\omega_t}) + \nabla f(\bm{\omega_t})(\bm{\omega}-\bm{\omega_t}) + R_1(\bm{\omega,\omega_t})$,
+$$f(\pmb{\omega}) = f(\pmb{\omega_t}) + \nabla f(\pmb{\omega_t})(\pmb{\omega}-\pmb{\omega_t}) + R_1(\pmb{\omega,\omega_t}),$$
 
 where
 
-$R_1(\bm{w};\bm{w_t}) = \frac{1}{2}(\bm{\omega}-\bm{\omega_t})^T(\nabla\nabla f)(\bm{\omega}-\bm{\omega_t})$.
+$$R_1(\pmb{w};\pmb{w_t}) = \frac{1}{2}(\pmb{\omega}-\pmb{\omega_t})^T(\nabla\nabla f)(\pmb{\omega}-\pmb{\omega_t}).$$
 
 Suppose we know an upper bound on the spectral norm of the Hessian within some region R:
 
-$|H|_2 \le M, \forall\ \omega \in R$.
+$$|H|_2 \le M, \forall\ \omega \in R.$$
 
 Now we can use this information to substitute the Hessian by M and find a quadratic upper bound on the loss function:
 
-$f(\omega) \le f(\bm{\omega_t}) + \nabla f(\bm{\omega_t})(\bm{\omega}-\bm{\omega_t}) + \frac{1}{2}M|\bm{\omega}-\bm{\omega_t}|^2$.
+$$f(\omega) \le f(\pmb{\omega_t}) + \nabla f(\pmb{\omega_t})(\pmb{\omega}-\pmb{\omega_t}) + \frac{1}{2}M|\pmb{\omega}-\pmb{\omega_t}|^2.$$
 
 We can now use a step size $\alpha = \frac{1}{M}$.
 
@@ -1192,15 +1198,15 @@ How does this work?
 
 First we find a quadratic upper bound,
 
-$f(\omega) \le f(\bm{\omega_t}) + \nabla f(\bm{\omega_t})(\bm{\omega}-\bm{\omega_t}) + \frac{1}{2}\frac{1}{\alpha_t}|\bm{\omega}-\bm{\omega_t}|^2$.
+$$f(\omega) \le f(\pmb{\omega_t}) + \nabla f(\pmb{\omega_t})(\pmb{\omega}-\pmb{\omega_t}) + \frac{1}{2}\frac{1}{\alpha_t}|\pmb{\omega}-\pmb{\omega_t}|^2.$$
 
 Then the gradient descent update finds the minimum of this quadratic and updates the current location to this minimum,
 
-$\omega_{t+1} = \omega_t - \alpha_t\nabla f(\omega_t)^T$
+$$\omega_{t+1} = \omega_t - \alpha_t\nabla f(\omega_t)^T.$$
 
 If we substitute this expression into the quadratic upper bound we find the implied upper bound at $\omega_{t+1}$.
 
-$f(\omega_{t+1}) = f(\omega_t) - \frac{1}{2\alpha}|\omega-\omega_t)|^2$.
+$$f(\omega_{t+1}) = f(\omega_t) - \frac{1}{2\alpha}|\omega-\omega_t)|^2.$$
 
 **If, after calculating $f(\omega_{t+1})$ we find that it actually violates the upper bound, then we know the step size was too large!** So we decrease the step size to $\alpha_t/2$ and try again. Decreasing the step size implies a larger curvature of the loss function, so the resulting upper bound will now be higher.
 
@@ -1214,15 +1220,15 @@ Instead, we need to reduce the number of data points where we will perform the c
 
 We can for instance approximate the data to something similar to a mean. First we re-scale the loss function by a multiplicative constant
 
-$f(\omega) \rightarrow f(\omega) = \frac{1}{N} \sum_{i=1}^N f_i(\omega)$.
+$$f(\omega) \rightarrow f(\omega) = \frac{1}{N} \sum_{i=1}^N f_i(\omega).$$
 
 We can then write the loss function as an expectation
 
-$f(\omega) \rightarrow f(\omega) = \mathbb{E}[f_i(\omega)]$.
+$$f(\omega) \rightarrow f(\omega) = \mathbb{E}[f_i(\omega)].$$
 
 We can then estimate the update step using only one data point
 
-$\hat{\omega}_{t+1} = \omega_t - \alpha_t\nabla f_i (\omega_t)$.
+$$\hat{\omega}_{t+1} = \omega_t - \alpha_t\nabla f_i (\omega_t).$$
 
 The data point to use each time should be chosen randomly at each iteration step. In order to ensure that we use all available data, we should choose the maximum number of iterations to be several times larger than the data set. 
 
@@ -1234,13 +1240,13 @@ If the data is chosen uniformly, we insure that the estimator is unbiased.
 
 However, the variance can be quite large. First, we notice that
 
-$Var(\hat{\omega}_{t+1}) = \alpha_t^2 Var(\nabla f_i(\omega_t))$.
+$$Var(\hat{\omega}_{t+1}) = \alpha_t^2 Var(\nabla f_i(\omega_t)).$$
 
 We can't control the variance of the gradients but we can reduce the step size. 
 
 We can also modify the conditions of the computation so that it computes the average over a smaller sample $k$. Now the variance will be
 
-$Var(\hat{\omega}_{t+1}) = \frac{\alpha_t^2}{k} Var(\nabla f_i(\omega_t))$,
+$$Var(\hat{\omega}_{t+1}) = \frac{\alpha_t^2}{k} Var(\nabla f_i(\omega_t)),$$
 
 where $k << population size$. Therefore if we increase the size of the sample we will decrease the variance as well. **This is known as mini-batch stochastic gradient descent**.
 
@@ -1250,7 +1256,7 @@ The variance of the stochastic gradient descent can be more problematic near the
 
 We could set a very small step size to fix this, but that would be a waste of precious time. Instead, we create a **step-size schedule** where the $\alpha_t$ is a function of the step number $t$. For instance we can impose that
 
-$\alpha_t = \frac{1}{1+t}$,
+$$\alpha_t = \frac{1}{1+t},$$
 
 so that the step size can start large and then be reduced as we converge.
 

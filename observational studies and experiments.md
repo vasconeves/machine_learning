@@ -179,7 +179,7 @@ In the paired test design one takes multiple samples from the same individual at
 
 Therefore we will measure the difference between the observed values in the treatment and in the control situations,
 
-$$Y_i = X_{i,treatment}-X_{i_control}$$.
+$$Y_i = X_{i,treatment}-X_{i,control}.$$
 
 The null hypothesis is the one where the expected value of the measurement $E[Y_i] = 0$.
 
@@ -199,7 +199,7 @@ In this case we can think in two possibilities *a priori*:
 
 * We can look at the empirical distribution of the observations. The number of hours slept by an adult is known to be centered around 8 hours, and outliers are rare, so this favours the Gaussian distribution model.
 
-In this case, it is prefereble to choose the Gaussian distribution as it closely matches the empirical distribution of the sleeping population. We can further argue that the number of hours slept is a cumulative effect of a large number of biological and lifestile variables. As most of these variables are unrelated to each other, the cumulative effect can be approximated by a normal distribution.
+In this case, it is preferable to choose the Gaussian distribution as it closely matches the empirical distribution of the sleeping population. We can further argue that the number of hours slept is a cumulative effect of a large number of biological and lifestyle variables. As most of these variables are unrelated to each other, the cumulative effect can be approximated by a normal distribution.
 
 ## The central limit theorem (CLT) and the z-test statistic
 
@@ -526,7 +526,7 @@ and
 
 - False discovery rate (FDR) which is the expected fraction of false significance results among **all** significance results.
 
-## Family-wise error rate
+## Family-wise error rate (FWER)
 
 FWER is usually used when we really need to be careful and control the error rate dut to possible serious consequences in any false discovery, such as the Pharmaceutical sector.
 
@@ -547,7 +547,7 @@ $$FWER = mp' < \alpha.$$
 
 ### Holm-Bonferroni Correction
 
-The Holms-Bonferroni method is more flexible and less stringent.
+The Holm-Bonferroni method is more flexible and less stringent.
 
 Suppose we have $m$ hypothesis. The application of the method consists in the following steps:
 
@@ -569,7 +569,9 @@ then
 
 In most cases, however, FWER is too strict and we loose too much statistical power. The most sensible course of action is then to control the expected proportion of false discoveries among all discoveries made. We can define 
 
-$$FDR = \mathbb{E}[ \frac{ \text{\# type 1 errors or false discoveries}}{\text{total number of discoveries}}].$$
+$$
+FDR = \mathbb{E}\left[ \frac{ \text{\# type 1 errors or false discoveries}}{\text{total number of discoveries}}\right].
+$$
 
 ### The Benjamini-Hochberg correction
 
@@ -580,9 +582,11 @@ The method is as follows:
 - Sort the $m$ *p-values* in increasing order.
 - Find the maximum $k$ such that
 
-$$p_{k} \le \frac{k}{m}\alpha$$
+$$
+p_{k} \le \frac{k}{m}\alpha
+$$
 
-- Reject all of H_0^1, H_0^2,...,H_0^k.
+- Reject all of $H_0^1, H_0^2,...,H_0^k.$
 
 **Example**
 
@@ -862,11 +866,11 @@ $$Y_i = \pmb{X_i^T\beta} + \pmb{\epsilon_i}.$$
 
 **Note: this equation shows the computation of one element at a time from the matrix-vector product. We'll use this to simplify further, so that we'll only use one equation for all observations.**
 
-Lets place all the $Y_i$ observations and noise terms into their own vectors,
+Let's place all the $Y_i$ observations and noise terms into their own vectors,
 
 $$
 \pmb{y}=
-$\begin{bmatrix}
+\begin{bmatrix}
 Y_1 \\
 Y_2 \\
 \vdots \\
@@ -878,7 +882,7 @@ $$
 and
 
 $$\pmb{\epsilon}=
-$\begin{bmatrix}
+\begin{bmatrix}
 \epsilon_1 \\
 \epsilon_2 \\
 \vdots \\
@@ -890,7 +894,7 @@ $$
 Now we arrange each row vector $\pmb{X_i^T}$ so that if forms one row of a larger matrix,
 
 $$\bf{X} =
-$\begin{bmatrix}
+\begin{bmatrix}
 X_{1,1} & X_{1,2} & \cdots & X{1,p} \\
 X_{2,1} & X_{2,2} & \cdots & X{2,p} \\
 \vdots  & \vdots  & \ddots & \vdots \\
@@ -915,7 +919,7 @@ After some operations we obtain
 
 $$\pmb{\beta} = (\pmb{X^TX})^{-1}\pmb{X^Ty}.$$
 
-**Note: the \pmb{X^TX} must be invertible!**.
+**Note: the $\pmb{X^TX}$ must be invertible!**.
 
 ### An example of multiple linear regression - exoplanet mass data
 
@@ -1260,12 +1264,131 @@ $$\alpha_t = \frac{1}{1+t},$$
 
 so that the step size can start large and then be reduced as we converge.
 
+## Gradient descent example
 
+In this example we'll the synthetic data matrix `syn_X.csv` and the vector `syn_y.csv`.
 
+First we'll compute the parameter vector $\pmb{\beta}$ using ordinary least squares. In order to do this we'll just need to compute
 
+$$
+\beta = (\pmb{X^TX})^{-1}\pmb{X^Ty}.
+$$
 
+Code:
+```python
+##OLS calculation 
+#note: Mx multiplication is done using the operator @
+#note: CAREFUL with the dimensions!
+###part1
+p1 = np.linalg.inv(X.T@X)
+###part2
+p2 = X.T@y
+###beta
+beta = p1@p2
+beta
+print(beta)
+[ 1.92960603  1.26397096 -4.59799331]
+```
+Now, we want to obtain the same result but using the gradient descent algorithm.
 
+Basically the gradient descent iteration is
 
+$$
+\omega_{t+1} \leftarrow \omega_t - \alpha_t\nabla f(\omega_t).
+$$
+
+Calculating the gradient for the squared loss we obtain
+
+$$
+\nabla_{\omega}\left( \sum_{i=1}^N (y_i-x_i\omega)^2 \right) = \sum_{i=1}^N \nabla_\omega(y_i-x_i\omega)^2 = -2\sum_{i=1}^N (y_i-x_i\omega)^T x_i
+$$
+
+so
+
+$$
+\omega_{t+1} = \omega_t + 2\alpha_t \sum_{i=1}^N(y_i-x_i\omega)^T x_i.
+$$
+
+**Note: in this text we interchange $\beta$ with $\omega$ but they're the same!!!**
+
+It is easier to implient the GD algorithm using a few separated functions as shown in the code below.
+
+```python
+def loss_fn(beta, X, y):
+  # (y - X beta)^T (y - X beta)
+  return np.sum(np.square(y - X.dot(beta)))
+
+def loss_grad(beta, X, y):
+  # -2*(y - X beta)^T X
+  return -2*(y - X.dot(beta)).T.dot(X)
+
+def gradient_step(beta, step_size, X, y):
+  loss, grads = loss_fn(beta, X, y), loss_grad(beta, X, y)
+  # beta_(i+1) = beta_i - alpha (del f)^T
+  beta = beta - step_size * grads.T
+  return loss, beta
+
+def gradient_descent(X, y, step_size, precision, max_iter=10000, warn_max_iter=True):
+  beta = np.zeros_like(X[0])
+  # beta = np.random.randn(len(X[0]))
+
+  losses = [] # Array for recording the value of the loss over the iterations.
+  graceful = False
+  for _ in range(max_iter):
+    beta_last = beta # Save last values of beta for later stopping criterion
+    loss, beta = gradient_step(beta, step_size, X, y)
+    losses.append(loss)
+    # Use the norm of the difference between the new beta and the old beta as a stopping criteria
+    if np.sqrt(np.sum(np.square((beta - beta_last)/beta))) < precision:
+      graceful = True
+      break
+  if not graceful and warn_max_iter:
+    print("Reached max iterations.")
+  return beta, np.array(losses)
+```
+
+We will use the function `gradient descent` that then calls all the other functions when needed. The input of the function is the matrix X, the vector y, the step size, the precision (should be a very small number),the maximum number of iterations, and also if the function should warn (true/false) if the number of max interactions is reached.
+
+First we need to ascertain the optimal step size. To do this we'll just experiment in a reasonable range, let's say between 0.001 and 0.008.
+
+Code:
+```python
+# Now run a scan over the step size in order to confirm this
+step_size_scan_range = np.arange(0.001, 0.008, 0.001)
+
+steps = np.zeros_like(step_size_scan_range)
+for n in range(len(step_size_scan_range)) :
+    beta_gd,out_loss = gradient_descent(X,y,step_size_scan_range[n],precision=1e-10)
+    steps[n] = len(out_loss)
+    #print (beta_gd) #diagnostic
+
+print('The optimal step size is',step_size_scan_range[np.where(steps==min(steps))][0])
+The optimal step size is 0.004
+
+plt.plot(step_size_scan_range,steps)
+plt.xlabel('step size')
+plt.ylabel('# of iterations')
+
+```
+We obtain an optimal step size equal to 0.004 as shown in th plot below
+
+![](pics/step_size.png)
+
+The next Figure shows how the loss function behaves with the number of steps. 
+
+Code:
+```python
+beta_gd2,loss_gd2 = gradient_descent(X,y,step_size=0.004,precision=1e-10)
+print('Beta =', beta_gd2)
+plt.plot(loss_gd2,'.',label='loss value')
+plt.plot((0,20),(1e-10,1e-10),'r--',label='precision threshold')
+plt.xticks([0,5,10,15,20])
+plt.xlabel('# of iterations'),plt.ylabel('loss')
+plt.legend()
+```
+![](pics/loss.png)
+
+As we observe, the loss function quickly diminishes towards the threshold value.
 
 
 

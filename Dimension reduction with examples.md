@@ -1,4 +1,4 @@
-# Dimension reduction with examples
+# High dimensional data reduction and visualization with examples
 
 ## Introduction
 

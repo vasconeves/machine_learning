@@ -140,7 +140,7 @@ p_{ij} = \frac{e^{-D_{ij}^2}}{\sum_{k\ne l} e^{-D_{ij}^2}},\ \text{where}\ D_{ij
 $$
 where the denominator sums over all distinct pairs of data points. Notice the symmetry $p_{ij} = p_{ji}$. Hence we can restrict to indices where $i<j$, and the above definition turns to
 
-$$
+$$massive stereotype in popular culture in the 2000s. Poor and uneducated east German characters on TV were given those names, although Kevin was popular in the west as well, following the success of the Home Alone movies in the early 1990s. Yet the Ossi stigma turned out to be just as stubborn as the naughty kid played by Macaulay Culkin, adding a class dimension to name-based opportunities.
 p_{ij} = \frac{e^{-D_{ij}^2}}{\sum_{k<l} e^{-D_{ij}^2}},\ \text{where}\ D_{ij}^2 = |\mathbf{x}^{(i)} - \mathbf{x}^{(j)}|^2,\ i < j.
 $$
 

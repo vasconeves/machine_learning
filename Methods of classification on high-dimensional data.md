@@ -18,7 +18,7 @@ Here we will only discuss classification methods using a **supervised framework*
 
 ### Methods of classification
 
-We will begin with the methods with the most assuptions to the ones with the leas assumptions:
+We will begin with the methods with the most assumptions to the ones with the least assumptions:
 
 - Classification using Baye's rule
 - Quadratic discriminant analysis (QDA) and Linear discriminant analysis (LDA)
@@ -45,7 +45,7 @@ Procedure:
   - equivalently choose c = 1 if posterior odds $P(C=1|X)/P(C=0|X) > 1$
 - We need to estimate P(C=c) on P(X|C).
 
-In the special case of classification into only two classes, a decision boundary is a hypersurface such that data on one side are classified as one of the two classes, and data on the other side are classified into the other class.
+In the special case of classification into only two classes, a decision boundary is a hipersurface such that data on one side are classified as one of the two classes, and data on the other side are classified into the other class.
 
 ![](image.png)
 
@@ -116,7 +116,7 @@ is maximal.
 
 ![](pics/qda.png)
 
-- Use the fact that maximizing $P(C=c|X=x)$ is equivalent to maximizing it s log. Then,
+- Use the fact that maximizing $P(C=c|X=x)$ is equivalent to maximizing its log. Then,
 
 $$
 \log{(P(C=c|X=x))} \propto \log{(P(C=c))} - \frac{1}{2}\log{(det \Sigma_c)} - \frac{1}{2}(x-\mu_c)^T\Sigma_c^{-1}(x-\mu_c)

@@ -372,7 +372,7 @@ From here we can observe what seems to be two main structures, but it is still v
 
 ### PCA
 
-PCA can produce an informative visualization where global structure and distances are preserved. Let's use the `sklearn-decomposition` package and import the PCA tool. Using this tool we'll transform our data onto its principal components.
+PCA can produce an informative visualization **where global structure and distances are preserved**. Let's use the `sklearn-decomposition` package and import the PCA tool. Using this tool we'll transform our data onto its principal components.
 
 **Note: if we don't specify the number of PCAs by default the tool will compute the first 100 PCAs. This can be very slow if we have a lot of dimensions! In our case, it will compute the 100 PCAs in 0.2 seconds!**
 
@@ -394,7 +394,7 @@ plt.show()
 ```
 ![](pics/pca2.png)
 
-Now we're seeing some structure! We see two larger clusters and one or two smaller clusters. As further apart the clusters are the more dissimilar they are.
+Now we're seeing some structure! We see two larger clusters (with more variance) and one or two smaller (denser, with less variance) clusters. As further apart the clusters are, the more dissimilar they are.
 
 Using our privileged information about the labels, we can color up our plot
 
@@ -496,11 +496,11 @@ plt.show()
 
 ![](pics/mds.png)
 
-Using the label color code, we can observe that the MDS can separate the points. However it does separate the 'blue' points into two different clusters for some reason. This suggests that there is additional structure inside the 'blue' labeled points.
+Using the label color code, we can observe that the MDS can separate the clusters because, in fact, it does not compute clusters but pairwise distances. This may suggest that there is additional structure inside the 'blue' labeled points.
 
 Also, more scatter mean more dissimilarity, in general terms. 
 
-If we want a quicker or with less information, for instance if we have really a lot of data, we can reduce the data to its means, like in the following code:
+If we want a quicker result or a result with less information, for instance if we have really a lot of data, we can reduce the data classes to their means, like in the following code:
 
 ```python
 means = np.array([np.mean(X[np.where(y == i)],axis=0) for i in range(4)])
@@ -512,7 +512,7 @@ plt.axis("equal")
 plt.show()
 ```
 
-This code produces the following plot. Of course we only obtain one point for each class.
+This code produces the following plot. Of course we only obtain one point for each class, and we lose the information about its variation.
 
 ![](pics/mds_means.png)
 
@@ -521,5 +521,336 @@ We can observe that the points of the clusters and its means are not very far aw
 **It is worth noting that with every initialization we will obtain different results. However most of the times they will revolve around the same results.**
 
 ### T-SNE
+
+Stochastic neighbor embedding (SNE) is a probabilistic approach to dimensional reduction that places data points in high dimensional space into low dimensional space while preserving the identity of neighbors. That is, SNE attempts to keep nearby data points nearby, and separated data points relatively far apart.
+
+One popular variation of SNE is the **t-distributed stochastic neighbor embedding (T-SNE)**, which uses the t-distribution instead of the Gaussian distribution to define the pdf of neighbors in the low-dimensional target space.
+
+Here we will detail an example of T-SNE, using the `TSNE` function from the `skelarn.manifold` package. This function has a lot of parameters but the most important one is `perplexity`, which governs the range of the neighborhood at each point coordinate you're trying to match. This means that higher perplexity implies larger neighborhoods.
+
+Let's start with an average perplexity value of 40 with our data. With the following code. Again, we have `n_components=2`.
+
+```python
+tsne = TSNE(n_components=2,verbose=1,perplexity=40)
+z_tsne = tsne.fit_transform(X)
+plt.scatter(z_tsne[:,0],z_tsne[:,1],c=y)
+plt.title("TSNE, perplexity 40",size=18)
+plt.axis("equal")
+plt.show()
+```
+
+With `perplexity=40` the algorithm is "grabbing" the smaller clusters into the bigger ones as shown in the plot below.
+
+![](pics/tsne_p40.png)
+
+If we reduce the perplexity to `perplexity=5` we obtain a similar result, but this time we can observe a much more fragmented result, meaning that the algorithm tends to form smaller clusters inside the two bigger ones.
+
+![](pics/tsne_p5.png)
+
+**Note: Distances in the T-SNE graph don't necessarily mean anything! Remember that we have a mixture of Gaussians.** 
+
+Sometimes, we need to reduce the dimensionality (i.e. information) to reveal hidden patterns in the data, which is the case for this particular dataset.
+
+Therefore, instead of using our raw data, we will get the information obtained with the first 10 PCs that was computed before.
+
+```python
+tsne = TSNE(n_components=2,verbose=1,perplexity=40)
+z_tsne = tsne.fit_transform(z[:,0:10]) #z is the PCA matrix, we slice the first 10 PCAs
+plt.scatter(z_tsne[:,0],z_tsne[:,1],c=y)
+plt.title("TSNE on first 10 PCs, perplexity 40",size=18)
+plt.axis("equal")
+plt.show()
+```
+
+Now, we can clearly observe the 4 clusters as shown below.
+
+![](pics/tsne_p40v2.png)
+
+If we need to see the structure in more detail we just reduce the perplexity hyperparameter.
+
+![](tsne_p5v2.png)
+
+T-SNE can be a powerful visualization tool for clustering! We'll now create a second dataset, this time with 25 clusters.
+
+```python
+# Alternative dataset
+mu2 = np.zeros((25,100))
+for i in range(25):
+    mu2[i,i] = 1
+cov2 = [0.02*np.eye(100) for _ in range(25)]
+X2,y2=sample_gmm(1000,mu2,cov2)
+pca2 = PCA()
+z2 = pca2.fit_transform(X2)
+```
+
+### Data visualization comparison
+
+Let's first compare with a PCA analysis the first and the second datasets. 
+
+```python
+fig,(ax1,ax2) = plt.subplots(1, 2,figsize=(10,4))
+ax1.scatter(z[:,0],z[:,1],c=y)
+ax1.set_title("Dataset 1, Top PCs",size=18)
+ax1.set_xlabel("PC 1",size=14)
+ax1.set_ylabel("PC 2",size=14)
+ax1.axis("equal")
+
+ax2.scatter(z2[:,0],z2[:,1],c=y2)
+ax2.set_title("Dataset 2, Top PCs",size=18)
+ax2.set_xlabel("PC 1",size=14)
+ax2.set_ylabel("PC 2",size=14)
+ax2.axis("equal")
+plt.show()
+```
+
+![](pics/pca_comparison.png)
+
+While we could observe the 4 clusters in the first dataset, we cannot distinguish the 25 clusters in the image on the right that depicts the second dataset.
+
+Let's now try MDS.
+
+```python
+mds2 = MDS(n_components=2,verbose=1,eps=1e-5)
+mds2.fit(X2)
+
+fig,(ax1,ax2) = plt.subplots(1, 2,figsize=(10,4))
+ax1.scatter(mds.embedding_[:,0],mds.embedding_[:,1],c=y)
+ax1.set_title("Dataset 1, MDS",size=18)
+ax1.axis("equal")
+
+ax2.scatter(mds2.embedding_[:,0],mds2.embedding_[:,1],c=y2)
+ax2.set_title("Dataset 2, MDS",size=18)
+ax2.axis("equal")
+plt.show()
+```
+
+![](pics/mds_comparison.png)
+
+Using the raw data we can't distinguish anything! If we use the means instead, we obtain a much more sensible (and misleading!) result. Why? 
+
+![](pics/mds_comparison_means.png)
+
+In fact, the MDS algorithm is trying to preserve *pairwise* distances! In multidimensional space the 25 clusters are equally set apart from each other. However in 2D, some appear very distant from other, which is actually false. **While on the left the MDS algorithm shows some ground truth on the right it doesn't.**
+
+T-SNE on the other hand represents more accurately the 25 clusters **because the distances represented in the plat are not actual distances!** We don't even need to PCA the data.
+
+```python
+tsne2 = TSNE(n_components=2,verbose=1,perplexity=40)
+z_tsne2 = tsne2.fit_transform(X2)
+
+fig,(ax1,ax2) = plt.subplots(1, 2,figsize=(10,4))
+ax1.scatter(z_tsne[:,0],z_tsne[:,1],c=y)
+ax1.set_title("Dataset 1, TSNE",size=18)
+ax1.axis("equal")
+
+ax2.scatter(z_tsne2[:,0],z_tsne2[:,1],c=y2)
+ax2.set_title("Dataset 2, TSNE",size=18)
+ax2.axis("equal")
+plt.show()
+```
+
+![](pics/tsne_comparison.png)
+
+## Clustering methods examples
+
+### K-means
+
+AS we've seen above, K means start with a pre-defined number of clusters $K$ and aims at minimizing the value of the **within group sum of squares (WGSS)** to its assigned center. **This means that we can find local minima as well as global minima.**
+
+#### K-means applied to the PCA plot
+
+We will be using the function `KMeans` from the `sklearn.cluster` package.
+
+```python
+from sklearn.cluster import KMeans
+kmeans = KMeans(n_clusters=4,n_init=10)
+y = kmeans.fit_predict(z)
+plt.scatter(z[:,0],z[:,1],c=y)
+plt.title("KMeans Clustering, PCA Plot",size=18)
+plt.xlabel("PC 1",size=14)
+plt.ylabel("PC 2",size=14)
+plt.axis("equal")
+plt.show()
+```
+
+The most important parameters are explicit in the code: `n_clusters` is the number of clusters we think we have and hope to find and `n_init` is the number of initializations of the algorithm. **This latter parameter is very important because the algorithm can compare between the different results and avoid local minima.** The plot below shows an example of a **bad** clustering allocation.
+
+![](pics/kmeans_10.png)
+
+
+If we use `n_init=100` instead we obtain a much nicer plot as shown below.
+
+```python
+# More initializations
+kmeans = KMeans(n_clusters=4,n_init=100)
+y = kmeans.fit_predict(z)
+plt.scatter(z[:,0],z[:,1],c=y)
+plt.title("KMeans Clustering, PCA Plot",size=18)
+plt.xlabel("PC 1",size=14)
+plt.ylabel("PC 2",size=14)
+plt.axis("equal")
+plt.show()
+```
+
+![](pics/kmeans_100.png)
+
+We can also reduce the number of dimensions. In the PCA case, if, for instance, we only use the first 10 PC we actually obtain a better and more stable performance with `n_init=10`
+
+```python
+# Reduced dimension
+kmeans = KMeans(n_clusters=4,n_init=10)
+y = kmeans.fit_predict(z[:,0:10])
+plt.scatter(z[:,0],z[:,1],c=y)
+plt.title("KMeans Clustering, PCA Plot",size=18)
+plt.xlabel("PC 1",size=14)
+plt.ylabel("PC 2",size=14)
+plt.axis("equal")
+plt.show()
+```
+
+![](pics/kmeans_10v2.png)
+
+#### K-means applied to the MDS plot
+
+To apply the k-means labels to the MDS plot we just add `c=y` into our previously computed MDS data.
+
+```python
+plt.scatter(mds.embedding_[:,0],mds.embedding_[:,1],c=y)
+plt.title("KMeans Clustering, MDS Plot",size=18)
+plt.axis("equal")
+plt.show()
+```
+
+We obtain the following plot.
+
+![](pics/kmeans_mds.png)
+
+We observe that, in general we obtain a reasonable representation of the cluster, except for one of them, which may have a strong sub-structure as well as a few points which are mislabeled.
+
+#### K-means applied to the T-SNE plot
+
+We follow the same reasoning for the T-SNE plot.
+
+```python
+plt.scatter(z_tsne[:,0],z_tsne[:,1],c=y)
+plt.title("KMeans Clustering, TSNE Plot",size=18)
+plt.axis("equal")
+plt.show()
+```
+
+We observe a good assignment for each cluster except for a few stragglers. 
+
+![](pics/kmeans_tsne.png)
+
+### Diagostics for clustering methods
+
+#### Sum of squares criterion
+
+In the clustering methodology context, we can use several techniques to know *how many clusters to estimate within the data*.
+
+The sum of squares criterion is one of them and, as the name suggests, uses the same of squares function that is at the heart of the K-means algorithm to estimate the number of cluster we should point at. 
+
+Here, we will use the estimate calculated within the function `KMeans` called `inertia`. To code it, we run a kmeans algorithm for a certain $i$ number of clusters as shown below.
+
+```python
+all_kmeans = [KMeans(n_clusters=i+1,n_init=100) for i in range(8)]
+# i-th kmeans fits i+1 clusters
+for i in range(8):
+    all_kmeans[i].fit(X)
+
+inertias = [all_kmeans[i].inertia_ for i in range(8)]
+plt.plot(np.arange(1,9),inertias)
+plt.title("KMeans Sum of Squares Criterion",size=18)
+plt.xlabel("# Clusters",size=14)
+plt.ylabel("Within-Cluster Sum of Squares",size=14)
+plt.show()
+```
+
+Plotting the inertias versus the number of cluster we obtain the following Figure.
+
+![](pics/kmeans_elbow.png)
+
+The elbow plot suggests $i=2$ for the number of clusters. Following that recommendation we obtain the plot shown below.
+
+![](pics/kmeans_2c.png)
+
+**This is a great starting point to explore further!**. It does capture the big difference between the two clusters on the left and the two clusters on the right. Despite that, it is easy to observe that there is further structure in the figure. If we zoom in in the elbow plot we observe that `i=4` should be a better option. Ultimately is quite subjective where the precise value of `i` should be! Five would also be a valid option.
+
+![](pics/kmeans_elbow_zoom.png)
+
+#### Silhouette plots
+
+To ascertain the number of clusters we can also plot **silhouette scores**. It tries to represent how well the sample is clustered: it's a score between -1 and 1. Positive values represent good clustering, while negative numbers represent bad clustering.
+
+**Note: Silhouettes may be less reliable on high-dimensional data, can give negative scores even for clusters which look good visually.**
+
+In this example we'll be using the `silhouette_score` and `silhouette_samples` tools from the `sklearn.metrics` package and silhouette plot visualizer tools from the `yellowbricks package`. 
+
+**Note: R has more developted tools regarding silhouette plots.**
+
+The code shown below plots silhouette scores from $k=2$ to $k=8$ and shows how well the represent the clustering. The areas of each cluster represent its cumulative distribution.
+
+```python
+from sklearn.metrics import silhouette_score, silhouette_samples
+
+from yellowbrick.cluster import SilhouetteVisualizer
+from yellowbrick.style import rcmod
+from yellowbrick.style.colors import resolve_colors
+
+# Yellowbrick changes the plotting settings, reset to default here
+
+rcmod.reset_orig()
+
+visualizers = [SilhouetteVisualizer(all_kmeans[i], colors='yellowbrick',is_fitted=True) for i in range(1,8)]
+for i in range(7):
+    fig, (ax1, ax2) = plt.subplots(1, 2,figsize=(10,4))
+    visualizer = SilhouetteVisualizer(all_kmeans[i+1], colors='yellowbrick',is_fitted=True,ax=ax1)
+    visualizer.fit(X)
+    
+    colors = np.array(resolve_colors(i+2,"yellowbrick"))
+    ax2.scatter(z[:,0],z[:,1],c=colors[all_kmeans[i+1].labels_])
+    ax2.axis("equal")
+    
+    # If we want to set axes to be the same for all plots, need to do something like this
+    # instead of visualizer.show(), which resets the axes
+    visualizer.finalize()
+    ax1.set_xlim((-.4,.8))
+    plt.show()
+
+```
+
+![Alt text](pics/silhouette2.png)
+![Alt text](pics/silhouette3.png)
+![Alt text](pics/silhouette4.png)
+![Alt text](pics/silhouette5.png)
+![Alt text](pics/silhouette6.png)
+![Alt text](pics/silhouette7.png)
+![Alt text](pics/silhouette8.png)
+
+As observed in the 7 plots, we obtain mixed results: the silhouette index gets the most general clustering correctly, when $k=2$. However, for the most probable $k=4$, the silhouette index is negative for two clusters. **Therefore, it is important to be careful on the use of this tool. It is important to know which *a priori* knowledge we should rely on**.
+
+We can also plot the average silhouette score as a function of the number of clusters. 
+
+```python
+# Silhouette score undefined for 1 class. i-th entry of avg_silhouette score is score for i+2 clusters.
+avg_silhouette_scores = [silhouette_score(X,all_kmeans[i].labels_) for i in range(1,8)]
+plt.plot(np.arange(2,9),avg_silhouette_scores)
+plt.title("Average Silhouette Scores",size=18)
+plt.xlabel("# Clusters",size=14)
+plt.ylabel("Average Silhouette Score",size=14)
+plt.show()
+```
+
+If we do that we obtain the following plot.
+
+**Note: here we don't want an "elbow", we want the maximum value!**
+
+![](pics/average_sil.png)
+
+The plot shows that $k=2$ seems to be the best option, which goes against our better knowledge. 
+
+## Hierarchical clustering examples (in R)
+
+
 
 

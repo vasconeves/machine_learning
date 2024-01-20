@@ -851,6 +851,148 @@ The plot shows that $k=2$ seems to be the best option, which goes against our be
 
 ## Hierarchical clustering examples (in R)
 
+Now we're going to explore hierarchical clustering examples in R. We're changing languages because the packages for hierarchical clustering are more developed in R.
+
+The multivariate normal distribution data will be generated using the `rmvnorm` function. Each distribution has different means but the same variance.
+
+We'll start by visualizing the data using PCA and T-SNE tools (`prcomp` from `stats` package and the `Rtsne` function respectively). We use the following code to plot both.
+
+```R
+library(mvtnorm)
+library(Rtsne)
+library(dendextend)
+library(RColorBrewer)
+
+# Color palette and synthetic data
+cols <- brewer.pal(n=5,name="YlOrRd")[c(2:4)]
+cols <- c(cols, brewer.pal(n=4,name="RdPu")[c(2:3)])
+cols <- c(cols, brewer.pal(n=4,name="Blues")[c(2:3)])
+means = matrix(0,nrow=7,ncol=5)
+means[1,1] = 0.4
+means[2,1] = 0.2
+means[3,1] = 0.6
+means[4,2] = 0.7
+means[5,3] = 0.7
+means[6,1] = 1.0
+means[6,2] = 2.8
+means[7,1] = 1.0
+means[7,2] = 2.4
+cov = 0.003 * diag(5)
+set.seed(314)
+X=matrix(nrow=0,ncol=5)
+for (i in 1:7) {
+  X = rbind(X, rmvnorm(20, mean=means[i,], sigma=cov))
+}
+y = rep(c(1:7),each=20)
+
+par(mfrow=c(2,1))
+# PCA and TSNE visualizations
+pca <- prcomp(X)
+z <- pca$x
+par(mar=c(5,5,5,3))
+plot(z[,1],z[,2],col=cols[y],pch=19)
+title("PCA, true labels")
+
+z_tsne <- Rtsne(X,perplexity=5)
+plot(z_tsne$Y[,1],z_tsne$Y[,2],col=cols[y],pch=19)
+title("TSNE, true labels, perplexity 5")
+```
+With this code we obtain the following plot.
+
+![](pics/pca_tsne_r.png)
+
+On the most part we can differentiat the cluster well. However, if we didn't have the labels (i.e. the colors) we could assume that the group of points in the top left side of the PCA plot would belong to the same cluster. This is not *entirely* the case for the TSNE plot. But then again we will have some doubts regarding cluster assignment.
+
+*How can hierarchical cluster help in this case?*
+
+**Yes!**
+
+Let's use a dendogram. A dendogram is a data visualization tool that allow us to observe bottom-up **Agglomerative clustering.** As we've seen before, It starts with 1 data point per cluster and, at each stage, merges pairs of clusters that are the closest together, according to a dissimilarity measure.
+
+Here we will use the `ward measure` in the `hclust` function of the `dendextend` library. In short the method will merge two points or clusters that will result in a bigger cluster with the minimum variance. 
+
+The code used to plot our dendogram is shown below.
+
+```R
+# Hierarchical clustering: dist -> hclust -> dendrogram -> cutree pipeline
+par(mfrow=c(1,1))
+dis <- dist(X, method="euclidean")
+hc1 <- hclust(dis, method="ward.D")
+dend <- as.dendrogram(hc1)
+plot(dend)
+title("Dendrogram: Ward criterion", ylab="Height")
+```
+
+![](pics/dendogram1.png)
+
+For clarity we'll zoom in and analyse the leftmost cluster of the dendogram, which is our cluster of interest, as shown in the figure below.
+
+![](pics/dendogram2.png)
+
+In the plot each horizontal line is the merging of two clusters. The height of the horizontal line represents the cost of merging the two clusters. To add more clusters we need to make a cut at a certain horizontal height. 
+
+For instance in this plot if we cut at height 60 we get two cluster. But if we make the cut at height 10 we get 3 clusters and so on. 
+
+Let's now observe how this works iteratively. The following code will produce 6 figures.
+
+```R
+for (i in 2:7) {
+  # Plot clustering on original data
+  cl <- cutree(dend,k=i)
+  cl.orders <- unique(cl[order]) # Order colors according to how they appear in dendrogram
+  colors_reordered <- cols[cl.orders]
+  d1=color_branches(dend, col = colors_reordered,clusters=cl[order])
+  d1=color_labels(d1,labels=labels(d1),col=cols[cl[order]])
+  layout(matrix(c(1,2,2), nrow = 1, ncol = 3, byrow = TRUE))
+  plot(d1)
+  title("Dendrogram: Ward criterion", ylab="Height")
+  plot(z[,1],z[,2],col=cols[cl],pch=19)
+  title(paste("Hierarchical Clustering, ",i," clusters",sep=""))
+}
+```
+
+The next 6 Figures show on the left the dendogram with color labels corresponding to each cluster and on the right the PCA plot. The number of classified clusters will increase from 2 in the first picture to 7 in the last. 
+
+![](pics/dendogram2c.png)
+![](pics/dendogram3c.png)
+![](pics/dendogram4c.png)
+![](pics/dendogram5c.png)
+![](pics/dendogram6c.png)
+![](pics/dendogram7c.png)
+
+The selection criteria will only be the height.
+
+At the figure where we have 5 clusters, we can observe that all separated clusters have different classifications, while the remaining points are classified in the same cluster (yellow color label). **At this point you may be satisfied with this clustering.**
+
+However, we thing we have more structure in the data so we move onwards and we can observe in the dendogram that it still makes sense to have 7 clusters.
+
+If we do the same exercise using the T-SNE method, it is even clearer that 7 is a good estimate of the number of clusters as shown in the figure below.
+
+![](pics/dendogram_tsne7c.png)
+
+To finish the dendogram overview we present another method to create dendograms: the circlized dendograms.
+
+Here we plot a circlized dendogram of our data with the original labels. 
+
+![](pics/circle_dendogram.png)
+
+The following code was used to plot the previous figure.
+
+```R
+# Can make nice circlized dendrograms
+par(mfrow=c(1,1),mar=c(0,0,3,0))
+circlize_dendrogram((d1))
+title("Circlized Dendrogram")
+d2=color_labels(d1,labels=labels(d1),col=cols[y[order]])
+circlize_dendrogram(d2)
+title("Circlized Dendrogram, Ground Truth Labels")
+```
+
+## Logistic regression 
+
+Let's now return to `python` and discuss an example of logistic regression application.
 
 
+
+TBD tomorrow
 

@@ -80,3 +80,72 @@ TOC. THIS IS WORK IN PROGRESS! The first version will be finished by the end of 
       - Logistic regression in the context of the Wine Dataset
       - Feature selection using logistic regression
 
+**TBD**
+
+- Graph analysis
+  - graph centrality measures
+  - spectral clustering
+  - graphical models
+  - project
+- Time series
+  - Trends, seasonality, stationarity, autocovariance
+  - time series statistical models
+  - time series analysis
+  - example: climate change signal
+  - example: stock price forecasting
+  - project
+- Gaussian processes
+  - Example: environmental data
+  - Spatial prediction
+  - Sensing and analyzing global patterns of dependence
+  - example: simulating flows
+  - project
+
+**ML with python: from linear models to deep learning**
+
+- Linear classifiers and generalizations
+  - Perceptrons, hinge loss, margin boundaries, regularization
+  - linear classification and generalization
+  - project: automatic review analyzer
+- Non-linear classification, linear regression, collaborative filtering
+  - linear regression
+  - non-linear classification
+  - example: recommender systems
+  - project: digit recognition I
+- Neural networks
+  - Introduction to feedforward neural networks
+  - FFNN, back propagation, and stochastic gradient descent
+  - Recurrent NN
+  - Convolutional NN
+  - project: digit recognition II
+- Unsupervised learning
+  - Clustering methods
+  - Generative models
+  - Mixture models and the EM algorithm
+  - project: collaborative filtering via gaussian mixtures
+- Reinforcement learning
+  - Introduction
+  - Example: Natural Language processing (NLP)
+  - project: text-based game
+
+**Data Analysis for Social Scientists (with R). I will use this mostly for examples in R**
+
+- Fundamentals of probability, random variables, joint, marginal and conditional distributions
+- Summarizing and describing data
+- Functions of random variables, moments of distributions, expectation, variance and regression
+- Special distributions
+- The sample mean, the CLT, and estimation
+- Example: R simulations
+- Confidence intervals, hypothesis testing, and power calculations
+- Causality, analyzing randomized experiments
+- Explanatory data analysis: non-parametric comparisons and regressions
+- Single and multivariate linear models
+- Practical issues in regressions, the omitted variable bias
+- Endogeneity, Instrumental variables, Experimental design, and data visualization
+- Introduction to machine learning
+- 
+
+**Other examples from astronomy and biology**
+
+- Taken from my papers.
+- Taken from advanced stat courses I did recently.

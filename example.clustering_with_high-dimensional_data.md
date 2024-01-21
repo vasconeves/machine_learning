@@ -840,7 +840,7 @@ From the plot we observe that our assignment is pretty good when compared with t
 
 The ground truth correponds to three different type of wines, which were extracted from 17 different chemical composts. In the end our method did well to identify the three groups.
 
-## Logistic regression in the context of the wine dataset
+### Logistic regression in the context of the wine dataset
 
 Now we're going to do logistic regression on the multivariate wine database in order to predict the 3 different classes.
 
@@ -944,7 +944,7 @@ log_reg.score(X_test,y_test)
 1.0
 ```
 
-## Feature selection using logistic regression
+### Feature selection using logistic regression
 
 We can also use logistic regression for feature selection. 
 

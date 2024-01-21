@@ -988,11 +988,295 @@ circlize_dendrogram(d2)
 title("Circlized Dendrogram, Ground Truth Labels")
 ```
 
-## Logistic regression 
+## A real world example: RA Fisher's Wine Dataset
 
-Let's now return to `python` and discuss an example of logistic regression application.
+Let's now return to `python` and discuss a real world example using RA Fisher's Wine Dataset.
+
+The dataset `load_wine` is included in `sklearn.datasets` and is a copy of the original data taken from the UCI ML Wine Data Set dataset (https://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data).
 
 
+In this dataset we have 178 wines and 13 features. The features are chemical composts of the wine. Here we're going to try to find the features without knowing the labels.
 
-TBD tomorrow
+We start by loading and standardizing the data.
+
+```python
+from sklearn.datasets import load_wine
+features, target = load_wine(return_X_y=True)
+wine_std = (features-np.mean(features,0))/np.std(features,0) #178x13
+```
+
+From here we visualize the data using the PCA method as shown below.
+
+```python
+pca_wine = PCA(5).fit(wine_std)
+pcs = pca_wine.transform(wine_std)
+plt.figure(figsize=(12,9))
+plt.scatter(pcs[:,0],pcs[:,1])
+plt.title("Wine Data PCs",size=18)
+plt.xlabel("PC 1",size=14)
+plt.ylabel("PC 2",size=14)
+plt.axis("equal")
+plt.show()
+```
+
+![](pics/wine_pca.png)
+
+In the PCA plot it is not clear there are different clusters. Let's now visualize the MDS and TSNE plots.
+
+```python
+mds_wine = MDS(2).fit_transform(wine_std)
+plt.scatter(mds_wine[:,0],mds_wine[:,1])
+plt.title("Wine Data MDS",size=18)
+plt.axis("equal")
+plt.show()
+```
+
+![](pics/wine_mds.png)
+
+The same is true for the MDS plot.
+
+For the T-SNE method we will going to create six plots with different perplexity values to observe if we can fine-tune the structure.
+
+```python
+for perplexity in [5,10,30,50,80,100]:
+    tsne_wine = TSNE(n_components=2,perplexity=perplexity).fit_transform(wine_std)
+    plt.scatter(tsne_wine[:,0],tsne_wine[:,1])
+    plt.title("Wine Data TSNE, perplexity "+str(perplexity),size=18)
+    plt.axis("equal")
+    plt.show()
+```
+
+![](pics/wine_tsnep5.png)
+![](pics/wine_tsnep10.png)
+![](pics/wine_tsnep30.png)
+![](pics/wine_tsnep50.png)
+![](pics/wine_tsnep80.png)
+![](pics/wine_tsnep100.png)
+
+At low perplexity values ($p=5$) we observe a lot of granulation with at seems to be the formation of three bigger clusters. At $p=10$ we observe three clusters. At $p=30$ and $p=50$ the dispersion increases but it is still possible to observe three clusters. For greater values of perplexity it starts to be increasingly difficult to observe the clusters.
+
+In short, we can say we may observe three cluster, but it is not really conclusive.
+
+Let's move on with the analysis using the elbow and the silhouette methods.
+
+```python
+plt.plot(np.arange(1,6),[KMeans(i,n_init=50).fit(wine_std).inertia_ for i in range(1,6)])
+plt.title("KMeans Sum of Squares Criterion",size=18)
+plt.xlabel("# Clusters",size=14)
+plt.ylabel("Within-Cluster Sum of Squares",size=14)
+plt.show()
+```
+
+![](pics/wine_elbow.png)
+
+The elbow plot seems to converge on 3 clusters.
+
+```python
+from sklearn.metrics import silhouette_score
+plt.plot(np.arange(2,6),[silhouette_score(wine_std,KMeans(i,n_init=50).fit(wine_std).labels_) for i in range(2,6)])
+plt.title("Average Silhouette Scores",size=18)
+plt.xlabel("# Clusters",size=14)
+plt.ylabel("Average Silhouette Score",size=14)
+plt.show()
+```
+
+![](pics/wine_sil.png)
+![](pics/wine_sil2.png)
+
+The silhouette scores also point for the same number.
+
+Looks nice! Now we will use the `KMeans` algorithm to asign the best membership for each cluster and compare them with the "ground truth".
+
+```python
+clustering = KMeans(3,n_init=50)
+clustering.fit(wine_std)
+colors = np.array(resolve_colors(3,"yellowbrick"))
+
+# Colors don't align since kmeans can order the clusters differently
+#we need to change the colors manually through three masks
+###NOTE THAT this may change depending on the KMeans color assignment!!!
+ind0 = clustering.labels_ == 0
+ind1 = clustering.labels_ == 1
+ind2 = clustering.labels_ == 2
+
+clustering.labels_[ind0] = 2
+clustering.labels_[ind1] = 0
+clustering.labels_[ind2] = 1
+#
+fig, (ax1,ax2) = plt.subplots(1,2,figsize=(12,4))
+ax1.scatter(tsne_wine[:,0],tsne_wine[:,1],c=colors[clustering.labels_])
+ax1.set_title("KMeans, Wine TSNE",size=18)
+ax2.scatter(tsne_wine[:,0],tsne_wine[:,1],c=colors[target])
+ax2.set_title("Wine TSNE Ground Truth",size=18)
+ax1.axis("equal")
+ax2.axis("equal")
+plt.show()
+```
+
+![](pics/wine_kmeans.png)
+
+From the plot we observe that our assignment is pretty good when compared with the ground truth: we only have a few misassignments. 
+
+The ground truth correponds to three different type of wines, which were extracted from 17 different chemical composts. In the end our method did well to identify the three groups.
+
+## Logistic regression in the context of the wine dataset
+
+Now we're going to do logistic regression on the multivariate wine database in order to predict the 3 different classes.
+
+In order to do this we can try two different approaches: i) One vs Rest; ii) Multinomial
+
+Here we will do the one vs the rest approach. We will train $k$ binary classifiers. Each classifier $i$ learns a rule class $i$ vs not class $i$. The classifier with the maximum score will be the class $i$.
+
+To this end we will use the functions `LogisticRegression` and `LogisticRegressionCV` functions from the `sklearn.linear_model` package.
+
+The first step consists in the separation of the data into training and testing subsamples. We'll have 4/5 of the data for the training and 1/5 for the testing.
+
+```python
+np.random.seed(317) #just to give always the same results
+perm = np.random.permutation(wine_std.shape[0])
+n_train = int(4/5*wine_std.shape[0])
+print(n_train)
+X_train = wine_std[perm[:n_train]]
+y_train = target[perm[:n_train]]
+X_test = wine_std[perm[n_train:]]
+y_test = target[perm[n_train:]]
+```
+
+Let's begin by using the function `LogisticRegression`. We can write that
+
+```python
+log_reg = LogisticRegression(penalty="none",multi_class="ovr").fit(X_train,y_train)
+```
+
+In this line of code we don't use any type of penalty function, which is not recommended: regularization via penalty function is important to ensure convergence in many cases because it will introduce constraints in the iteration. The `multi_class="ovr"` a binary (one vs rest) is fit for each class or label.
+
+If we calculate the log regression score for the training sample we obtain a perfect match as expected.
+
+```python
+log_reg.score(X_train,y_train)
+1.0
+```
+
+When applying the regressors on the testing sample however, the result does not converge to one.
+
+```python
+log_reg.score(X_test,y_test)
+0.9444444444444444
+```
+
+However if we regularize the regression by adding a constant $C$, which is the inverse regularization stength we will obtain
+
+```python
+# Some solvers only support certain regularization/multi_class parameters
+log_reg = LogisticRegression(penalty="l2",C=0.1,max_iter=5000,multi_class="ovr").fit(X_train,y_train)
+log_reg.score(X_train,y_train)
+0.9929577464788732
+log_reg.score(X_test,y_test)
+1.0
+```
+
+The smaller the $C$ the strong the regulariation. Logistic regression is solved via iterative methods: different solvers exist, some support certain types of regularization or multi-class objective. Therefore it is important to play around with the different settings.
+
+In this case our regression outputs a very good result and the testing and training results and indistinguishable. In general we should fine tune the value of $C$ experimentally to optimize the results.
+
+A method to obtain the best $C$ parameter is to perform Cross Validation: we divide the data into $k$ folds and train on $k-1$ folds and evaluate on the remaining fold.
+
+Here we will use the function `LogisticRegressionCV` directly.
+
+```python
+log_reg = LogisticRegressionCV(cv=5,Cs=[0.01,0.1,1,10],max_iter=5000,penalty="l1",solver="liblinear",multi_class="ovr")
+log_reg.fit(X_train,y_train)
+log_reg.score(X_train,y_train)
+1.0
+```
+
+We can take a deeper look at the CV results using the commands `log_reg.C_` and `log_reg.scores_`.
+
+```python
+log_reg.C_
+array([10.,  1.,  1.])
+
+log_reg.scores_
+{0: array([[0.62068966, 0.96551724, 0.96551724, 0.96551724],
+        [0.62068966, 0.86206897, 0.93103448, 1.        ],
+        [0.64285714, 1.        , 1.        , 1.        ],
+        [0.64285714, 0.96428571, 0.96428571, 0.96428571],
+        [0.60714286, 1.        , 1.        , 1.        ]]),
+ 1: array([[0.65517241, 0.86206897, 1.        , 1.        ],
+        [0.65517241, 0.89655172, 1.        , 1.        ],
+        [0.64285714, 0.89285714, 1.        , 1.        ],
+        [0.64285714, 0.92857143, 0.92857143, 0.92857143],
+        [0.67857143, 0.92857143, 1.        , 1.        ]]),
+ 2: array([[0.72413793, 0.96551724, 1.        , 1.        ],
+        [0.72413793, 0.96551724, 1.        , 1.        ],
+        [0.71428571, 1.        , 1.        , 1.        ],
+        [0.71428571, 0.89285714, 0.96428571, 0.96428571],
+        [0.71428571, 0.96428571, 1.        , 1.        ]])}
+```
+
+In `log_reg.C_` we obtain the $C$ values that optimized the three clusters. In `log_reg.scores_` we obtain the scores for each CV round (rows) as a function of the $C$ value (columns). In fact, in the second and third cluster there is no difference in the scores between $C=1$ and $C=10$.
+
+Regardless the result on the test set is excellent.
+
+```python
+log_reg.score(X_test,y_test)
+1.0
+```
+
+### Feature selection using logistic regression
+
+We can also use logistic regression for feature selection. 
+
+**Note: this may be not the ideal method to do feature selection but it can be a good baseline to start from**.
+
+We can start by looking at the regression coefficient matrix. The number of rows is the number of classes (=3) and the number of columns is equal to the number of features (=13).
+
+```python
+log_reg.coef_
+array([[ 3.03804169,  0.90425921,  2.25353081, -3.28730332,  0.        ,
+         0.07756079,  1.84148469,  0.        , -0.07309995,  0.        ,
+         0.        ,  2.31621553,  4.21456335],
+       [-1.64847534, -0.35274206, -1.02727633,  0.56931675, -0.01746661,
+         0.        ,  0.25367182,  0.        ,  0.49893444, -1.74217771,
+         1.32355799,  0.        , -2.46335232],
+       [ 0.        ,  0.30061583,  0.30204354,  0.        ,  0.        ,
+         0.        , -2.64670061,  0.        ,  0.        ,  2.12828324,
+        -0.65572067, -0.36972186,  0.        ]])
+```
+
+We can think that larger values mean that a feature is more important. One way of seleting the larger values is to take the sum of the absolute value per column as shown below.
+
+```python
+np.sum(np.abs(log_reg.coef_),axis=0)
+array([4.68651703, 1.5576171 , 3.58285069, 3.85662007, 0.01746661,
+       0.07756079, 4.74185712, 0.        , 0.57203438, 3.87046095,
+       1.97927866, 2.68593739, 6.67791567])
+```
+
+From here we can apply the logistic regression to the last and the first feature, for instance. *How much these two features explain?*
+
+```python
+log_reg = LogisticRegressionCV(cv=5,Cs=[0.001,0.01,0.1,1,10],max_iter=5000,penalty="l1",solver="liblinear",multi_class="ovr")
+log_reg.fit(X_train[:,np.array([0,12])],y_train) #selects the first and the last feature
+log_reg.score(X_train[:,np.array([0,12])],y_train)
+0.8028169014084507
+
+log_reg.score(X_test[:,np.array([0,12])],y_test)
+0.75
+```
+
+We obtain a 75\% explaining power from the test set from just the two biggest features. 
+
+We can test this result against other features to establish a baseline. For instance if we select feature 4 and 5 (0.01746661 and 0.07756079) we obtain the following scores.
+
+```python
+log_reg.score(X_train[:,np.array([4,5])],y_train)
+0.7394366197183099
+log_reg.score(X_test[:,np.array([4,5])],y_test)
+0.6388888888888888
+```
+
+We thus obtain a lower value. It is worth mentioning that it makes more sense to differentially compare the two testing values if we want to compare the explanatory power between the two sets of features. Here we observe that the stronger feature explain more than the weaker features but not by much. Therefore, it would be wiser to use the **full set** of features.
+
+
 

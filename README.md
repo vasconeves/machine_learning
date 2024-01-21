@@ -77,6 +77,6 @@ TOC. THIS IS WORK IN PROGRESS! The first version will be finished by the end of 
         - Silhouette plots
         - Hierarchical clustering
     - A real world example: RA Fisher's Wine Dataset
-    - Logistic regression in the context of the Wine Dataset
-    - Feature selection using logistic regression
+      - Logistic regression in the context of the Wine Dataset
+      - Feature selection using logistic regression
 

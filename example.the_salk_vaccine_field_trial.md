@@ -1,6 +1,6 @@
 # Example. The Salk Vaccine Field Trial
 
-**This example shows how should we qualitatively interpret simple results in the context of clinical trials.**
+**This example shows how we should qualitatively interpret simple results in the context of clinical trials.**
 
 The first polio epidemic hit the United States in 1916. By the 1950s several vaccines against the disease had been discovered. The one developed by Jonas Salk seemed the most promising in laboratory trials. By 1954, the National Foundation for Infantile Paralysis (NFIP) was ready to try the vaccine in the real world.
 

@@ -101,7 +101,7 @@ The result reflects the higher accuracy for negative results by the test as well
 
 ## Quadratic discriminant analysis
 
-## 1-D
+### 1-D
 
 - Let's assume that $\mathbf{X}|(C=c) \sim \mathcal{N}(\mathbf{\mu_c},\mathbf{\sigma_c})$. 
 

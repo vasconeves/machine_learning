@@ -215,7 +215,7 @@ fig.suptitle("A selection from the 64-dimensional digits dataset", fontsize=16)
 
 **Note: 64 dimensions means we have 8x8 pixel images with 14 shades of gray (plus black and white).**
 
-## Adding a function to plot the embedding
+### Adding a function to plot the embedding
 
 The function below will plot the projection of the original data onto each embedding and help us visualize the quality of the clustering and its variance.
 

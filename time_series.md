@@ -328,21 +328,169 @@ On the top panel, the ACF signal steadily decreases with time lag, revealing a m
 
 ## The white noise model (revisited)
 
+The simplest time series model is the **white noise process** $\{W_t\}_t$ of r.v. that have zero mean, the same variance $\sigma_W^2$, and zero correlations. Therefore,
 
+$$
+\mu_W(t) = \mathbb{E}[W_t] = 0
+$$
+$$
+\gamma_W(t,t) = Var(X_t) = \sigma_W^2
+$$
+$$
+\gamma_W(t,s) = Cov(X_t,X_s) = 0, \text{ for t } \ne s.
+$$
 
+The path of a white noise process and its ACF function can be represented by the following figure
 
+![](image.png)
 
+Here we observe that the full strength of the ACF signal is concentrated when there is no correlation ($Lag=0$).
 
+The main purpose of the white noise is to model the "best" case residuals that contain no information after we perform all possible procedures in our data. 
 
+The distribution of the estimator of a white noise source is
 
+$$
+\hat{\gamma}_W(h) \sim \mathcal{N}\left(0,\frac{\sigma_W^2}{n}\right)
+$$
 
+which means that we do not expect to see the theoretical ACF function exactly as our estimate but only approximately up to estimation error.
 
+## Autoregressive model
 
+A time series \{X_t\}_t is an **autoregressive process** of order $p$, denoted AR(p) if
 
+$$
+X_t = \phi_1X_{t-1} + \phi_2X_{t-2} + ... + \phi_pX_{t-p} + W_t,
+$$
 
+where $\{W_t\}_t$ is a white noise process, and $W_t$ is uncorrelated with $X_s$ for $s < t$.
 
+**Note:** the definition of the model is recursive, meaning we can relate $X_t$ to any previous term of the series $X_{t-h} by substituting the above expression for X_{t-1} on the right side of the equation and so on. Because of this recursive nature, **all** terms of the series are **dependent**. This fact is reflected on the ACF. The ACF of a **stationary autoregressive process** is **non-zero** for all time shifters $h$ and decays to zero exponentially as $h$ increases, as shown in the plot below.
 
+![](pics/models_autoregression.png)
 
+## Random walk model
+
+A time series $\{X_t\}_{t\ge 1}$ is a random walk if the value of $X_t$ is obtained from the value of $X_{t-1}$ by adding a random perturbation $W_t$ (white noise) that is independent of the past history of the series $\{X_s\}_{s<t}$. Thus,
+
+$$
+X_t = X_{t-1} + W_t
+$$
+
+A time series $\{Y_t\}_{t\ge 1}$ is a random walk **with drift** if it is equal to the sum of a random walk process with a deterministic linear trend. Therefore,
+
+$$
+Y_t = \delta t + X_t = \delta + Y_{t-1} + W_t,
+$$
+
+where $Y_{t-1} = \delta(t-1) + X_{t-1}$.
+
+Due to the inherent random nature of white noise, all random walks are different as shown in the figure below.
+
+![](pics/models_random_walk1.png)
+![](pics/models_random_walk2.png)
+
+### Statistic of random walk
+
+To compute the basic statistics of the random walk it is useful to write $X_t$ as a sum of perturbations that accumulate over time.
+
+$$
+X_t = X_{t-1} + W_t
+\\
+= \left[X_{t-2} + W_{t-1} \right] + W_t
+\\
+\vdots
+\\
+= X_0 + \sum_{h=1}^t W_h
+$$
+
+Similarly, for the random walk with drift we have
+
+$$
+Y_t = \delta + Y_{t-1} + W_t
+\\
+= \delta + \left[\delta + Y_{t-2} + W_{t-1} \right] + W_t
+\\
+\vdots
+\\
+\delta t + Y_0 + \sum_{h=1}^t W_h.
+$$
+
+Using these representations we can find the marginal mean function, the covariance function and the autocorrelation function.
+
+$$
+\mu_X(t) = \mathbb{E}[X_t] = \mathbb{E}\left[X_0 + \sum_{h=1}^t W_h\right]
+$$
+$$
+\mu_X(t) = \mathbb{E}[X_0].
+$$
+$$
+\sigma_X^2(t) = Var(X_t) = Var\left(X_0 + \sum_{h=1}^t W_h\right) 
+$$
+$$
+= Var(X_0) + \sum_{h=1}^t \left[2Cov(X_0,W_h) + Var(W_h)\right] + 2 \sum_{1 \le h < j \le t} Cov(W_h,W_j) 
+$$
+$$
+\sigma_X^2(t) = Var(X_0) + t\sigma_W^2,
+$$
+
+since $W_h$ is uncorrelated with $X_0$ and with $W_j$ for $j \ne h$.
+
+$$
+\gamma_X(s,t) = Cov(X_s,X_t) = Cov\left(X_0 + \sum_{h=1}^s W_h, X_0+\sum_{h=1}^t W_h\right) 
+$$
+$$
+= Var(X_0) + \sum_{h=1}^{min(s,t)} Var(W_h)
+$$
+$$
+\gamma_X(s,t) = Var(X_0) + min(s,t)\sigma_W^2.
+$$
+
+**Note: The random walk is not stationary because the variance is growing with time and the autocovariance depends on the smallest of the two time stamps rather than on the difference.**
+
+## Moving average model
+
+A time series \{X_t\}_t is a **moving average process** of order $q$, denoted by MA(q) if it can be represented as a weighted moving average
+
+$$
+X_t = W_t + \theta_1 W_{t-1} + \theta_2 W_{t-2} + ... + \theta_q W_{t-q}
+$$
+
+$$
+X_t = \sum_{h=0}^q \theta_h W_{t-h}
+$$
+
+of a white noise series $\{W_t\}_t$.
+
+The following figure shows three plots (top part) and corresponding ACFs(bottom part). The plot on the left is a representation of white noise, the middle plot depicts a moving average model of order 1 and on the left we can observe a representation of a moving average model of order 7. 
+
+![](pics/models_MA.png)
+
+From the definition of a moving average time series we can write that the autocovariance function is
+
+$$
+\gamma_X(h) = Cov\left(\sum_{j=0}^q \theta_j W_{t-j}, \sum_{k=0}^q \theta_k W_{t+h-k} \right)
+$$
+$$
+\gamma_X(h) = \sum_{j=0}^{q-h} \theta_j\theta_{j+h}\sigma_W^2, \text{ for } 0 \le h \le k
+$$
+
+because $W_j$ is uncorrelated with $W_k$ for $j \ne k$.
+
+## ARMA Model
+
+A time series $\{X_t\}_{t \ge l}$ is a **moving average autoregressive process** of orders $p,q$, denoted by ARMA(p,q), if it is a sum of an AR(p) component with a MA(q) component. Thus
+
+$$
+X_t = \phi_1X_{t-1} + \phi_2X_{t-2} + ... + \phi_pX_{t-p} + W_t + \theta_1 W_{t-1} + \theta_2 W_{t-2} + ... + \theta_q W_{t-q}
+$$
+
+A time series $\{X_t\}_{t \ge l}$ is an ARIMA(p,d,q) model if the difference of order d, \{\nabla^d X_t\}_{t\ge l} is an ARMA(p,q) model.
+
+And so on...
+
+## Fitting regressions to time series
 
 
 

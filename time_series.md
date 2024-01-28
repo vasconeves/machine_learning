@@ -16,7 +16,7 @@ $$
 X_1,X_2,...,X_t,...,X_n : \Omega \rightarrow \mathbb{R}
 $$
 
-and are defined on some common rpobability space ($\Omega,P$). 
+and are defined on some common probability space ($\Omega,P$). 
 
 Then, what is observed is a particular outcome of a specialized probability model:
 
@@ -340,6 +340,13 @@ $$
 \gamma_W(t,s) = Cov(X_t,X_s) = 0, \text{ for t } \ne s.
 $$
 
+Also,
+
+- It is oftern i.i.d. e.g. Gaussian
+- Stationary
+- Checking for white noise: $\hat{\rho}(h) is approximately \mathbb{N}(0,\frac{1}{n}) under mild conditions.
+
+
 The path of a white noise process and its ACF function can be represented by the following figure
 
 ![](image.png)
@@ -370,6 +377,17 @@ where $\{W_t\}_t$ is a white noise process, and $W_t$ is uncorrelated with $X_s$
 
 ![](pics/models_autoregression.png)
 
+Let's see another example. The following autoregressive model 
+
+$$
+X_t = 1.5X_{t-1} - 0.75X_{t-2} + W_t
+$$
+
+generates the following ACF. Again, we observe the exponentially decay as $h$ increases.
+
+![](pics/models_autoregression2.png)
+
+
 ## Random walk model
 
 A time series $\{X_t\}_{t\ge 1}$ is a random walk if the value of $X_t$ is obtained from the value of $X_{t-1}$ by adding a random perturbation $W_t$ (white noise) that is independent of the past history of the series $\{X_s\}_{s<t}$. Thus,
@@ -385,6 +403,10 @@ Y_t = \delta t + X_t = \delta + Y_{t-1} + W_t,
 $$
 
 where $Y_{t-1} = \delta(t-1) + X_{t-1}$.
+
+In the following plot we can observe the differences between the random walk model with and without drift.
+
+![](pics/models_random_walk.png)
 
 Due to the inherent random nature of white noise, all random walks are different as shown in the figure below.
 
@@ -449,6 +471,8 @@ $$
 
 **Note: The random walk is not stationary because the variance is growing with time and the autocovariance depends on the smallest of the two time stamps rather than on the difference.**
 
+**Note2: However $\nabla X_t$ *is* stationary.**
+
 ## Moving average model
 
 A time series \{X_t\}_t is a **moving average process** of order $q$, denoted by MA(q) if it can be represented as a weighted moving average
@@ -478,6 +502,15 @@ $$
 
 because $W_j$ is uncorrelated with $W_k$ for $j \ne k$.
 
+**Notes:**
+
+- $\mathbb{E}[X_t] = 0$.
+- Autocovariance $\gamma$ depends only on $|s-t| \implies$ stationarity.
+- ACF reflects order: $\gamma(s,t) = 0 if |s-t| > q.
+- ACF distinguishes MA and AR models as shown in the figure below.
+
+![](pics/acf_comparison.png)
+
 ## ARMA Model
 
 A time series $\{X_t\}_{t \ge l}$ is a **moving average autoregressive process** of orders $p,q$, denoted by ARMA(p,q), if it is a sum of an AR(p) component with a MA(q) component. Thus
@@ -490,10 +523,672 @@ A time series $\{X_t\}_{t \ge l}$ is an ARIMA(p,d,q) model if the difference of 
 
 And so on...
 
-## Fitting regressions to time series
+## Regression and time series
+
+We can always try and fit a regression in our time series. Such a model can be written as
+
+$$
+X_t = \beta_1 z_{t1} + \beta_2 z_{t2} + ... + W_t = \mathbf{\beta^Tz_t} + W_t
+$$
+
+Examples:
+
+- linear trend $\implies X_t = \beta_1 + \beta_2 t + W_t$ 
+- AR(2) model $\implies X_t = \phi_1 X_{t-1} + \phi_2 X_{t-2} + W_t$
+- include external regressors $\implies X_t = \beta_1 X_{t-1} + \beta_2 Y_t + W_t$
+
+To fit any model we can do least squares regression: $min_\beta\sum_t (mathbf{x_t-\beta^T z_t})^2
+
+**Note: the errors may be correlated over time!!!**
+
+**Note2: this is also valid for any non-linear models**
+
+### ACF as a diagnostic tool
+
+*Which external variables should we use? What should be the order of the model?*
+
+We can use ACF (and partial ACF) to determine the fit. The end result should look like white noise.
+
+Example. $X_t = T_t + Y_t$
+
+- $T_t$ = 50+3t (linear trend)
+- $Y_t$ = 0.8Y_{t-1} + W_t$ (AR(1) model)
+
+The plot below shows the result after fitting the linear trend only. The ACF shows the typical signal of an AR model!
+
+![](pics/acf_diag1.png)
+
+### Fitting autoregressive models
+
+For a given autoregressive order $p$, the AR(p) model has $p+1$ parameters that need to be estimated from data: $\phi_1,\phi2,...,\phi_p,\sigma_W^2$.
+
+We can estimate these parameters using the method of moments approach. The first step in estimation is to compute the autocovariance
+
+$$
+\hat{\gamma}_X(0),\hat{\gamma}_X(1),...,\hat{\gamma}_X(p).
+$$
+
+The second step is to find the $p+1$ equations that relate these moments to the unknown parameters above
+
+$$
+\hat{\gamma}_X(0),\hat{\gamma}_X(1),...,\hat{\gamma}_X(p) = \Gamma\left(\phi_1,\phi2,...,\phi_p,\sigma_W^2\right)
+$$
+
+we will then have $p+1$ equations with $p+1$ unknowns, which in general will have a unique solution
+
+$$
+(\phi_1,\phi2,...,\phi_p,\sigma_W^2) = \Gamma^{-1}\left(\hat{\gamma}_X(0),\hat{\gamma}_X(1),...,\hat{\gamma}_X(p)\right)
+$$
+
+The equations $\Gamma$ are known as the **Yule-Walker** equations. They can be expressed in the following way:
+
+$$
+\gamma_X(0) = \phi_1\gamma_X(1) + \phi_2\gamma_X(2) + ... + \phi_p\gamma_X(p) + \sigma_W^2
+$$
+
+$$
+\gamma_X(1) = \phi_1\gamma_X(0) + \phi_2\gamma_X(1) + ... + \phi_p\gamma_X(p-1)
+$$
+
+$$
+\vdots
+$$
+
+$$
+\gamma_X(p) = \phi_1\gamma_X(p-1) + \phi_2\gamma_X(p-2) + ... + \phi_p\gamma_X(0)
+$$
+
+In matrix form we have
+
+$$ 
+\mathbf{\phi = \Gamma_p^-1\gamma_p}.
+$$
+
+### AR(p) model order determination
+
+The following figure shows the ACF of the white noise model (left), the MA model (center) and the AR model (right).
+
+![](pics/acf_comparison2.png)
+
+We know that in the case of the MA(q) models, the ACF reveals the order $q$. Basically it is only necessary to count the number of time steps where the ACF is above the noise level.
+
+For AR(p) models however this is not so clear, as the function decays exponentially fast. We need another form of diagnostic.
+
+#### Partial autocorrelation
+
+The best method to determine the order is to use the partial autocorrelation function.
+
+Let X_0,...,X_n be a stationary time series. The autocorrelation function at lag $h$ is defined as
+
+$$
+\rho_x(h) = Corr(X_h,X_0) = \mathbb{E}[(X_h-\mathbb{E}[X_0])(X_0-\mathbb{E}[X_0])]/Var(X_0).
+$$
+
+The partial autocorrelation between $X_h$ and $X_0$ is the correlation between $X_h$ and $X_0$ with the correlation due to the intermediate terms of the series $X_1,...,X_{h-1}$ removed. 
+
+Formally we can write that the partial autocorrelation of time series $X_t$ at lag $h$ is
+
+$$
+\alpha_X(h) = Corr(X_h-\hat{X}_h^{lin_{h-1}},X_0-\hat{X}_0^{lin_{h-1}}),
+$$
+
+where $\hat{X}_h^{lin_{h-1}}$ is the linear regression (projection) of $X_h$ on $X_1,...,X_{h-1}$ and $\hat{X}_0^{lin_{h-1}}$ is the linear regression of $X_0$ on $X_1,...,X_{h-1}$. 
+
+The following shows a comparison between the ACF (left) and the PACF for AR(2). We can observe that in the PACF the two orders are clearly displayed. 
+
+![](pics/pacf1.png)
+
+Let's take a look at a previous example, where we have a time series composed of two series: 
+
+$$
+X_t = T_t + Y_t
+$$
+
+where
+
+$$
+T_t = 50+3t \implies \text{ time series with a linear trend}
+$$
+
+and
+
+$$
+Y_t = 0.8Y_{t-1} + W_t \implies \text{ AR(1) series}
+$$
+
+The following figure shows the time series (top plot) as well as the ACF (bottom left plot) and the PACF (bottom right plot) of the residuals after fitting a linear model only. From the ACF we can conclude that we have a AR time series (exponential decay, oscillation) and in the PACF plot we only observe one peak above noise. Therefore, we should fit a AR(1) model.
+
+#### Akaike information criterion (AIC)
+
+There are also other ways to determine which model is more apropriate among a few model candidates. Here we will explore two other more generic approaches. The first one is the Akaike Information Criterion or AIC. It is calculated as
+
+$$
+AIC = 2k-2ln(L),
+$$
+
+where $k$ is the number of parameters in the model, $n$ is the number of the observations in the dataset, and $L$ is the likelihood value of a given dataset.
+
+Models with smaller AIC values are preferred to the models with larger AIC values, as the smaller values are associated with a smaller number of model parameters (i.e. less complexity) and a better fit to the data (larger likelihood value). It is the interplay between these values that will determine the best model.
+
+Another commonly used information criterion is the Bayesian information criterion (BIC) and can be calculated as
+
+$$
+BIC = kln(n)-2ln(L).
+$$
+
+The equation parameters are the same as in AIC, but a lower weight is given to the number of parameters.
+
+#### Cross validation
+
+Cross validation can be used in special cases for AR models (Bergmeier, Hyndman & Koo 2015). 
+
+*Which technique to use? An information criterion (IC) or CV?*
+
+- IC is more prefereable if the speed is priority
+- IC is more preferable if the sample size is small
+- CV is more preferable if model selection results are different with different ICs
+
+**Note: minimizing AIC is asymptotically equivalent to leave-one-out CV (Stone 1977). See also Shao (1997).**
+
+## Forecasting with AR(p) models
+
+*Can we predict $X_{n+m}$ based on observed $x_n,x{n-1},...,x1$?*
+
+**Yes!...but only for short horizons $m$!** For long horizons, the forecast converges to the mean of the time series.
+
+1. We estimate the coefficients $\hat{\phi}_1,...,\hat{\phi}_p$
+2. Estimate the steps ahead of the time series
+   - 1 step ahead $\implies \hat{x}_{n+1|n} = \hat{\phi}_1x_n + \hat{\phi}_2 x_{n-1} + ... + \hat{\phi}_p x_{n-p+1}$
+   - 2 steps ahead $\implies \hat{x}_{n+2|n} = \hat{\phi}_1x_{n+1} + \hat{\phi}_2 x_{n} + ... + \hat{\phi}_p x_{n-p+2}$
+   - general $\implies \hat{x}_{n+m|n} = \hat{\phi}_1x_{n+m-1} + \hat{\phi}_2 x_{n+m-2} + ... + \hat{\phi}_p x_{n+m-p}$
+
+where we use $x_t$ instead of $\hat{x}_t$ where available.
+
+The following plot shows an example of a forecast and the time frame of the convergence towards the mean.
+
+![](pics/ar_forecast.png)
+
+## Fitting a time series: overview
+
+1. Transform to make it stationary
+   - log-transform
+   - remove trends/seasonality
+   - differentiate successively
+2. Check for white noise (ACF)
+3. If stationary: plot autocorrelation
+   - If finite lag, fit MA (ACF gives order)
+   - Otherwise fit AR
+
+**Fitting AR(p)**
+
+1. compute PACF to 
+2. get order
+3. estimate coefficients $\phi_k$ and noise variance $\sigma_W^2$ via Yule-Walker equations
+4. Compute residuals, test for white noise
+
+**Fitting MA(q)**
+
+1. compute ACF to get order
+2. estimate coefficients via maximum likelihood
+3. compute residuals, test for white noise.
+
+**Fitting ARMA(p,q)**
+
+1. attempt to fit an AR model, compute residuals
+2. attempt to fit an MA model to residuals (or original data)
+3. fit ARMA(p,q) using p,q, determined in steps 1 and 2
+4. compute residuals, test for white noise
+
+**Review table**
+
+![](pics/time_series_table.png)
+
+## Linear process
+
+The MA and the AR models can be related to each other with the concept **linear process**. Linear process models can be written as
+
+$$
+X_t = \sum_{j=-\infty}^\infty \psi_j W_{t-j}.
+$$
+
+For the process to be well defined, $\sum_j ||\psi_j|| < \infty$.
+
+A linear process is called **causal** if $\psi_j=0$ whenever $j<0$. This is to say that the value of $X_t$ depends only on the past!
+
+A linear process is weakly stationary, where
+
+$$
+\mathbb{E}[X_t] = 0
+$$
+
+and
+
+$$
+\gamma_X(t,t+h) = \sum_{i=-\infty}^\infty \psi_i\psi_{i+h}\sigma_w^2,
+$$
+
+which only depends on the length of the gap $h$.
+
+This means that:
+
+- MA(q) is a linear process and causal.
+- AR(p) is stationary and causal if linear process converges (it converges if $|\phi_1|<1$)
+
+## Local linear regression
+
+- No time series and time series (TBD)
+
+# Time series example: climate change signal
+
+## Introduction
+
+In this example we will explore climate data from Middlesex County, Massachusets, USA.
+
+Temperature records are from Wolfram Schlenker, and are available [here](https://www.dropbox.com/sh/fe844ythm9xhz25/AABMmYzeY44zP_CwuNa1BOgoa?dl=0). This weather dataset was developed to study how crop yields respond to climate change, and includes a grid of values across the United States based on a network of weather stations. You can read more about that work [here](https://www.pnas.org/doi/10.1073/pnas.0906865106).
+
+*? Is the trend in average temperature statistically significant, after controlling for components that can be explained by seasonal components or ENSO index?* 
+
+## Input data
+
+First, we upload the data from the internet.
+
+```python
+import pandas as pd
+import numpy as np
+
+climate_df = pd.read_csv('https://raw.githubusercontent.com/maxoboe/6419_recitations/main/data/annual_weather.csv')
+climate_df.head()
+	Unnamed: 0	fips	year	prec	tAvg	tMax	tMin
+0	0	1001	1950.0	0.316240	18.562836	24.982644	12.143027
+1	1	1003	1950.0	0.396390	19.632386	25.255855	14.008918
+2	2	1005	1950.0	0.314359	18.764575	25.225654	12.303496
+3	3	1007	1950.0	0.339745	17.712741	24.537339	10.888144
+4	4	1009	1950.0	0.346355	16.051495	22.331040	9.771949
+```
+
+We can observe that the data has information about time, precipitation (`prec`), average, maximum and minimum temperatures (`tAvg`,`tMax`, and `tMin` respectively). The time spans from 1950 to 2019 with almost 150k sequential measurements for the counties of Massachusets.
+
+The county code is located in column `fips`. The county code for Middlesex County is `23017`, which has 70 datapoints.
+
+Let's now plot the average temperature as a function of time using the following code. We will be using the python packages `matplotlib` and `seaborn` for data visualization.
+
+```python
+import matplotlib.pyplot as plt
+import seaborn as sns; sns.set_theme()
+plt.figure(figsize=(9, 6), dpi=80)
+subset = climate_df[climate_df.fips == 23017] # Only looking at Middlesex County
+year = subset.year.values.reshape(-1,1)
+temp = subset.tAvg.values.reshape(-1,1)
+sns.lineplot(x=subset.year,y=subset.tAvg)
+plt.title("Average Temperature in Middlesex County, MA")
+plt.ylabel('Temp (C)')
+plt.show()
+subset.head()
+```
+
+![](pics/cc1.png)
+
+We can readily observe a linear trend in the data. *Is this trend statistically significate? What is its origin?*
+
+Before answering this pressing question we need to take the long walk around it. 
+
+## Simulated data
+
+Let's start by generating some simulating data so we can put into practice time series methods and approaches.
+
+This simulated time series has a quadratic trend, a periodic component, and an exogenous regressor. We will fit each component in sequence. We can write the fitting function as
+
+$$
+y_{t} = \beta z_t + T_t + S_t + \varepsilon_t
+$$
+
+where $z_t$ is an external regressor, $T_t$ is a quadratic trend component, and $S_t$ is a periodic component with period 5, and $\epsilon_t$ is random noise, normal and independent for different times $t$.
+
+We generate the data with the following code
+
+```python
+# This code was used to generate the original dataset; 
+np.random.seed(1234) #this is to obtain the same result in different runs. it is arbitrary
+x_vals = np.arange(0, 200) #number of simulated datapoints
+z = 5 * np.random.beta(1,1,size=len(x_vals)) #simulated external regressor (drawn from a beta distribution)
+quad_trend = x_vals ** 2 * 0.004 + 0.2 * x_vals #simulated quadratic trend
+seasonality = 2 * (x_vals % 5 == 0) + 3 * (x_vals % 5 == 1) + 1 * (x_vals % 5 == 2) - 1 * (x_vals % 5 == 4) #simulated seasonality with period 5
+random_noise = np.random.normal(size=len(x_vals)) #white normal noise
+y_vals = quad_trend + seasonality + z + random_noise #our final time series
+x = x_vals.reshape(-1,1)
+z = z.reshape(-1,1)
+y = y_vals.reshape(-1,1)
+sns.set()
+plt.plot(x, y)
+```
+
+The following plot shows our generated data. Pretty isn't it? ;)
+
+![](pics/cc2.png)
+
+Now we'll show to different ways of removing the trends. The first one consists in removing the line with a linear regression package such as `sklearn.linear_model`.
+
+### Removing the trends with linear regression
+
+Let's consider the case of the model with only a linear time trend,
+
+$$
+y_t = T_t + W_t.
+$$
+
+We can find the parameters of a linear regression following the code below. The printed values are the $\beta$ regressors.
+
+```python
+from sklearn import linear_model
+clf = linear_model.LinearRegression()
+clf.fit(x, y)
+print(clf.coef_,clf.intercept_) # Print the beta values found via regression 
+y_hat = clf.predict(x) #generated predictors
+plt.plot(x, y, label='original data')
+plt.plot(x, y_hat, 'r', label='fitted line')
+plt.legend()
+```
+
+From the generated plot we can observe the fitted line superimposed on the original data. Clearly, there is more in it than a simple linear fit. Let's take a look at the residuals.
+
+```python
+linear_residuals = y - y_hat
+plt.plot(x, linear_residuals,'o')
+```
+
+It is now clear we have a quadratic residual. Let's remove the quadratic trend via linear regression. In other words, we need to linearize the quadratic expression
+
+$$
+y_t = t\beta_1 + t^2\beta_2.
+$$
+
+We thus need to generate a set of $x^2$ values from our previously generated $x$ values as shown in the code below. The printed values show the regression coefficients.
+
+```python
+# Difference in this text block: we're including this squared term 
+x_stacked = np.hstack((x, x**2)) #stack x and x² to input into LinearRegression
+clf = linear_model.LinearRegression()
+clf.fit(x_stacked, y)
+quadratic_y_hat = clf.predict(x_stacked)
+print(clf.coef_,clf.intercept_) # Print the beta values found via regression 
+plt.plot(x, y, label='original data')
+plt.plot(x, quadratic_y_hat, 'r', label='best fit quadratic')
+plt.legend()
+plt.show()
+nonlinear_residuals = y - quadratic_y_hat
+plt.plot(x, nonlinear_residuals,'o');
+[[0.20453378 0.00399063]] [3.1017371]
+```
+
+The generated plot now shows a much better fit as expected.
+
+![](pics/cc3.png)
+
+The code also generated a residual plot as shown below. There is no clear trend in the data.
+
+![](pics/cc4.png)
+
+The command `regplot` from the `seaborn` package can show us the mean (blue line) and the 95% confidence interval from bootstrap (light blue area around the line) of the data.
+
+```python
+import seaborn as sns 
+sns.regplot(x=x, y=nonlinear_residuals)
+```
+
+![](pics/cc5.png)
+
+Again, the fit shows that the residuals have zero mean and no apparent trend left.
+
+### Removing the trends with first differences
+
+Let's now approach the same problem using the first differences method. If we take the first difference we obtain
+
+$$
+y_t-y_{t-1} = T_t-T_{t-1}+W_t-W_{t-1}.
+$$
+
+If $T_t$ is linear,
+
+$$
+T_t-T_{t-1} = t\beta-(t-1)\beta = \beta
+$$
+
+Simple enough? Let's try it out.
+
+```python
+first_diff = y[1:] - y[:-1]
+plt.plot(x[:-1],first_diff, 'o')
+sns.regplot(x=x[:-1], y=first_diff)
+```
+
+![](pics/cc6.png)
+
+The first plot shows that the remaining structure in the data is not clear. 
+
+![](pics/cc7.png)
+
+The second plot shows that there is a small linear trend still in the data. 
+
+Let's try another differencing layer to remove the quadratic trend. If we consider a quadratic model as before we have
+
+$$
+y_t = t\beta_1 + t^2\beta_2.
+$$
+
+If we take the difference we obtain
+
+$$
+y_t-y_{t-1} = T_t-T_{t-1} + W_t - W_{t-1} = t\beta_1 + t^2\beta_2 - ((t-1)\beta_1 + (t-1)^2\beta_2).
+$$
+
+When we expand this becomes
+
+$$
+t^2 \beta_2 + t \beta_1 - (t^2 - 2t + 1) \beta_2 - (t - 1)\beta_1.
+$$
+
+The squared terms and the noise cancel out, but we're left with a linear term: $2t \beta_2 - \beta_2 + \beta_1$. As we've seen before, the first difference removes the linear component, so we just take another difference. Therefore,
+
+$$
+\Delta y_t^2 = 2t \beta_2 - \beta_2 + \beta_1 - (2(t-1) \beta_2 - \beta_2 + \beta_1) = \beta_2
+$$
+
+**Note: it is possible to successively to this to remove any polynomial component.**
+
+Code:
+
+```python
+# Alternate approach: taking a second difference
+first_diff = y[1:] - y[:-1]
+second_diff = first_diff[1:] - first_diff[:-1]
+sns.regplot(x[:-2],second_diff, 'o')
+```
+
+![](pics/cc8.png)
+
+We now have mean zero residuals.
+
+Ok! Let's now look in more detail to what is left in the residuals.
+
+### ACF/PACF plots and seasonality
+
+The ACF and PACF plots are very useful to make diagnostics in time series, including for identifying the existence of seasonal components in data.
+
+**Note: the `tsa` package from `statsmodels` is the reference to look for in python.**
+
+Let's plot the ACF and the PACF of the de-trended residuals.
+
+```python
+import statsmodels.api as sm
+sm.graphics.tsa.plot_acf(nonlinear_residuals, lags=30)
+plt.show()
+sm.graphics.tsa.plot_pacf(nonlinear_residuals, lags=30)
+plt.show()
+```
+
+![](pics/cc9.png)
+
+The ACF plot shows a significant (i.e. above error) periodic signal with period 5 (i.e. goes from 0 to 5 to 10, etc).
+
+![](pics/cc10.png)
+
+The PACF also shows a similar signal at $h=0$ and $h=5$ as well at $h=10,15,25,30$ at the signal to noise limit.
+
+#### Sinusoidal approximation
+
+At this point we can try to remove the periodic signal with a sinusoidal approximation. For the de-trended signal we will try to fit
+
+$$
+S_t = a + b\sin\left(\phi+\frac{2pit}{T} \right),
+$$
+
+where $a$ is the mean of the sine function, $b$ is the amplitude, $\phi$ is the phase shift, and $T$ is the period. Here we will fix $T = 5$ because it can be measured from the ACF plot. Therefore, we are estimating three parameters: $a,b, and \phi$. 
+
+In the following code we will define the `sine_function` where its parameters will be found using the `curve_fit` function from the `scipy.optimize` package.
+
+```python
+from scipy import optimize
+period = 5 #period is fixed
+def sine_function(X, amp, phase_shift, mean):
+  return (amp * np.sin(1/period * 2 * np.pi * (X - phase_shift)) + mean)
+params, _ = sine_curve_fit = optimize.curve_fit(
+  f = sine_function,
+  xdata = x.flatten(),
+  ydata = nonlinear_residuals.flatten(),
+  p0 = np.array([3, 1, 10])) #p0 are the initial values for the parameters
+print(params)
+amp, phase_shift, mean = params
+sin_approx = sine_function(x, amp, phase_shift, mean)
+plt.plot(x, nonlinear_residuals, label='detrended data')
+plt.plot(x, sin_approx, 'r', label='fitted line')
+plt.legend()
+plt.plot()
+plt.show()
+sin_residuals = nonlinear_residuals - sin_approx
+plt.plot(x, sin_residuals,'o');
+[ 1.92428331e+00 -2.93991107e-01 -2.17336386e-09]
+```
+
+The optimized output printed parameters are the amplitude, the phase shift, and the mean of the function respectively.
+
+The first generated plot shows the detrended data in blue and the fitted line in red. 
+
+![](pics/cc11.png)
+
+We can observe a reasonable agreement regarding the phase shift and the mean but not the amplitude. Therefore, there are still more stuff hidden in the data! 
+
+Let's take a look at the second generated plot, the residuals.
+
+![](pics/cc12.png)
+
+The residuals are centered, have mean zero and don't show any apparent pattern in the data.
+
+Let's take another look at the ACF plots and check what's left.
 
 
+```python
+sm.graphics.tsa.plot_acf(sin_residuals, lags=30)
+plt.show()
+```
 
+![](pics/cc13.png)
 
+Indeed, the plot does not show any periodic signal at the noise level. **At this level we already have a stationary signal or a good aproximation to white noise**.
 
+#### Time-series fixed effects
+
+Another approach to remove a periodic signal involves time-series fixed effects. 
+
+Here we remove the mean from each time element up to the time series. If the period is 5, we can fit an element for $\{0,1,2,3,4\}$ and then we find $S_t$ by looping through those fixed elements.
+
+We can estimate these values by taking the mean at each point or by fitting a regression with a "fixed effect" at each integer modulus. The following code shows the latter approach.
+
+```python
+period = 5
+x_with_fixed_effects = x
+for i in range(period):
+  x_with_fixed_effects = np.hstack((x_with_fixed_effects, (x % period)==i))
+clf.fit(x_with_fixed_effects, nonlinear_residuals)
+print(clf.coef_)
+fixed_effects_predicted = clf.predict(x_with_fixed_effects)
+plt.plot(x, nonlinear_residuals, label='detrended data')
+plt.plot(x, fixed_effects_predicted, 'r', label='fitted line')
+plt.legend();
+plt.plot()
+plt.show()
+fixed_effects_residuals = nonlinear_residuals - fixed_effects_predicted
+plt.plot(x, fixed_effects_residuals, 'o')
+```
+
+The first plot generated by the code shows the data and the fitted line. As can be observed, the result is similar to the one that fitted a sinusoidal line.
+
+![](pics/cc14.png)
+
+The second plot shows the residuals.
+
+![](pics/cc15.png)
+
+We can compare the performance of both methods by computing the mean of the squared residuals.
+
+```python
+print(np.mean((sin_residuals)**2))
+print(np.mean((fixed_effects_residuals)**2))
+3.7962668641256028
+3.297378223877299
+```
+
+We can see that, in fact, the second method obtains lower uncertainties. This is also observed in the ACF plot, where the errors are slightly smaller.
+
+```python
+sm.graphics.tsa.plot_acf(fixed_effects_residuals, lags=30)
+plt.show()
+```
+
+![](pics/cc16.png)
+
+### Fitting external regressors
+
+Now that we have estimates for $T_t$ and $S_t$ we can try and find external regressors. 
+
+*How do you know there are external regressors?* It depends. In many cases, there are sources of expert guidance (scientific or theoretical advice) about what might be relevant to the problem at hand.
+
+In this case we know that a strange variable "z" is interfering with our measurements and may be correlated with our residuals. 
+
+Therefore, the first thing to try is to plot the residuals against z and observe if there is a clear correlation. If there is, we can quantify it by calculating, for instance, the well-known Pearson correlation coefficient. 
+
+```python
+from scipy import stats
+plt.scatter(fixed_effects_residuals, z)
+
+stats.spearmanr(fixed_effects_residuals,z)
+SignificanceResult(statistic=0.8115307882697069, pvalue=4.344729600805482e-48)
+```
+
+From the generated plot it is possible to observe a clear positive correlation, with a r = 0.81 and vanishingly small p-value. 
+
+![](pics/cc17.png)
+
+We can now include this external variable by regressing the correlation and subtracting its own residuals from the previous ones, as shown in the code below.
+
+```python
+clf.fit(z, fixed_effects_residuals)
+with_external_regressor = clf.predict(z)
+print(clf.coef_) # Print the beta values found via regression 
+plt.plot(x, fixed_effects_residuals, label='residuals after seasonal')
+plt.plot(x, with_external_regressor, 'r', label='fitted line')
+plt.legend()
+plt.show()
+external_residuals = fixed_effects_residuals - with_external_regressor
+plt.plot(x, external_residuals,'o');
+```
+
+This code generates two plots. The first one depicts the residuals after seasonal fit in blue and the fitted line in red. We can observe that including the external variable captures a significant part of the residuals. 
+
+![](pics/cc18.png)
+
+The second plot shows the latest residuals and we can already observe that the uncertainties are smaller than before. If we quantify them by calculating the mean of the square residuals we obtain $\sim 1.14$, a value much smaller than before.
+
+![](pics/cc19.png)
+
+### Information criteria
 

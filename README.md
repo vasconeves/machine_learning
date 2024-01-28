@@ -79,6 +79,13 @@ TOC. THIS IS WORK IN PROGRESS! The first version will be finished by the end of 
     - A real world example: RA Fisher's Wine Dataset
       - Logistic regression in the context of the Wine Dataset
       - Feature selection using logistic regression
+  - [Time series](time_series.md)
+    - Trends, seasonality, stationarity, autocovariance
+    - time series statistical models
+    - time series analysis
+    - example: climate change signal
+    - example: stock price forecasting
+    - project
 
 **TBD**
 
@@ -86,13 +93,6 @@ TOC. THIS IS WORK IN PROGRESS! The first version will be finished by the end of 
   - graph centrality measures
   - spectral clustering
   - graphical models
-  - project
-- Time series
-  - Trends, seasonality, stationarity, autocovariance
-  - time series statistical models
-  - time series analysis
-  - example: climate change signal
-  - example: stock price forecasting
   - project
 - Gaussian processes
   - Example: environmental data

@@ -788,6 +788,8 @@ Temperature records are from Wolfram Schlenker, and are available [here](https:/
 
 *? Is the trend in average temperature statistically significant, after controlling for components that can be explained by seasonal components or ENSO index?* 
 
+**Note: ENSO is the acronym of El Niño southern oscillation.**
+
 ## Input data
 
 First, we upload the data from the internet.
@@ -1191,4 +1193,537 @@ The second plot shows the latest residuals and we can already observe that the u
 ![](pics/cc19.png)
 
 ### Information criteria
+
+Information criteria allows us to get a better metric than mean squared error, because they calculate the balance between complexity of the model and precision.
+
+The following code shows two functions, `evaluate_AIC` and `evaluate_BIC` where the Akaike information criteria and the Bayesian information criteria are defined. The log likelihood is calculated using the function `norm.logpdf` from the package `scipy.stats`.
+
+```python
+# Example here about how to find; what my assumption is behind this 
+from scipy.stats import norm 
+def evaluate_AIC(k, residuals):
+  """
+  Finds the AIC given the number of parameters estimated and 
+  the residuals of the model. Assumes residuals are distributed 
+  Gaussian with unknown variance. 
+  """
+  standard_deviation = np.std(residuals)
+  log_likelihood = norm.logpdf(residuals, 0, scale=standard_deviation)
+  return 2 * k - 2 * np.sum(log_likelihood)
+def evaluate_BIC(k, residuals):
+  """
+  Finds the AIC given the number of parameters estimated and 
+  the residuals of the model. Assumes residuals are distributed 
+  Gaussian with unknown variance. 
+  """
+  standard_deviation = np.std(residuals)
+  log_likelihood = norm.logpdf(residuals, 0, scale=standard_deviation)
+  return k * np.log(len(residuals)) - 2 * np.sum(log_likelihood)
+```
+
+Now, we will use both functions to evaluate all residual we've calculated so far.
+
+```python
+# plt.plot(x, detrended, label='detrended data')
+for residual, label, DOF_used in zip([linear_residuals, nonlinear_residuals, sin_residuals, fixed_effects_residuals, external_residuals], 
+                         ['linear', 'nonlinear', 'sinusoidal', 'fixed effects', 'with external regressor'], 
+                         [1, 2, 5, 7, 8]):
+  print('Mean squared error with {} method is: {}'.format(label, np.nanmean((residual)**2)))
+  print('AIC with {} method is: {}'.format(label, evaluate_AIC(DOF_used, residual)))
+  print('BIC with {} method is: {}'.format(label, evaluate_BIC(DOF_used, residual)))
+  print('-'*20)
+Mean squared error with linear method is: 147.1867487705771
+AIC with linear method is: 1567.9158493425778
+BIC with linear method is: 1571.2141667091257
+--------------------
+Mean squared error with nonlinear method is: 5.647710964231751
+AIC with nonlinear method is: 917.8254780805322
+BIC with nonlinear method is: 924.4221128136282
+--------------------
+Mean squared error with sinusoidal method is: 3.7962668641398625
+AIC with sinusoidal method is: 844.3790492185412
+BIC with sinusoidal method is: 860.8706360512814
+--------------------
+Mean squared error with fixed effects method is: 3.297378223877299
+AIC with fixed effects method is: 820.200948300849
+BIC with fixed effects method is: 843.2891698666853
+--------------------
+Mean squared error with with external regressor method is: 1.1397781811944072
+AIC with with external regressor method is: 609.7421463966742
+BIC with with external regressor method is: 636.1286853290585
+--------------------
+```
+
+From the results we observe that AIC and BIC have very similar results and its value goes down in every successive data re-trending. As shown before, the fixed effects method is preffered to the sinusoidal method in this case for the detrending of the seasonal signal. 
+
+**Note: In practice it's best to fit all components simultaneously. However, it's good practice to test components sequentially and examine residuals.**
+
+The **a posterior** simultaneous fitting can be done with one of the many python packages available. Here we will showcase `Autoreg` from the package `statsmodels.tsa`.
+
+```python
+# With a Python package
+exog = z
+period = 5
+from statsmodels.tsa.ar_model import AutoReg
+from statsmodels.tsa.deterministic import DeterministicProcess
+det_comp = DeterministicProcess(x.flatten(), period=period, order=2, seasonal=True)
+model = AutoReg(y, exog=exog, deterministic=det_comp, lags=None).fit()
+print(model.summary())
+model_predictions = model.predict(exog=exog)
+plt.plot(x, y, label='raw y data')
+plt.plot(x, model_predictions, 'r', label='fitted model')
+plt.legend()
+plt.plot()
+plt.show()
+residuals = y - model_predictions.reshape(-1,1)
+plt.plot(x, residuals,'o');
+                            AutoReg Model Results                             
+==============================================================================
+Dep. Variable:                      y   No. Observations:                  200
+Model:                   AutoReg-X(0)   Log Likelihood                -289.120
+Method:               Conditional MLE   S.D. of innovations              1.027
+Date:                Mon, 29 Jan 2024   AIC                            596.241
+Time:                        09:39:05   BIC                            625.925
+Sample:                             0   HQIC                           608.254
+                                  200                                         
+=================================================================================
+                    coef    std err          z      P>|z|      [0.025      0.975]
+---------------------------------------------------------------------------------
+trend             0.1987      0.005     39.307      0.000       0.189       0.209
+trend_squared     0.0040   2.44e-05    162.705      0.000       0.004       0.004
+s(1,5)            1.5908      0.281      5.659      0.000       1.040       2.142
+s(2,5)            2.7402      0.290      9.453      0.000       2.172       3.308
+s(3,5)            0.5163      0.280      1.846      0.065      -0.032       1.064
+s(4,5)           -0.2821      0.291     -0.971      0.332      -0.852       0.288
+s(5,5)           -1.5140      0.285     -5.307      0.000      -2.073      -0.955
+x1                0.9911      0.048     20.621      0.000       0.897       1.085
+=================================================================================
+/tmp/ipykernel_8343/1370006017.py:7: SpecificationWarning: When using deterministic, trend must be "n" and seasonal must be False.
+  model = AutoReg(y, exog=exog, deterministic=det_comp, lags=None).fit()
+```
+
+The ICs output a similar value to our own. The following two plots show the raw data and the fitted fitted model and its residuals respectively.
+
+![](pics/cc20.png)
+
+![](pics/cc21.png)
+
+## Returning to the climate change problem
+
+Now that we have all the tools in our hands, let's apply them to the real problem.:
+
+? *Is the trend in average temperature statistically significant, after controlling for components that can be explained by seasonal components or ENSO index?*
+
+The temperature versus time in Middlesex County that we've obtain before is the following one. 
+
+![](pics/cc22.png)
+
+*Do we need to adjust the scale?* 
+
+In this case it does not seem to be necessary to make any log or other kind of adjustment as the variance does not change much throughout the time series.
+
+### Fitting a linear trend
+
+*Should we fit a linear trend?*
+
+To answer this question we start our exploratory analysis. Let's fit a linear regression and vizualize the results and its residuals.
+
+```python
+sns.regplot(x=subset.year, y=subset.tAvg)
+plt.show()
+clf = linear_model.LinearRegression()
+clf.fit(year, temp)
+print(clf.coef_,clf.intercept_)
+linear_residuals = temp - clf.predict(year)
+plt.plot(linear_residuals, 'o')
+[[0.01144365]] [-16.32905344]
+```
+
+The two plots generated by the code are shown below. The first one depicts the data and the linear fit line. We can observe a clear linear trend, therefore it makes sense to remove this trend from the raw data.
+ 
+ ![](pics/cc23.png)
+
+The second plot shows the residuals.
+
+![](pics/cc24.png) 
+
+### Fitting a seasonal trend
+
+Now we'll examine the existence of a seasonal trend via the ACF/PACF plots. 
+
+```python
+sm.graphics.tsa.plot_acf(linear_residuals, lags=20)
+plt.show()
+sm.graphics.tsa.plot_pacf(linear_residuals, lags=20)
+plt.show()
+```
+
+The ACF/PACF plots show one or two signals above the error level but the periodicity of this signals is very weak or insignificant. 
+
+![](pics/cc25.png)
+
+![](pics/cc26.png)
+
+Despite that, we will go through the process to find the periodicity. First, we need to test different values within a reasonable range as shown in the code below. In this case we will scan from $T=1$ to $T=20$ years, where the latter value matches the maximum lag of the ACF/PACF analysis. For each period value we calculate the mean squared error of the residuals and find the minimum MSE.  The `sine_function` was already describe in detail before so we will not do it again.
+
+```python
+from scipy import optimize
+period_range = np.arange(1, 20)
+mse_list = []
+
+def find_sine_approximation(period, x_data=year, y_data=temp):
+  """
+  Finds a best-fitting sinusoidal approximation, for the given period. 
+  """
+  def sine_function(X, amp, phase_shift, mean):
+    return (amp * np.sin(1/period * 2 * np.pi * (X - phase_shift)) + mean)
+  params, _ = sine_curve_fit = optimize.curve_fit(
+    f = sine_function,
+    xdata = x_data.flatten(),
+    ydata = y_data.flatten(),
+    p0 = np.array([3, 1, 0]))
+  amp, phase_shift, mean = params
+  sin_prediction = sine_function(x_data, amp, phase_shift, mean)
+  return sin_prediction
+
+for period in period_range:
+  sin_prediction = find_sine_approximation(period, year, linear_residuals)
+  mse = np.nanmean((linear_residuals - sin_prediction) **2)
+  mse_list.append(mse)
+plt.plot(period_range, mse_list)
+plt.ylabel('MSE'),plt.xlabel('Period')
+plt.show()
+period_guess = period_range[np.argmin(mse_list)]
+print("minimizing period is:", period_guess)
+sin_residuals = linear_residuals - find_sine_approximation(period_guess, year, linear_residuals)
+minimizing period is: 12
+```
+
+The plot shows that the optimized period is located at $P=12 years$. **However, the gain in detrending this signal does not seem significative (goes from a MSE of 0.3875 to 0.3675).
+
+![](pics/cc27.png)
+
+### External regressor: the El Niño index
+
+If we plot the residuals we can observe that there is still a signal in the detrended data. **In fact very little has changed.**
+
+![](pics/cc28.png)
+
+From scientific research we know that the "El Niño" phenomenon may impact global temperatures. Let's see if we can find a correlation between our residuals and ENSO data.
+
+Here we will use the "ONI" variable which is a measure of how anomalously warm or cool the central-to-eastern equatorial Pacific Ocean is compared to "normal".
+
+```python
+enso_df = pd.read_csv('https://raw.githubusercontent.com/maxoboe/6419_recitations/main/data/enso_index.csv')
+ONI = enso_df[enso_df.year.isin(climate_df.year)]['ONI_index'].values.reshape(-1,1)
+plt.plot(year, ONI)
+plt.title("ENSO Index Over Time")
+plt.ylabel("ONI")
+```
+
+The following plot shows the ONI index versus time. 
+
+![](pics/cc29.png)
+
+Ok, seems promising. Let's plot the residuals versus the ONI index. 
+
+```python
+plt.scatter(linear_residuals, ONI)
+stats.spearmanr(linear_residuals,ONI)
+SignificanceResult(statistic=-0.12904975717128836, pvalue=0.28699964373818654)
+```
+
+We readily observe no correlation with the linear trend residuals, which is confirmed by the value of the statistic $= -0.13$.From here we would conclude we shouldn't include the ENSO data in our model.
+
+![](pics/cc30.png)
+
+### Do we need to find ARMA components?
+
+Nope. There is no evidence for AR/MA components from the ACF/PACF plots. 
+
+### Model selection
+
+Finally, we will test each combinations of models simultaneously using the following code.
+
+```python
+min_AIC=np.inf # starting values
+min_BIC = np.inf # starting values
+AIC_choice = None
+BIC_choice = None
+
+for period in [None] + [x for x in range(2, 13)]: #range of periods from none to 13
+  for order in [0, 1]:                            #range of orders (0 and 1)
+    for exog, exog_label in zip([ONI, None], ['ONI',None]): # range of exog from ONI to None
+      det_comp = DeterministicProcess(year.flatten(), period=period, constant=True,
+                                      order=order, seasonal=period is not None)
+      model = AutoReg(temp, exog=exog, deterministic=det_comp, lags=None, 
+                      trend='n',seasonal=False).fit()
+      # print("Model has period {}, order {}, exog {}".format(period, order, exog_label))
+      # print("AIC", model.aic, "BIC", model.bic )
+      # print("-"*20)
+      if model.aic < min_AIC:
+        AIC_choice = (period, order, exog_label)
+        min_AIC = model.aic
+      if model.bic < min_BIC:
+        BIC_choice = (period, order, exog_label)
+        min_BIC = model.bic 
+print('AIC_choice: Period = ',AIC_choice[0],'Polynomial order = ',AIC_choice[1],'External regressor = ',AIC_choice[2])
+print('BIC_choice: Period = ',BIC_choice[0],'Polynomial order = ',BIC_choice[1],'External regressor = ',BIC_choice[2])
+AIC_choice: Period =  None Polynomial order =  1 External regressor =  None
+BIC_choice: Period =  None Polynomial order =  1 External regressor =  None
+```
+
+From the results we can conclude that a linear model is the most likely (and simplest) candidate to fit our data. 
+
+If we fit our data we obtain the following two plots from the code below.
+
+```python
+period, order, exog = AIC_choice
+det_comp = DeterministicProcess(year.flatten(), period=period, order=order, constant=True, seasonal =period is not None)
+model = AutoReg(temp, exog=exog, deterministic=det_comp, lags=None, trend='n',seasonal=False).fit()
+model_predictions = model.predict()
+plt.plot(year, temp, label='average temp')
+plt.plot(year, model_predictions, 'r', label='fitted line')
+plt.legend()
+plt.show()
+residuals = temp - model_predictions.reshape(-1,1)
+plt.plot(year, residuals,'o');
+plt.show()
+print(model.summary())
+```
+
+The first one shows the data and the linear fit in red. The second one depicts the residuals.
+
+![](pics/cc31.png)
+
+![](pics/cc32.png)
+
+Finally the code also output the table from the `Autoreg` function. We observe a very low p-value for the linear fit coefficient which gives confidence in our results.
+
+```python
+AutoReg Model Results                             
+==============================================================================
+Dep. Variable:                      y   No. Observations:                   70
+Model:                     AutoReg(0)   Log Likelihood                 -66.167
+Method:               Conditional MLE   S.D. of innovations              0.623
+Date:                Mon, 29 Jan 2024   AIC                            138.335
+Time:                        15:20:56   BIC                            145.080
+Sample:                             0   HQIC                           141.014
+                                   70                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          5.9746      0.150     39.708      0.000       5.680       6.270
+trend          0.0114      0.004      3.107      0.002       0.004       0.019
+==============================================================================
+```
+
+# Time series example: Stock price forecasting
+
+Our research question here is the following: *How well can we predict Meta's closing stock price one day in advance and one month in advance?*
+
+and
+
+*Given the historical series of Meta's closing stock price, what is the best estimator of the stock price one day ahead or one month ahead? What is the test-sample mean squared error of each estimate?*
+
+## Data set: stock prices
+
+Our data is sourced from Yahoo finance, which maintains a python package to retrieve daily stock prices.
+
+The following code loads Meta's stock prices since 2012-05-18. In the table below we can view a sample of Meta's stock series which includes the date, the daily price variation (opening session, highest value, lowest value and closing value). The last column shows the daily stock volume transactions.
+
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import requests
+import io
+import yfinance as yf
+url="https://pkgstore.datahub.io/core/nasdaq-listings/nasdaq-listed_csv/data/7665719fb51081ba0bd834fde71ce822/nasdaq-listed_csv.csv"
+s = requests.get(url).content
+companies = pd.read_csv(io.StringIO(s.decode('utf-8')))
+print("All available NASDAQ listings: \n", companies.head())
+fb_series = yf.download("META",start='2012-05-18',progress=False)
+print("Sample of Meta stock series: \n", fb_series.head())
+price = fb_series.reset_index()['Close'].values.reshape(-1,1)
+date = fb_series.reset_index().Date.dt.date.values.reshape(-1,1)
+plt.plot(date, price)
+plt.title("Meta stock price over time")
+plt.show()
+
+All available NASDAQ listings: 
+   Symbol                                       Company Name  \
+0   AAIT  iShares MSCI All Country Asia Information Tech...   
+1    AAL                      American Airlines Group, Inc.   
+2   AAME                      Atlantic American Corporation   
+3   AAOI                      Applied Optoelectronics, Inc.   
+4   AAON                                         AAON, Inc.   
+
+                                       Security Name Market Category  \
+0  iShares MSCI All Country Asia Information Tech...               G   
+1       American Airlines Group, Inc. - Common Stock               Q   
+2       Atlantic American Corporation - Common Stock               G   
+3       Applied Optoelectronics, Inc. - Common Stock               G   
+4                          AAON, Inc. - Common Stock               Q   
+
+  Test Issue Financial Status  Round Lot Size  
+0          N                N           100.0  
+1          N                N           100.0  
+2          N                N           100.0  
+3          N                N           100.0  
+4          N                N           100.0  
+Sample of Meta stock series: 
+                  Open       High        Low      Close  Adj Close     Volume
+Date                                                                        
+2012-05-18  42.049999  45.000000  38.000000  38.230000  38.230000  573576400
+2012-05-21  36.529999  36.660000  33.000000  34.029999  34.029999  168192700
+2012-05-22  32.610001  33.590000  30.940001  31.000000  31.000000  101786600
+2012-05-23  31.370001  32.500000  31.360001  32.000000  32.000000   73600000
+2012-05-24  32.950001  33.209999  31.770000  33.029999  33.029999   50237200
+
+```
+
+The plot generated with the code depicts Meta's stock price over time as shown below.
+
+![](pics/stock1.png)
+
+## Scaling the data
+
+*Do we need to scale the data?* 
+
+In this case yes, because as we can see in the plot the degree of the variance is not constant over time and this violates one of the assumptions of stationarity. We can correct this by taking a log transformation of the data. 
+
+```python
+# Applying log transformation
+log_price = np.log(price)
+plt.plot(date, log_price)
+plt.title("log of FB stock price over time")
+plt.show()
+```
+
+As shown in the plot below, the variance now looks more constant.
+
+![](pics/stock2.png)
+
+## Information criteria
+
+As seen before we will use the AIC and the BIC in the form of the functions depicted in the code. 
+
+```python
+# Example here about how to find; what my assumption is behind this 
+from scipy.stats import norm 
+def evaluate_AIC(k, residuals):
+  """
+  Finds the AIC given the number of parameters estimated and 
+  the residuals of the model. Assumes residuals are distributed 
+  Gaussian with unknown variance. 
+  """
+  standard_deviation = np.std(residuals)
+  log_likelihood = norm.logpdf(residuals, 0, scale=standard_deviation)
+  return 2 * k - 2 * np.sum(log_likelihood)
+def evaluate_BIC(k, residuals):
+  """
+  Finds the AIC given the number of parameters estimated and 
+  the residuals of the model. Assumes residuals are distributed 
+  Gaussian with unknown variance. 
+  """
+  standard_deviation = np.std(residuals)
+  log_likelihood = norm.logpdf(residuals, 0, scale=standard_deviation)
+  return k * np.log(len(residuals)) - 2 * np.sum(log_likelihood)
+```
+
+## Linear model
+
+Let's start with a linear model. The code outputs the MSE,AIC and BIC as shown below.
+
+```python
+from sklearn import linear_model
+clf = linear_model.LinearRegression()
+index = fb_series.reset_index().index.values.reshape(-1,1)
+
+clf.fit(index, log_price)
+print(clf.coef_) # To print the coefficient estimate of the series. 
+linear_prediction = clf.predict(index)
+plt.plot(date, log_price, label='log stock price (original data)')
+plt.plot(date, linear_prediction, 'r', label='fitted line')
+plt.legend()
+plt.show()
+linear_residuals = log_price - linear_prediction
+plt.plot(date, linear_residuals, 'o')
+plt.show();
+print("MSE with linear fit:", np.mean((linear_residuals)**2))
+print("AIC:", evaluate_AIC(1, linear_residuals))
+print("BIC:", evaluate_BIC(1, linear_residuals))
+
+MSE with linear fit: 0.12649596448928904
+AIC: 2268.3173142051555
+BIC: 2274.304159106317
+```
+
+The code also produces two plots: the log stock price versus time plot and its residuals as shown below.
+
+![](pics/stock3.png)
+
+From the residuals we can observe the need of a higher order model.
+
+![](pics/stock4.png)
+
+## Quadratic model
+
+Let's try a model of order 2. 
+
+```python
+## After linear fit, it seems like a higher order model is needed
+from sklearn import linear_model
+clf = linear_model.LinearRegression()
+index = fb_series.reset_index().index.values.reshape(-1,1)
+
+new_x = np.hstack((index, index **2))
+clf.fit(new_x, log_price)
+print(clf.coef_) # To print the coefficient estimate of the series. 
+quad_prediction = clf.predict(new_x)
+plt.plot(date, log_price, label='log stock price (original data)')
+plt.plot(date, quad_prediction, 'r', label='fitted line')
+plt.legend()
+plt.show()
+quad_residuals = log_price - quad_prediction
+plt.plot(date, quad_residuals, 'o')
+plt.show();
+print("MSE with quadratic fit:", np.mean((quad_residuals)**2))
+print("AIC:", evaluate_AIC(2, quad_residuals))
+print("BIC:", evaluate_BIC(2, quad_residuals))
+
+MSE with quadratic fit: 0.05321548541531681
+AIC: -277.04566883374355
+BIC: -265.07197903142077
+```
+
+There is an huge improvement in the AIC and BIC criteria. The fitted plot as well as the residuals are shown below.
+
+![](pics/stock5.png)
+
+![](pics/stock6.png)
+
+Thus, the quadratic fit is a satisfactory model for the general trend. 
+
+## Examining periodicities with ACF/PACF analysis
+
+Let's now move one and analyze the remaining signal with ACF/PACF methods, as shown in the following code.
+
+```python
+import statsmodels.api as sm
+sm.graphics.tsa.plot_acf(quad_residuals, lags=30)
+plt.show()
+sm.graphics.tsa.plot_pacf(quad_residuals, lags=30)
+plt.show()
+```
+
+The ACf plot shows a exponentially decaying signal (remember, we're analysing a log transformed signal, so an exponentially decaying signal will be transformed into a negative linear trend)
+
+![](pics/stock7.png)
+
+The PACF plot shows a strong first term, which is evidence of an AR(1) component.
+
+![](pics/stock8.png)
 

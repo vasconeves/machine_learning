@@ -705,3 +705,270 @@ The third and fourth figures show the ACF and the PACF respectively.
 From here we can observe that the ACF/PACF plots suggest an AR(1) model: there are two significant terms in the PACF and a slowly decaying ACF. 
 
 Let's see what our grid search finds.
+
+```python
+min_aic_index, min_bic_index, _, _ = grid_search_ARIMA(quad_residuals, range(4), range(4), verbose=True)
+if min_aic_index == min_bic_index:
+  arma = ARIMA(quad_residuals, order=min_bic_index).fit()
+  print(arma.summary())
+  arma_predictions = arma.predict()
+  arma_residuals = (quad_residuals.T - arma_predictions).flatten()
+  arma_residuals = arma_residuals # Fitting AR 1 model means removing one observation
+  plt.plot(quad_residuals, label='Residuals from fitted quadratic line')
+  plt.plot(arma_predictions, 'r', label='fitted ARMA process')
+  plt.legend()
+  plt.show()
+  plt.plot(arma_residuals, 'o')
+  plt.show()
+  print("Automatic selection finds model with AR {0}, MA {2}".format(*min_aic_index))
+  print("MSE with selected model:", np.mean(arma_residuals**2))
+else:
+  print("AIC, BIC do not agree.")
+ SARIMAX Results                                
+==============================================================================
+Dep. Variable:                      y   No. Observations:                 2943
+Model:                 ARIMA(1, 0, 0)   Log Likelihood                6646.949
+Date:                Wed, 31 Jan 2024   AIC                         -13287.899
+Time:                        12:46:27   BIC                         -13269.937
+Sample:                             0   HQIC                        -13281.432
+                               - 2943                                         
+Covariance Type:                  opg                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+const       1.138e-06      0.065   1.74e-05      1.000      -0.128       0.128
+ar.L1          0.9943      0.001    738.070      0.000       0.992       0.997
+sigma2         0.0006   4.82e-06    132.400      0.000       0.001       0.001
+===================================================================================
+Ljung-Box (L1) (Q):                   0.80   Jarque-Bera (JB):             61634.16
+Prob(Q):                              0.37   Prob(JB):                         0.00
+Heteroskedasticity (H):               1.29   Skew:                            -0.66
+Prob(H) (two-sided):                  0.00   Kurtosis:                        25.38
+===================================================================================
+Automatic selection finds model with AR 1, MA 0
+MSE with selected model: 0.0007324663949477522
+```
+
+As expected the algorithm found an AR(1) as the best model. The results are really good! The following plots show the data and the fitted ARMA model, and the residuals.
+
+![](pics/stock25.png)
+
+![](pics/stock26.png)
+
+## Prediction
+
+### Evaluating with a test set. 
+
+*How well can we predict future events from data?* 
+
+Let's arbitrarily draw 20% of the data for testing purposes. We will thus use the remaining 80% of the data to train our model.
+
+```python
+train_test_split = int(len(price) * 0.8)
+train_price, test_price = quad_residuals[:train_test_split], quad_residuals[train_test_split:]
+train_date, test_date = date[:train_test_split], date[train_test_split:]
+assert(len(train_date) + len(test_date) == len(date))
+```
+
+In this context we will use the minimum AIC value. If we used the minimum BIC value instead the result would be the same.
+
+```python
+## First, let's see how this does with the AIC selected values. 
+arma = ARIMA(train_price, order=min_aic_index).fit()
+print(arma.summary())
+fig, ax = plt.subplots(figsize=(15, 5))
+
+# Construct the forecasts
+fcast = arma.get_forecast(len(test_price)).summary_frame()
+
+arma_predictions = arma.predict()
+ax.plot(date, quad_residuals, label='stock price, converted to stationary time series')
+predicted_values = arma_predictions.reshape(-1,1)
+ax.plot(train_date, predicted_values, 'r', label='fitted line')
+forecast_means = fcast['mean'].values.reshape(-1,1)
+test_set_mse = np.mean((forecast_means.reshape(test_price.shape) - test_price)**2)
+ax.plot(test_date, forecast_means, 'k--', label='mean forecast')
+ax.fill_between(test_date.flatten(), fcast['mean_ci_lower'], fcast['mean_ci_upper'], color='k', alpha=0.1);
+plt.legend();
+print("Test set mean squared error: ", test_set_mse)
+
+SARIMAX Results                                
+==============================================================================
+Dep. Variable:                      y   No. Observations:                 2354
+Model:                 ARIMA(1, 0, 0)   Log Likelihood                5537.536
+Date:                Wed, 31 Jan 2024   AIC                         -11069.072
+Time:                        13:56:42   BIC                         -11051.780
+Sample:                             0   HQIC                        -11062.775
+                               - 2354                                         
+Covariance Type:                  opg                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.0118      0.038      0.314      0.753      -0.062       0.085
+ar.L1          0.9900      0.002    583.305      0.000       0.987       0.993
+sigma2         0.0005   5.75e-06     91.973      0.000       0.001       0.001
+===================================================================================
+Ljung-Box (L1) (Q):                   1.94   Jarque-Bera (JB):             19532.27
+Prob(Q):                              0.16   Prob(JB):                         0.00
+Heteroskedasticity (H):               0.67   Skew:                             0.25
+Prob(H) (two-sided):                  0.00   Kurtosis:                        17.10
+===================================================================================
+Test set mean squared error:  0.15227452700738053
+```
+
+The generated plot shows the full data, the fitted model in red and the forecast as the dashed black line. We can readily observe that the forescast has very poor quality and it converges rapidly to the average value of the training subsample.
+
+![](pics/stock27.png)
+
+### Long range predictions
+
+If we're interested in long range predictions one way of successfully doing this is to collapse our data into monthly values.
+
+We lose information but this will deter the fast convergence to the mean of the series. 
+
+Let's start by grouping our data by mouth and take its mean as shown in the code below.
+
+```python
+collapsed = fb_series.groupby(pd.Grouper(freq ='M')).mean()
+month_date = collapsed.reset_index().Date.dt.date.values.reshape(-1,1)
+month_price = collapsed.High.values.reshape(-1,1)
+month_log_price = np.log(month_price)
+plt.plot(month_date, month_log_price)
+plt.title("log of Facebook stock price over time")
+plt.show()
+```
+
+![](pics/stock28.png)
+
+The plot looks much smoother and cleaner. Then we fit a quadratic regression. We obtain the quadratic coefficients and the MSE with the quadratic fit.
+
+```python
+clf = linear_model.LinearRegression()
+index = collapsed.reset_index().index.values.reshape(-1,1)
+new_x = np.hstack((index, index **2))
+clf.fit(new_x, month_log_price)
+print(clf.coef_,clf.intercept_) # To print the coefficient estimate of the series. 
+month_quad_prediction = clf.predict(new_x)
+plt.plot(month_date, month_log_price, label='original data')
+plt.plot(month_date, month_quad_prediction, 'r', label='fitted line')
+plt.legend()
+plt.show()
+month_quad_residuals = month_log_price - month_quad_prediction
+plt.plot(month_date, month_quad_residuals, 'o')
+plt.show();
+print("MSE with quadratic fit:", np.mean((month_quad_residuals)**2))
+[[ 0.0411845  -0.00017904]] [3.1460942]
+MSE with quadratic fit: 0.05099051519913883
+```
+
+The generated plots are shown below. The first figure is the data with the fit curve, and the second figure depicts the residuals.
+
+![](pics/stock29.png)
+
+![](pics/stock30.png)
+
+Now, we plot the ACF and the PACF.
+
+```python
+sm.graphics.tsa.plot_acf(month_quad_residuals, lags=14)
+plt.show()
+sm.graphics.tsa.plot_pacf(month_quad_residuals, lags=14)
+plt.show()
+```
+
+![](pics/stock31.png)
+
+![](pics/stock32.png)
+
+We observe a similar trend as before for the AR function. We may have an AR(2) function.
+
+To confirm our hypothesis we run `grid_search_ARIMA` and find that indeed we have an AR(2) function as the best model.
+
+```python
+min_aic_index, min_bic_index, *other = grid_search_ARIMA(month_quad_residuals, range(4), range(4), verbose=True)
+if min_aic_index == min_bic_index:
+  arma = ARIMA(month_quad_residuals, order=min_bic_index).fit()
+  print(arma.summary())
+  arma_predictions = arma.predict()
+  arma_residuals = month_quad_residuals.reshape(arma_predictions.shape) - arma_predictions
+  arma_residuals = arma_residuals # Fitting AR 1 model means removing one observation
+  plt.plot(month_quad_residuals, label='Residuals from fitted quadratic line')
+  plt.plot(arma_predictions, 'r', label='fitted ARMA process')
+  plt.legend()
+  plt.show()
+  plt.plot(arma_residuals, 'o')
+  plt.show()
+  print("Automatic selection finds model with AR {0}, MA {2}".format(*min_aic_index))
+  print("MSE with selected model:", np.mean(arma_residuals**2))
+else:
+  print("AIC, BIC do not agree.")
+
+                               SARIMAX Results                                
+==============================================================================
+Dep. Variable:                      y   No. Observations:                  141
+Model:                 ARIMA(2, 0, 0)   Log Likelihood                 154.464
+Date:                Wed, 31 Jan 2024   AIC                           -300.928
+Time:                        11:39:40   BIC                           -289.133
+Sample:                             0   HQIC                          -296.135
+                                - 141                                         
+Covariance Type:                  opg                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.0357      0.076      0.466      0.641      -0.114       0.186
+ar.L1          1.3367      0.073     18.206      0.000       1.193       1.481
+ar.L2         -0.4361      0.077     -5.697      0.000      -0.586      -0.286
+sigma2         0.0064      0.001     10.732      0.000       0.005       0.008
+===================================================================================
+Ljung-Box (L1) (Q):                   0.11   Jarque-Bera (JB):                81.91
+Prob(Q):                              0.75   Prob(JB):                         0.00
+Heteroskedasticity (H):               1.02   Skew:                            -1.05
+Prob(H) (two-sided):                  0.94   Kurtosis:                         6.09
+===================================================================================
+
+Automatic selection finds model with AR 2, MA 0
+MSE with selected model: 0.007191718795732677
+```
+
+The code also generates two figures, as shown below. The first one shows the residuals from the quadratic fit and the fitted AR(2) line. The second one depicts the residuals. We can readily observe the de-phasing by one month of the data and the model.
+
+![](pics/stock33.png)
+
+![](pics/stock34.png)
+
+Let's now create the forecast from the 80% training elements.
+
+```python
+arma = ARIMA(month_train, order=min_bic_index).fit()
+fig, ax = plt.subplots(figsize=(15, 5))
+
+# Construct the forecasts
+fcast = arma.get_forecast(len(month_test)).summary_frame()
+arma_predictions = arma.predict()
+ax.plot(month_date, month_quad_residuals, label='original data')
+predicted_values = arma_predictions.reshape(-1,1)
+ax.plot(month_date_train, predicted_values, 'r', label='fitted line')
+forecast_means = fcast['mean'].values.reshape(-1,1)
+ax.plot(month_date_test, forecast_means, 'k--', label='mean forecast')
+ax.fill_between(month_date_test.flatten(), fcast['mean_ci_lower'], fcast['mean_ci_upper'], color='k', alpha=0.1);
+plt.legend();
+
+test_set_mse = np.mean((forecast_means.reshape(month_test.shape) - month_test)**2)
+print("Test set mean squared error: ", test_set_mse)
+
+Test set mean squared error:  0.18344070477352128
+```
+
+The generated plot shows the original data, the fitted line model based on the training subset and the forecast. We observe a slower transition towards the mean of the time series. 
+
+![](pics/stock35.png)
+
+**Nevertheless, this approach is quite limited: it can only forecast the mean with precision.**
+
+## A rolling window forecast
+
+TBD
+
+
+
+

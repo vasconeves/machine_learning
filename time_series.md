@@ -711,7 +711,7 @@ Can we predict $X_{n+m}$ based on observed $x_n,x{n-1},...,x1$?
 
 **Yes!...but only for short horizons $m$!** For long horizons, the forecast converges to the mean of the time series.
 
-$\implies \hat{\phi}_{2}$ 
+$\implies \hat{x}_{n+1|n} \hat{\phi}_{2}$ 
 
 $\hat{\phi}_{2} x_{n-1} + ... + \hat{\phi}_{p} x_{n-p+1}$
 

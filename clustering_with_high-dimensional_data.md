@@ -128,14 +128,16 @@ $$
 
 due to Jensen's inequality.
 
-In the special case where the covariance matrix is $\Sigma_k = \sigma_k^2 \mathbf{I}$, the parameters that maximiz the expected log-likelihood function are as follows:
+In the special case where the covariance matrix is $\Sigma_k = \sigma_k^2 \mathbf{I}$, the parameters that maximize the expected log-likelihood function are as follows:
 
 $$
 \hat{\mu}^k = \frac{\sum_{i=1}^n x^{(i)}p(k|i)}{\sum_{i=1}^n p(k|i)}
 $$
+
 $$
 \hat{p}_k = \frac{1}{n}\sum_{i=1}^n p(k|i),
 $$
+
 $$
 \hat{\sigma}_k^2 = \frac{\sum_{i=1}^n p(k|i)|x^{(i)}-\hat{\mu}^k|^2}{\sum_{i=1}^n p(k|i)}.
 $$
@@ -154,7 +156,7 @@ For the initialization it is possible to
 In the context of GMM, the optimization of the number of clusters can be found by, for instance, maximizing the **Bayesian Information Criterion** (BIC), where
 
 $$
-BIC = \text{log-likelihood} - \frac{\log{n}}{2} \text{\# of parameters}.
+BIC = \text{log-likelihood} - \frac{\log{n}}{2} \text{nº of parameters}.
 $$
 
 ## Hierarchical clustering
@@ -269,11 +271,11 @@ $$
 a(x^{(i)}) = \frac{1}{n_i-1}\sum_{x^{(j)}\in C_i,j\ne i} d(x^{(i)},x^{(j)})
 $$
 
-is the average "within group" distance or dissimilarity from $x^{(i)} and
+is the average "within group" distance or dissimilarity from $x^{(i)}$ and
 
 $$
 b(x^{(i)}) = \min_{C_k\ne C_i}\frac{1}{n_k}\sum_{x^{(j)}\in C_k} d(x^{(i)}x^{(j)})
 $$
 
-is the average distance or dissimilarity from $x^{(i)} to the closest other cluster.
+is the average distance or dissimilarity from $x^{(i)}$ to the closest other cluster.
 

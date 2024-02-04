@@ -42,14 +42,23 @@ Let's consider the following examples:
 - **Sound data**: speech, music, pollution;
 
 ![](pics/johnson.png)
+
 *Johnson & Johnson quarterly earnings per share*
+
 ![](pics/air_traffic.png)
+
 *global air traffic passengers*
+
 ![](pics/exchange_rates.png)
+
 *exchange rates GBP to NZ dollar*
+
 ![](pics/pressure_and_fish.png)
+
 *Air pressure and fish population*
+
 ![](pics/price_index_usa.png)
+
 *Price index USA*
 
 In all these examples, data takes the form of discrete measurements of a real world phenomena that evolves continuously in time. A general probabilistic model to describe such phenomena is called a **stochastic process**, which is simply a collection of r.v. indexed by either a continuous or discrete time parameter $t$. A time series can therefore be considered as a **single realization** of a stochastic process. Each r.v. $X_t$ has a marginal distribution $P_t$. The process ${X_t}_{t>0}$ as a whole also has a probability law, which can be thought of as the **joint** distribution of all the $X_t$s.
@@ -225,16 +234,20 @@ Let's consider the following techniques of transforming time series data:
   - can remove linear and non-linear trends as well as seasonal variations
 - Periodic function as regression model $\rightarrow$ can remove seasonal variations.
 - differencing the data one or more times $\rightarrow$ can remove linear and non-linear trends as well as increasing variances.
+
 $$
 Y_t = \nabla X_t = X_t - X_{t-1}
 \rightarrow \text{removes linear trend} \\
 $$
+
 $$
 \nabla^2 X_t = \nabla X_t - \nabla X_{t-1} = X_t - 2 X_{t-1} + X_{t-2} \rightarrow \text{removes quadratic trend}
 $$
+
 $$
 \text{If } \{X_t\}_t \text{ is integrated of order p, then } \{\nabla^p X_t\}_t \text{ is stationary.}
 $$
+
 - applying a variance reduction transformation (square root or log transformation) $\rightarrow$ can remove increasing variance.
 - smoothing (i.e. applying moving averages).
 - applying fourier analysis $\rightarrow$ can remove seasonal trends.

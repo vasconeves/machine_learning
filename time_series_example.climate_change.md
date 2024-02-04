@@ -261,7 +261,7 @@ The PACF also shows a similar signal at $h=0$ and $h=5$ as well at $h=10,15,25,3
 At this point we can try to remove the periodic signal with a sinusoidal approximation. For the de-trended signal we will try to fit
 
 $$
-S_t = a + b\sin\left(\phi+\frac{2pit}{T} \right),
+S_t = a + b\sin\left(\phi+\frac{2\pi t}{T} \right),
 $$
 
 where $a$ is the mean of the sine function, $b$ is the amplitude, $\phi$ is the phase shift, and $T$ is the period. Here we will fix $T = 5$ because it can be measured from the ACF plot. Therefore, we are estimating three parameters: $a,b, and \phi$. 

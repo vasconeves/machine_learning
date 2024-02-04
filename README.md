@@ -97,10 +97,10 @@ TOC. THIS IS WORK IN PROGRESS! The first version will be finished by the end of 
     - The moving average model
     - The ARMA model
     - Regression and time series
-  - [example climate change signal](time_series_example.climate_change.md).In this example we will explore climate data from Middlesex County, Massachusets, USA.
-  - [example stock price forecasting](time_series_example.stock_price_forecast.md). Our research question here is the following: How well can we predict Meta's closing stock price one day in advance and one month in advance?
-  - [example the mauna loa co2 concentration](time_series_example.the_mauna_loa_co2_concentration.md). In this example we want to treat and analyze the data in order to find all possible trends with the first 80% of the data. Then we want to gauge the performance of our model by predicting the last 20% of the data.
-  - [example consumer price index and break even rate analysis](time_series_example.consumer_price_index_and_break_even_rate_analysis). In this example we will analyze consumer price index (CPI) and break even rate (BER) data for the last decade and present an approach to estimate the 1 month ahead forecasts of the CPI starting September 2013.
+  - [example: climate change signal](time_series_example.climate_change.md).In this example we will explore climate data from Middlesex County, Massachusets, USA.
+  - [example: stock price forecasting](time_series_example.stock_price_forecast.md). Our research question here is the following: How well can we predict Meta's closing stock price one day in advance and one month in advance?
+  - [example: the mauna loa co2 concentration](time_series_example.the_mauna_loa_co2_concentration.md). In this example we want to treat and analyze the data in order to find all possible trends with the first 80% of the data. Then we want to gauge the performance of our model by predicting the last 20% of the data.
+  - [example: consumer price index and break even rate analysis](time_series_example.consumer_price_index_and_break_even_rate_analysis). In this example we will analyze consumer price index (CPI) and break even rate (BER) data for the last decade and present an approach to estimate the 1 month ahead forecasts of the CPI starting September 2013.
 
 
 **TBD**

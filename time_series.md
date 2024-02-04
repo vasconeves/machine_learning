@@ -550,7 +550,7 @@ Examples:
 - AR(2) model $\implies X_t = \phi_1 X_{t-1} + \phi_2 X_{t-2} + W_t$
 - include external regressors $\implies X_t = \beta_1 X_{t-1} + \beta_2 Y_t + W_t$
 
-To fit any model we can do least squares regression: $min_\beta\sum_t (mathbf{x_t-\beta^T z_t})^2
+To fit any model we can do least squares regression: $min_\beta\sum_t (mathbf{x_t-\beta^T z_t})^2$
 
 **Note: the errors may be correlated over time!!!**
 
@@ -564,8 +564,8 @@ We can use ACF (and partial ACF) to determine the fit. The end result should loo
 
 Example. $X_t = T_t + Y_t$
 
-- $T_t$ = 50+3t (linear trend)
-- $Y_t$ = 0.8Y_{t-1} + W_t$ (AR(1) model)
+- $T_t = 50+3t$ (linear trend)
+- $Y_t = 0.8Y_{t-1} + W_t$ (AR(1) model)
 
 The plot below shows the result after fitting the linear trend only. The ACF shows the typical signal of an AR model!
 
@@ -631,7 +631,7 @@ For AR(p) models however this is not so clear, as the function decays exponentia
 
 The best method to determine the order is to use the partial autocorrelation function.
 
-Let X_0,...,X_n be a stationary time series. The autocorrelation function at lag $h$ is defined as
+Let $X_0,...,X_n$ be a stationary time series. The autocorrelation function at lag $h$ is defined as
 
 $$
 \rho_x(h) = Corr(X_h,X_0) = \mathbb{E}[(X_h-\mathbb{E}[X_0])(X_0-\mathbb{E}[X_0])]/Var(X_0).
@@ -671,9 +671,11 @@ $$
 
 The following figure shows the time series (top plot) as well as the ACF (bottom left plot) and the PACF (bottom right plot) of the residuals after fitting a linear model only. From the ACF we can conclude that we have a AR time series (exponential decay, oscillation) and in the PACF plot we only observe one peak above noise. Therefore, we should fit a AR(1) model.
 
+[FIGURE MISSING]
+
 #### Akaike information criterion (AIC)
 
-There are also other ways to determine which model is more apropriate among a few model candidates. Here we will explore two other more generic approaches. The first one is the Akaike Information Criterion or AIC. It is calculated as
+There are also other ways to determine which model is more appropriate among a few model candidates. Here we will explore two other more generic approaches. The first one is the Akaike Information Criterion or AIC. It is calculated as
 
 $$
 AIC = 2k-2ln(L),
@@ -711,7 +713,7 @@ Cross validation can be used in special cases for AR models (Bergmeier, Hyndman 
 
 1. We estimate the coefficients $\hat{\phi}_1,...,\hat{\phi}_p$
 2. Estimate the steps ahead of the time series
-   - 1 step ahead $\implies \hat{x}_{n+1|n} = \hat{\phi}_1x_n + \hat{\phi}_2 x_{n-1} + ... + \hat{\phi}_p x_{n-p+1}$
+   - 1 step ahead $\implies \hat{x}_{n+1|n} = \hat{\phi}_{1x_n} + \hat{\phi}_{2} x_{n-1} + ... + \hat{\phi}_{p} x_{n-p+1}$
    - 2 steps ahead $\implies \hat{x}_{n+2|n} = \hat{\phi}_1x_{n+1} + \hat{\phi}_2 x_{n} + ... + \hat{\phi}_p x_{n-p+2}$
    - general $\implies \hat{x}_{n+m|n} = \hat{\phi}_1x_{n+m-1} + \hat{\phi}_2 x_{n+m-2} + ... + \hat{\phi}_p x_{n+m-p}$
 

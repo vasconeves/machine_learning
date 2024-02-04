@@ -316,10 +316,10 @@ This range is called a **confidence interval**. It is centered around the sample
 
 The interval is defined in such a way that with probability $1-\alpha$ the interval will contain the true mean $\mu$. In other words, if we sample the dataset many times and calculate intervals each time, the probability that $\mu$ is in the proposed range is $1-\alpha$.
 
-We can write this interval in the following way
+We can write this interval in the following way ok
 
 $$
-P(-\Phi^{-1}_{1-\alpha/2} \le \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \le \Phi^{-1}_{1-\alpha/2}) = 1 - \alpha,
+P(-\Phi^{-1}_{1-\alpha/2} \le \frac{\bar{X}-\mu}{\sigma/\sqrt{n}} \le \Phi^{-1}_{1-\alpha/2}) = 1 - \alpha,
 $$
 
 where $\phi$ is the cdf of the distribution and $\alpha$ is the significant level.
@@ -327,13 +327,13 @@ where $\phi$ is the cdf of the distribution and $\alpha$ is the significant leve
 If we isolate $\mu$ then we obtain
 
 $$
-P(\overline{X}-\frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2} \le \mu \le \overline{X}+\frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2}) = 1 - \alpha.
+P(\bar{X}-\frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2} \le \mu \le \bar{X}+\frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2}) = 1 - \alpha.
 $$
 
 Therefore, the (two-sided in this case!) confidence interval will be
 
 $$
-\overline{X} \pm \frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2}.
+\bar{X} \pm \frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2}.
 $$
 
 To better understand what the confidence interval is we can create a very simple simulation where we randomly draw 100 elements from a standard normal distribution 100 times. The result is depicted in the following Picture.

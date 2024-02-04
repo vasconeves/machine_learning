@@ -24,7 +24,7 @@ $$
 
 where $s^2_{ALL,i}$ is the sample variance for gene $i$.
 
-Similarly we can write the variance for $\overline{X}_{AML,i} as
+Similarly we can write the variance for $\overline{X}_{AML,i}$ as
 
 $$
 s^2_{\overline{X}_{AML,i}} = \frac{s^2_{AML,i}}{N_{AML}}.

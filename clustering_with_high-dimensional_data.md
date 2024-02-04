@@ -38,7 +38,7 @@ $$
 
 ### K-means algorithm
 
-1. Initialize the K means ${\mu_k}_k=1,...,K to random positions.
+1. Initialize the K means ${\mu_k}_k=1,...,K$ to random positions.
 
 Then repeat 2. and 3. until convergence.
 

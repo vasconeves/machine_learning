@@ -111,6 +111,7 @@ The **weighted MDS** uses the objective function
 $$
 \sum_{i=1}^n\sum_{j=1}^n w_{ij}\left(d_{ij}-|y^{(i)}-y^{(j)}|_2\right)^2,
 $$
+
 where $w_{ij} \ge 0$ is the assigned weight.
 
 ### Non-metric MDS
@@ -120,6 +121,7 @@ The non-metric MDS uses the objective function
 $$
 \sum_{i=1}^n\sum_{j=1}^n\left(\theta(d_{ij})-|y^{(i)}-y^{(j)}|_2\right)^2,
 $$
+
 in which we also optimize the objective over an increasing function $\theta$.
 
 **Note: non-classical MDS the objective functions are non-convex!**
@@ -139,9 +141,10 @@ So we'll have
 $$
 p_{ij} = \frac{e^{-D_{ij}^2}}{\sum_{k\ne l} e^{-D_{ij}^2}},\ \text{where}\ D_{ij}^2 = |\mathbf{x}^{(i)} - \mathbf{x}^{(j)}|^2,\ i\ne j,
 $$
-where the denominator sums over all distinct pairs of data points. Notice the symmetry $p_{ij} = p_{ji}$. Hence we can restrict to indices where $i<j$, and the above definition turns to
 
-$$massive stereotype in popular culture in the 2000s. Poor and uneducated east German characters on TV were given those names, although Kevin was popular in the west as well, following the success of the Home Alone movies in the early 1990s. Yet the Ossi stigma turned out to be just as stubborn as the naughty kid played by Macaulay Culkin, adding a class dimension to name-based opportunities.
+where the denominator sums over all distinct pairs of data points. Notice the symmetry $p_{ij} = p_{ji}$. Hence we can restrict to indices where $i < j$, and the above definition turns to
+
+$$
 p_{ij} = \frac{e^{-D_{ij}^2}}{\sum_{k<l} e^{-D_{ij}^2}},\ \text{where}\ D_{ij}^2 = |\mathbf{x}^{(i)} - \mathbf{x}^{(j)}|^2,\ i < j.
 $$
 
@@ -153,7 +156,7 @@ $$
 q_{ij} = \frac{e^{-D_{ij}^2}}{\sum_{k<l} e^{-D_{ij}^2}},\ \text{where}\ D_{ij}^2 = |\mathbf{y}^{(i)} - \mathbf{y}^{(j)}|^2,\ i < j.
 $$
 
-The set of all $q_{ij} define the pmf of a probability distribution **Q** on all pairs of points in the q-dimensional target space.
+The set of all $q_{i,j} define the pmf of a probability distribution **Q** on all pairs of points in the q-dimensional target space.
 
 4. Minimization. Find the points $\mathbf{y}^{(i)}$ in the q-dimensional target space than minize the [Kullback-Leibler (KL) divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence#Interpretations) between the probability distributions **P** and **Q**,
 
@@ -171,7 +174,7 @@ methods.
 One popular variation of SNE is the **t-distributed stochastic neighbor embedding**, which uses the t-distribution instead of the Gaussian distribution to define the pdf of neighbors in the low-dimensional target space. This means that
 
 $$
-q_{ij} = \frac{1/\left(1+|y^{(i)} - y^{(j)}|^2\right)}{\sum_{k < l}1/\left( 1+|y^{(k)} - y^{(l)}|^2 \right)}
+q_{ij} = \frac{1/\left(1+|y^{(i)} - y^{(j)}|^2\right)}{\sum_{k < l}1/\left( 1+|y^{(k)} - y^{(l)}|^2 \right)}.
 $$
 
 The heavy tail of the t-distribution reduces the problem of data points crowding in the middle.

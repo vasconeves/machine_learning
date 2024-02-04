@@ -5,6 +5,7 @@
 Dimensional reduction is the transformation of high-dimensional data into a low dimension representation. During this process, some information is lost but the main features are (hopefully!) preserved.
 
 ![The elephant in the room of Machine Learning...](pics/elephant.png)
+
 *The elephant in the room of Machine Learning...*
 
 These transformations are very important because processing and analyzing high-dimensional data can be intractable. Dimension reduction is thus very useful in dealing with large numbers of observations and variables and is widely used in many fields.
@@ -91,7 +92,7 @@ Multidimensional scaling (MDS) is a non-linear dimensionality reduction method t
 
 Let $x^{(1)},x^{(2)},...,x^{(n)} \in \mathbb{R}^p$ denote $n$ data points in $p$ dimensional space, and let the distance matrix $\mathbf{D} \in \mathbb{R}^{n\times n}$ consists of the elements of distances between each pair of the points, i.e. $d_{i,j} = |x^{(i)}-x^{(j)}|$.
 
-The objective of MDS is to find points $y^{(1)},...,y^{(n)}\in\mathbb{R}^q$ in a lower dimensional space ($q<p$), such that the sum of all pairwise distances
+The objective of MDS is to find points $y^{(1)},...,y^{(n)}\in\mathbb{R}^q$ in a lower dimensional space ($q < p$), such that the sum of all pairwise distances
 
 $$
 \sum_{i=1}^n\sum_{j=1}^n\left(d_{ij}-|y^{(i)}-y^{(j)}|_2\right)^2

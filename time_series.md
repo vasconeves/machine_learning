@@ -707,7 +707,7 @@ Cross validation can be used in special cases for AR models (Bergmeier, Hyndman 
 
 ## Forecasting with AR(p) models
 
-*Can we predict $X_{n+m}$ based on observed $x_n,x{n-1},...,x1$?*
+Can we predict $X_{n+m}$ based on observed $x_n,x{n-1},...,x1$?
 
 **Yes!...but only for short horizons $m$!** For long horizons, the forecast converges to the mean of the time series.
 

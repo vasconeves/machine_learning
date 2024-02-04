@@ -155,7 +155,7 @@ print(num_holm_bonferroni_rejections)
 In most cases, however, FWER is too strict and we loose too much statistical power. The most sensible course of action is then to control the expected proportion of false discoveries among all discoveries made. We can define 
 
 $$
-FDR = \mathbb{E}\left[ \frac{ \text{\# type 1 errors or false discoveries}}{\text{total number of discoveries}}\right].
+FDR = \mathbb{E}\left[ \frac{ \text{nº type 1 errors or false discoveries}}{\text{total number of discoveries}}\right].
 $$
 
 ### The Benjamini-Hochberg correction

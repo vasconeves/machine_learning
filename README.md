@@ -2,6 +2,8 @@
 
 This repository showcases what I've learned in statistics and ML in the past few years.
 
+**NOTE: For some unknown reason some equation appear unformatted in github but are displayed correctly in my local computer (i.e. for instance in visual studio code). I do not know the reason for this (yet).**
+
 TOC. THIS IS WORK IN PROGRESS! The first version will be finished by the end of January 2024! Please be patient! :) Multi-daily updates are expected up to the end of Feb. ;)
 
 ## Provisional TOC

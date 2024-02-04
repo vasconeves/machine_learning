@@ -7,7 +7,7 @@
 Given data $X^{(1)},X^{(2)},...,X^{(n)}$ that take values in $\mathbb{R}^p$, a **classification problem** is a problem in which we look for a functions 
 
 $$
-f:\mathbb{R}^p \rightarrow C,\ \text{where} C={C1,...,C_k},
+f:\mathbb{R}^p \rightarrow C,\ \text{where } C={C1,...,C_k},
 $$
 
 which maps the sample space of the data into a set of class labels $C={c1,...,c_m}$. This function is called a **classifier**.
@@ -180,7 +180,6 @@ $$
 
 $$
 = \prod_{i=1}^n p(x^{(i)})^{Y^{(i)}}(1 - p(x^{(i)}))^{1-Y^{(i)}}.
-
 $$
 
 From here we can calculate the log-likelihood,

@@ -24,7 +24,7 @@ $$\sigma_X = 0.6534\ Mpc,$$
 
 and
 
-$$\sigma_Y = 348.7337\ km/s$$.
+$$\sigma_Y = 348.7337\ km/s.$$
 
 From the average value of the two variables we can calculate the sample covariance, which is defined as the amount that $X$ and $Y$ vary away from the mean **at the same time**. The covariance has a maximum when X and Y are perfectly correlated. This value is equal to
 

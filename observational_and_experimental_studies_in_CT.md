@@ -288,7 +288,7 @@ A great feature of the $t_n$ distribution is that it introduces uncertainty due 
 
     - Using a qq-plot (quantile-quantile plot). By inspecting the form of the qq plot one has a **qualitative** measure of the form of the distribution. In this example I use the qqplot function of the statsmodels library. In short the function draws at random $n$ numbers and orders them, doing the same with the sample values. Then, if they're more or less in a straight line we can have some confidence that our sample is drawn from a normal distribution. **It's important to note that it is necessary to subtract by the mean and divide by the standard deviation to properly use the qq plot**.
 ![](pics/qqplot.png)
-   - Using a KS test (one sample Kolmogorov smirnov test of normality). For instance we can use the 1-sample KS test for normality contained in the scipy.stats library and we conclude that there is a high probability that our data is drawn from a normal distribution ($\textit{p-value} \sim 0.64$) as shown below. **Always take care to check if you're doing a 1-sided or a two-sided test**.
+   - Using a KS test (one sample Kolmogorov smirnov test of normality). For instance we can use the 1-sample KS test for normality contained in the `scipy.stats` library and we conclude that there is a high probability that our data is drawn from a normal distribution ($\textit{p-value} \sim 0.64$) as shown below. **Always take care to check if you're doing a 1-sided or a two-sided test**.
 
 Code:
 ```python
@@ -314,21 +314,27 @@ Ok, we're now actually happy with our model to obtain the expected value and its
 
 This range is called a **confidence interval**. It is centered around the sample mean and its width is proportional to the standard error.
 
-The interval is defined in such a way that with probability $1-\alpha$ the interval will contain the true mean $\mu$. In other words, if we sample the dataset many times and calculate inervals each time, the probability taht $\mu$ is in the proposed range is $1-\alpha$.
+The interval is defined in such a way that with probability $1-\alpha$ the interval will contain the true mean $\mu$. In other words, if we sample the dataset many times and calculate intervals each time, the probability that $\mu$ is in the proposed range is $1-\alpha$.
 
 We can write this interval in the following way
 
-$$P(-\Phi^{-1}_{1-\alpha/2} \le \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \le \Phi^{-1}_{1-\alpha/2}) = 1 - \alpha,$$
+$$
+P(-\Phi^{-1}_{1-\alpha/2} \le \frac{\overline{X}-\mu}{\sigma/\sqrt{n}} \le \Phi^{-1}_{1-\alpha/2}) = 1 - \alpha,
+$$
 
 where $\phi$ is the cdf of the distribution and $\alpha$ is the significant level.
 
 If we isolate $\mu$ then we obtain
 
-$$P(\overline{X}-\frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2} \le \mu \le \overline{X}+\frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2}) = 1 - \alpha.$$
+$$
+P(\overline{X}-\frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2} \le \mu \le \overline{X}+\frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2}) = 1 - \alpha.
+$$
 
 Therefore, the (two-sided in this case!) confidence interval will be
 
-$$\overline{X} \pm \frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2}.$$
+$$
+\overline{X} \pm \frac{\sigma}{\sqrt{n}}\Phi^{-1}_{1-\alpha/2}.
+$$
 
 To better understand what the confidence interval is we can create a very simple simulation where we randomly draw 100 elements from a standard normal distribution 100 times. The result is depicted in the following Picture.
 
@@ -572,7 +578,7 @@ then
 In most cases, however, FWER is too strict and we loose too much statistical power. The most sensible course of action is then to control the expected proportion of false discoveries among all discoveries made. We can define 
 
 $$
-FDR = \mathbb{E}\left[ \frac{ \text{\# type 1 errors or false discoveries}}{\text{total number of discoveries}}\right].
+FDR = \mathbb{E}\left[ \frac{ \text{nº type 1 errors or false discoveries}}{\text{total number of discoveries}}\right].
 $$
 
 ### The Benjamini-Hochberg correction

@@ -234,7 +234,7 @@ where $W_t$ is the white noise that is uncorrelated with any lagged or future va
 
 First, we need to simulate the dataset with random noise and AR/MA terms.
 
-The condition that the characteristic polynomial must have roots outside the unit circle is used here. For an order-$p$ time series $X_t = \phi_1 X_{t-1} + \phi_2 X_{t-2} \dots + \phi_p X_{t - p}$, there is a **characteristic polynomial** $\Phi(X_t) := 1 - \sum_{i=1}^p \phi_i X_{t-i}$. 
+The condition that the characteristic polynomial must have roots outside the unit circle is used here. For an $order-p$ time series $X_t = \phi_1 X_{t-1} + \phi_2 X_{t-2} \dots + \phi_p X_{t - p}$, there is a **characteristic polynomial** $\Phi(X_t) := 1 - \sum_{i=1}^p \phi_i X_{t-i}$. 
 
 Note that we can equivalently express this polynomial as $\Phi(X_t) = \prod_{i=1}^p (1 - \alpha_i L) X_t$ where $L$ is the lag operator (i.e. $L(X_t) = X_{t-1}$.
 By fixing all $\alpha_i = R$, for some constant $R \in (-1,1)$, we guarantee the time series is stationary. 
@@ -630,7 +630,7 @@ Now that we can find models, we can form forecasts.
 With estimates of each $\theta$ and $\phi$ term, we can predict one step ahead. 
 
 $$
-\hat{X}_{t + 1} = \hat{\phi}_1 X_{t} + \hat{\phi}_2 X_{t-1} \dots + \hat{\phi}_p X_{t - p + 1} + \hat{\theta}_1 W_{t} + \hat{\theta}_2 W_{t-1} \dots + \hat{\theta}_q W_{t-q + 1} 
+\hat{X}_{t + 1} = \hat{\phi}_1 X_{t} + \hat{\phi}_2 X_{t-1} \dots + \hat{\phi}_p X_{t - p + 1} + \hat{\theta}_1 W_{t} + \hat{\theta}_2 W_{t-1} \dots + \hat{\theta}_q W_{t-q + 1}.
 $$
 
 To form long-range forecasts, we can just plug in our estimate $\hat{X}_{t + 1}$ in place of $X_{t + 1}$ at every future value, and so on for other future estimates. Let's see what happens when we do this. The forecast will be done with `arma.get_forecast(50)` for 50 time points. We will be using our previouse AR(1,2) series.

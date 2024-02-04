@@ -217,7 +217,7 @@ $$
 - If a perfect classification is not possible, determine a hyperplane $(\mathbf{w}x-b=0)$ that maximizes the distance to the nearest point $x_i$ from each group and minimizes the sum of classification errors $\varphi_i$:
 
 $$
-\text{minimize } ||\mathbf{w}||_2 + \lambda\sum_{i=1}^n{\varphi_i} \text{ such that } y_i(\mathbf{w}x_i - b) \ge 1 - \varphi_i\ \forall\ i.
+\text{minimize } ||\mathbf{w}||_2 + \lambda\sum_{i=1}^n{\varphi_i} \text{ such that } y_i(\textbf{w}x_i - b) \ge 1 - \varphi_i\text{ } \forall\text{ } i.
 $$
 
 ## Wrap-up: Classification

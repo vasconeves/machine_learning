@@ -139,13 +139,13 @@ So we'll have
 2. In the high dimensional $p$ space, center a Gaussian distribution on each data point $\mathbf{x}^{(i)}$, and define the probability of another data point $\mathbf{x}^{(j)}$ to be its neighbor to be
 
 $$
-p_{ij} = \frac{e^{-D_{ij}^2}}{\sum_{k\ne l} e^{-D_{ij}^2}},\ \text{where}\ D_{ij}^2 = |\mathbf{x}^{(i)} - \mathbf{x}^{(j)}|^2,\ i\ne j,
+p_{ij} = \frac{e^{-D_{ij}^2}}{\sum_{k\ne l} e^{-D_{ij}^2}}, \text{ where } D_{ij}^2 = |\mathbf{x}^{(i)} - \mathbf{x}^{(j)}|^2,\ i\ne j,
 $$
 
 where the denominator sums over all distinct pairs of data points. Notice the symmetry $p_{ij} = p_{ji}$. Hence we can restrict to indices where $i < j$, and the above definition turns to
 
 $$
-p_{ij} = \frac{e^{-D_{ij}^2}}{\sum_{k<l} e^{-D_{ij}^2}},\ \text{where}\ D_{ij}^2 = |\mathbf{x}^{(i)} - \mathbf{x}^{(j)}|^2,\ i < j.
+p_{ij} = \frac{e^{-D_{ij}^2}}{\sum_{k<l} e^{-D_{ij}^2}}, \text{ where } D_{ij}^2 = |\mathbf{x}^{(i)} - \mathbf{x}^{(j)}|^2,\ i < j.
 $$
 
 The shape of the Gaussian distribution ensures that pairs that are close together are given much more weight than pairs that are far apart.
@@ -153,7 +153,7 @@ The shape of the Gaussian distribution ensures that pairs that are close togethe
 3. In the low dimensional target space do the same procedure as in the previous point: define for each point $y^{(i)}$ the probability of $y^{(j)}$ being its neighbor to be
 
 $$
-q_{ij} = \frac{e^{-D_{ij}^2}}{\sum_{k<l} e^{-D_{ij}^2}},\ \text{where}\ D_{ij}^2 = |\mathbf{y}^{(i)} - \mathbf{y}^{(j)}|^2,\ i < j.
+q_{ij} = \frac{e^{-D_{ij}^2}}{\sum_{k<l} e^{-D_{ij}^2}}, \text{ where } D_{ij}^2 = |\mathbf{y}^{(i)} - \mathbf{y}^{(j)}|^2,\ i < j.
 $$
 
 The set of all $q_{i,j} define the pmf of a probability distribution **Q** on all pairs of points in the q-dimensional target space.

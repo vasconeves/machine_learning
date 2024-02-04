@@ -6,9 +6,9 @@ The data set golub consists of the expression levels of 3051 genes for 38 tumor 
 
 Here we will estimate the number of genes that can be used to differentiate the tumor types (meaning that their expression level differs between the two tumor types) using
 
-- *the uncorrected p-values,*
-- *the Holm-Bonferroni correction, and* 
-- *the Benjamini-Hochberg correction*
+- the uncorrected p-values,
+- the Holm-Bonferroni correction, and
+- the Benjamini-Hochberg correction
 
 ## Introduction
 

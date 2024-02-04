@@ -308,7 +308,7 @@ In the following diagram we can observe a very simple example. We want to plot t
 
 ![](pics/acf_example1.png)
 
-From here we can draw the "correlogran" as shown below which is just the value of the autocovariance as a function of the lag $h$.
+From here we can draw the "correlogram" as shown below which is just the value of the autocovariance as a function of the lag $h$.
 
 ![](pics/acf_example2.png)
 
@@ -386,7 +386,7 @@ $$
 
 where $\{W_t\}_t$ is a white noise process, and $W_t$ is uncorrelated with $X_s$ for $s < t$.
 
-**Note:** the definition of the model is recursive, meaning we can relate $X_t$ to any previous term of the series $X_{t-h} by substituting the above expression for X_{t-1} on the right side of the equation and so on. Because of this recursive nature, **all** terms of the series are **dependent**. This fact is reflected on the ACF. The ACF of a **stationary autoregressive process** is **non-zero** for all time shifters $h$ and decays to zero exponentially as $h$ increases, as shown in the plot below.
+**Note:** the definition of the model is recursive, meaning we can relate $X_t$ to any previous term of the series $X_{t-h}$ by substituting the above expression for $X_{t-1}$ on the right side of the equation and so on. Because of this recursive nature, **all** terms of the series are **dependent**. This fact is reflected on the ACF. The ACF of a **stationary autoregressive process** is **non-zero** for all time shifters $h$ and decays to zero exponentially as $h$ increases, as shown in the plot below.
 
 ![](pics/models_autoregression.png)
 
@@ -403,7 +403,7 @@ generates the following ACF. Again, we observe the exponentially decay as $h$ in
 
 ## Random walk model
 
-A time series $\{X_t\}_{t\ge 1}$ is a random walk if the value of $X_t$ is obtained from the value of $X_{t-1}$ by adding a random perturbation $W_t$ (white noise) that is independent of the past history of the series $\{X_s\}_{s<t}$. Thus,
+A time series $\{X_t\}_{t\ge 1}$ is a random walk if the value of $X_t$ is obtained from the value of $X_{t-1}$ by adding a random perturbation $W_t$ (white noise) that is independent of the past history of the series $\{X_s\}_{s\lt t}$. Thus,
 
 $$
 X_t = X_{t-1} + W_t

@@ -18,9 +18,10 @@ TOC. THIS IS WORK IN PROGRESS! The first version will be finished by the end of 
       - Family-wise error rate, Bonferroni correction, Holm-Bonferroni correction, False discovery rate, Benjamini-Hochberg correction, commonly accepted practice.
   - [The Salk Vaccine Field Trial](example.the_salk_vaccine_field_trial.md). Here is shown how should the interpretation of simple, qualitative results be done in the context of clinical trials.
   - [Molecular classification of cancer](example.molecular_classification_of_cancer.md). In this example it is estimated  the number of genes that can be used to differentiate tumor types using different approaches, highlighting the difference between using uncorrected p-values and employing p-value corrections, such as the Holm-Bonferroni and the Benjamini-Hochberd methods.
-  - [Project: Single-cell RNAseq dataset analysis](project.single_cell_RNA-seq_dataset_analysis.md). **Work in progress**
+  - [Single-cell RNAseq dataset analysis](example.single_cell_RNA-seq_dataset_analysis.md). In this example we will analyze a single-cell RNA-seq dataset from the mouse neocortex, a region of the brain that governs its higher functions, such as perception and cognition.
+
 - **Examples from Science**
-  - [Gamma ray observation analysis - a likelihood ratio test application](example.gamma_ray_observation_analysis.md)
+  - [Gamma ray observation analysis - a likelihood ratio test application](example.gamma_ray_observation_analysis.md). Here, a small quantity of data collected from the Compton Gamma Ray Observatory, a satellite launched by NASA in 1991 (http://cossc.gsfc.nasa.gov/) will be analysed. For each of 100 sequential time intervals of variable lengths (given in seconds), the number of gamma rays originating in a particular area of the sky was recorded. We would like to check the assumption that the emission rate is constant. This is the perfect example for a likelihood ratio test application.
 - **Methodology**
   - [Gradient descent optimization example](optimization_example_gradient_descent.md)
     - Notation and convexity
@@ -79,13 +80,26 @@ TOC. THIS IS WORK IN PROGRESS! The first version will be finished by the end of 
     - A real world example: RA Fisher's Wine Dataset
       - Logistic regression in the context of the Wine Dataset
       - Feature selection using logistic regression
-  - [Time series](time_series.md)
-    - Trends, seasonality, stationarity, autocovariance
-    - time series statistical models
-    - time series analysis
-    - example: climate change signal
-    - example: stock price forecasting
-    - project
+- **Time Series**
+  - [Time series 101](time_series.md)
+    - Dependence in time series
+    - Deterministic dependence in time series
+    - Stochastic dependence in time series
+    - Stationarity
+    - Identifying and removing non-stationarity features
+    - Estimation on stationary time series
+    - Autocorrelation as a diagnostic tool
+    - The white noise model
+    - The autoregressive model
+    - The random walk model
+    - The moving average model
+    - The ARMA model
+    - Regression and time series
+  - [example climate change signal](time_series_example.climate_change.md).In this example we will explore climate data from Middlesex County, Massachusets, USA.
+  - [example stock price forecasting](time_series_example.stock_price_forecast.md). Our research question here is the following: How well can we predict Meta's closing stock price one day in advance and one month in advance?
+  - [example the mauna loa co2 concentration](time_series_example.the_mauna_loa_co2_concentration.md). In this example we want to treat and analyze the data in order to find all possible trends with the first 80% of the data. Then we want to gauge the performance of our model by predicting the last 20% of the data.
+  - [example consumer price index and break even rate analysis](time_series_example.consumer_price_index_and_break_even_rate_analysis). In this example we will analyze consumer price index (CPI) and break even rate (BER) data for the last decade and present an approach to estimate the 1 month ahead forecasts of the CPI starting September 2013.
+
 
 **TBD**
 

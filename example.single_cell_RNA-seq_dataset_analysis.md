@@ -1,6 +1,6 @@
 # Single-Cell RNA-seq analysis
 
-In this project we will analyze a single-cell RNA-seq dataset from the mouse neocortex, a region of the brain that governs its higher functions, such as perception and cognition.
+In this example we will analyze a single-cell RNA-seq dataset from the mouse neocortex, a region of the brain that governs its higher functions, such as perception and cognition.
 
 This dataset is a subset of a larger single-cell RNA-seq dataset compiled by the [Allen Institute](https://alleninstitute.org/).
 

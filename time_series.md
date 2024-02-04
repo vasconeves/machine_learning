@@ -519,7 +519,7 @@ because $W_j$ is uncorrelated with $W_k$ for $j \ne k$.
 
 - $\mathbb{E}[X_t] = 0$.
 - Autocovariance $\gamma$ depends only on $|s-t| \implies$ stationarity.
-- ACF reflects order: $\gamma(s,t) = 0 if |s-t| > q.
+- ACF reflects order: $\gamma(s,t) = 0$ if $|s-t| > q$.
 - ACF distinguishes MA and AR models as shown in the figure below.
 
 ![](pics/acf_comparison.png)

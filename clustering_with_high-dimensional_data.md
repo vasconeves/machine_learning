@@ -136,7 +136,7 @@ $$
 $$
 
 $$
-\hat{p}_k = \frac{1}{n}\sum_{i=1}^n p(k|i),
+\hat{p}_k = \frac{1}{n}{\sum_{i=1}^n p(k|i)},
 $$
 
 $$

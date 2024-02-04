@@ -116,6 +116,7 @@ $$
 $$
 \tilde{\ell}(x^{(1)},...,x^{(n)};\theta) = \sum_{i=1}^n\left[ \sum_{k=1}^K p(k|i)\log{\left( \frac{P(x^{(i)},\text{cluster k};\theta)}{p(k|i)}\right)}\right] = \tilde{\ell}(x^{(1)},...,x^{(n)};\theta) 
 $$
+
 $$
 = \sum_{i=1}^n\left[ \sum_{k=1}^K p(k|i)\log{\left(\frac{p_k\mathcal{N}(x^{(i)};\mu^{(k)},\Sigma_k)}{p(k|i)}\right)}\right]
 $$
@@ -131,7 +132,7 @@ due to Jensen's inequality.
 In the special case where the covariance matrix is $\Sigma_k = \sigma_k^2 \mathbf{I}$, the parameters that maximize the expected log-likelihood function are as follows:
 
 $$
-\hat{\mu}^k = \frac{\sum_{i=1}^n x^{(i)}p(k|i)}{\sum_{i=1}^n p(k|i)}
+\hat{\mu}^k = \frac{\sum_{i=1}^n x^{(i)}p(k|i)}{\sum_{i=1}^n p(k|i)},
 $$
 
 $$

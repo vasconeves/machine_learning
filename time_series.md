@@ -550,7 +550,7 @@ Examples:
 - AR(2) model $\implies X_t = \phi_1 X_{t-1} + \phi_2 X_{t-2} + W_t$
 - include external regressors $\implies X_t = \beta_1 X_{t-1} + \beta_2 Y_t + W_t$
 
-To fit any model we can do least squares regression: $min_\beta\sum_t (mathbf{x_t-\beta^T z_t})^2
+To fit any model we can do least squares regression: $min_\beta\sum_t (mathbf{x_t-\beta^T z_t})^2$
 
 **Note: the errors may be correlated over time!!!**
 

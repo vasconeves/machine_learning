@@ -4,6 +4,8 @@ This repository showcases what I've learned in statistics and ML in the past few
 
 **NOTE: For some unknown reason some equation appear unformatted in github but are displayed correctly in my local computer (i.e. for instance in visual studio code). I do not know the reason for this (yet).**
 
+**NOTE: Most of the material presented here was learned from the [MitX Micromaster courses on statistics and data science](https://micromasters.mit.edu/ds/) or inspired by it and then upgraded/expanded/branched. When something is not explicitly referenced the default source should be that one.**
+
 TOC. THIS IS WORK IN PROGRESS! The first version will be finished by the end of January 2024! Please be patient! :) Multi-daily updates are expected up to the end of Feb. ;)
 
 ## Provisional TOC

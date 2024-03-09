@@ -1,4 +1,4 @@
-# High dimensional data reduction and visualization with examples
+# High dimensional data reduction and visualization with an example: digit recognition
 
 ## Introduction
 
